@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_HOLD, initialHold, press, tick, type HoldState } from "../src/hold.js";
 import { keyAction } from "../src/keys.js";
-import type { Motion } from "../src/protocol.js";
+import type { Motion } from "@acemate/core";
 
 const config = DEFAULT_HOLD;
 

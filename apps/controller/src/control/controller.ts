@@ -1,4 +1,4 @@
-import { applyStopLatch, resolveMotion, type Motion } from "../shared";
+import { applyStopLatch, resolveMotion, type Motion } from "@acemate/core";
 import { CENTERED, stickToInput, type Horizontal, type Stick } from "./sticks";
 
 export interface ControlState {

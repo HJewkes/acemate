@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { LaunchValidationError, ballMachine, runRequests, singleShot, targetShot } from "../src/launch.js";
-import { encodeLine } from "../src/protocol.js";
+import { LaunchValidationError, ballMachine, runRequests, singleShot, targetShot } from "../src/protocol/launch";
+import { encodeLine } from "../src/protocol/protocol";
 
 const centre = { direction: 0, speed: 3, spin: 0, elevation: 20 };
 

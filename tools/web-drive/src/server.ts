@@ -3,12 +3,9 @@ import { createServer, type Server, type ServerResponse } from "node:http";
 import { parseArgs } from "node:util";
 import { context } from "esbuild";
 import { WebSocketServer, type WebSocket } from "ws";
-import { parseMessage, requests, type Request } from "../../drive-probe/src/protocol.js";
+import { parseMessage, requests, type Request, DriveLoop, LaunchController, type Motion } from "@acemate/core";
 import { attachControl, type LaunchHooks } from "./control-socket.js";
-import { DriveLoop } from "./drive-loop.js";
-import { LaunchController } from "./launcher.js";
 import { connect, dryRunLink, findFirst, type Link } from "./link.js";
-import type { Motion } from "./motion.js";
 
 const { values } = parseArgs({
   options: {

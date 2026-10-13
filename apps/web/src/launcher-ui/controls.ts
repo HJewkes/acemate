@@ -1,8 +1,6 @@
-import { directionLabel } from "./aim.js";
-import type { Assumptions } from "./assumptions.js";
+import { directionLabel, type Assumptions, SPANS, type FireMessage } from "@acemate/core";
 import { h, slider, spinControl } from "./dom.js";
-import { SPANS } from "./ranges.js";
-import type { FireMessage, LauncherVariant } from "./variant.js";
+import { type LauncherVariant } from "./variant.js";
 
 /** A: every ball-machine parameter as a labelled slider with steppers. */
 export function controlsVariant(): LauncherVariant {

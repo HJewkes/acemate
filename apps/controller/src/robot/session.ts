@@ -8,7 +8,7 @@ import {
   type DriveLoopConfig,
   type Motion,
   type Request,
-} from "../shared";
+} from "@acemate/core";
 import { trace } from "../debug/log-buffer";
 import type { ByteChannel } from "./channel";
 import { LaunchLink } from "./launch-link";

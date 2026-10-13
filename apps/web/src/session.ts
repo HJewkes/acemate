@@ -1,8 +1,13 @@
 // The browser half of what tools/web-drive/src/server.ts does: inbox, set_time, heartbeat, car_state and the drive loop.
-import { parseMessage, requests, type Request } from "../../../tools/drive-probe/src/protocol.js";
-import { DriveLoop } from "../../../tools/web-drive/src/drive-loop.js";
-import { LaunchController, type LaunchMessage } from "../../../tools/web-drive/src/launcher.js";
-import type { Motion } from "../../../tools/web-drive/src/motion.js";
+import {
+  parseMessage,
+  requests,
+  type Request,
+  DriveLoop,
+  LaunchController,
+  type LaunchMessage,
+  type Motion,
+} from "@acemate/core";
 import type { Link } from "./link.js";
 
 export type CarState = { running?: boolean; bat?: number | null; mode?: string; time_is_set?: boolean } & Record<

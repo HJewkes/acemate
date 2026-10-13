@@ -8,7 +8,7 @@
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "noEmit": true,
-    // "node" only because the shared protocol.ts also declares Buffer helpers for the Node tools; the page never calls them.
+    // "node" only because @acemate/core's protocol also declares Buffer helpers for the Node tools; the page never calls them.
     "types": ["node", "vite/client"]
   },
   "include": ["src", "test", "vite.config.ts"]

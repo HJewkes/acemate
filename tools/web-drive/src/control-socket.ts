@@ -1,7 +1,4 @@
-import { MOTIONS } from "../../drive-probe/src/protocol.js";
-import type { DriveLoop } from "./drive-loop.js";
-import { parseLaunch, type LaunchMessage } from "./launcher.js";
-import type { Motion } from "./motion.js";
+import { MOTIONS, type DriveLoop, parseLaunch, type LaunchMessage, type Motion } from "@acemate/core";
 
 /** The slice of a ws WebSocket this needs, so tests can pass an EventEmitter. */
 export interface ControlSocket {

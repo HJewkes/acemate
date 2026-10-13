@@ -1,5 +1,5 @@
 import { appendFileSync } from "node:fs";
-import { LaunchValidationError } from "./launch.js";
+import { LaunchValidationError } from "@acemate/core";
 import { USAGE, parseLaunchArgs, runLaunch, type LaunchDeps, type LaunchOptions } from "./launch-session.js";
 import type { Link } from "./link.js";
 

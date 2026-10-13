@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { AppState } from "react-native";
 import type { Controller, ControlState } from "../control/controller";
 import { NO_RUN, type RunInfo } from "../launcher/run-chip";
-import type { FireMessage } from "../shared";
+import type { FireMessage } from "@acemate/core";
 import type { SavedRobot } from "../storage/settings";
 import { AUTO_CONNECT, openRobot } from "./ble-channel";
 import type { LaunchListener } from "./launch-link";

@@ -1,20 +1,21 @@
 import { showLaunchStatus } from "../../../../tools/web-drive/src/page/launch-panel.js";
-import type { LaunchMessage } from "../../../../tools/web-drive/src/launcher.js";
+import {
+  type LaunchMessage,
+  ASSUMPTION_NOTES,
+  loadAssumptions,
+  saveAssumptions,
+  type Assumptions,
+  createHoldFire,
+  type HoldReading,
+  describeShot,
+  type FireMessage,
+} from "@acemate/core";
 import { aimPadVariant } from "./aim-pad.js";
-import { ASSUMPTION_NOTES, loadAssumptions, saveAssumptions, type Assumptions } from "./assumptions.js";
 import { controlsVariant } from "./controls.js";
 import { courtMapVariant } from "./court-map.js";
 import { h, segmented } from "./dom.js";
-import { createHoldFire, type HoldReading } from "./hold-fire.js";
 import { presetBoardVariant } from "./preset-board.js";
-import {
-  VARIANT_IDS,
-  describeShot,
-  initialVariant,
-  type FireMessage,
-  type LauncherVariant,
-  type VariantId,
-} from "./variant.js";
+import { VARIANT_IDS, initialVariant, type LauncherVariant, type VariantId } from "./variant.js";
 
 const VARIANT_KEY = "acemate.launcher.variant";
 const CONTROL_SELECTOR = "input, textarea, select, [data-grab]";

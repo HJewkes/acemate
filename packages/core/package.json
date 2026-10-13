@@ -1,0 +1,19 @@
+{
+  "name": "@acemate/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Platform-free S10 logic shared by every controller: wire protocol, launch builders, drive loop and launcher controls.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  }
+}

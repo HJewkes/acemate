@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeAll, describe, expect, it } from "vitest";
 import html from "../index.html?raw";
-import { HOLD_MS } from "../src/launcher-ui/hold-fire.js";
+import { HOLD_MS } from "@acemate/core";
 
 const byId = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const text = (id: string) => byId(id)?.textContent ?? "";

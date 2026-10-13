@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { LineDecoder, chunk, encodeLine, parseMessage, requests } from "../src/protocol.js";
+import { LineDecoder, chunk, encodeLine, parseMessage, requests } from "../src/protocol/protocol";
 
 describe("motion command encoding", () => {
   it("matches the app's motion_control JSON with a CRLF terminator", () => {

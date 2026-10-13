@@ -1,4 +1,4 @@
-import type { Motion } from "./protocol.js";
+import type { Motion } from "@acemate/core";
 
 // Terminals report key-repeat, never key-up, so release is inferred from repeat going quiet.
 export interface HoldConfig {

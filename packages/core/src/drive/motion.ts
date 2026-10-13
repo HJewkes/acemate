@@ -1,4 +1,4 @@
-import type { Motion } from "../../drive-probe/src/protocol.js";
+import type { Motion } from "../protocol/protocol";
 
 export type { Motion };
 

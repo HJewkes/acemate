@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createHoldFire } from "../src/launcher-ui/hold-fire.js";
+import { createHoldFire } from "../src/controls/hold-fire";
 
 const MS = 1000;
 

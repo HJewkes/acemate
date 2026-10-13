@@ -1,7 +1,7 @@
 import { expect } from "vitest";
 import type { ByteChannel } from "../src/robot/channel";
 import { RobotSession, type RobotMessage } from "../src/robot/session";
-import type { Motion } from "../src/shared";
+import type { Motion } from "@acemate/core";
 
 export type Sent = { type: string; data?: unknown };
 /** Lets the fake robot answer a request, as a line it notifies on the next macrotask. */

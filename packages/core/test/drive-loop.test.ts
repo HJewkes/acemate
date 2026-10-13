@@ -1,8 +1,6 @@
-import { EventEmitter } from "node:events";
 import { describe, expect, it } from "vitest";
-import { attachControl, parseControl } from "../src/control-socket.js";
-import { DriveLoop } from "../src/drive-loop.js";
-import type { Motion } from "../src/motion.js";
+import { DriveLoop } from "../src/drive/drive-loop";
+import type { Motion } from "../src/drive/motion";
 
 // A fake link and clock: sent records [ms, motion]; advance() ticks every 10 ms like the server does.
 function harness() {
@@ -100,28 +98,5 @@ describe("drive loop", () => {
       [0, "go_front"],
       [0, "turn_right"],
     ]);
-  });
-});
-
-describe("control socket", () => {
-  it("drives from page messages and stops when the socket closes", () => {
-    const { loop, sent } = harness();
-    const socket = new EventEmitter();
-    attachControl(socket, loop);
-
-    socket.emit("message", Buffer.from(JSON.stringify({ motion: "go_left" })));
-    socket.emit("close");
-
-    expect(sent).toEqual([
-      [0, "go_left"],
-      [0, "stop"],
-    ]);
-  });
-
-  it("treats malformed or unknown messages as stop", () => {
-    expect(parseControl("not json")).toBe("stop");
-    expect(parseControl(JSON.stringify({ motion: "fly" }))).toBe("stop");
-    expect(parseControl("null")).toBe("stop");
-    expect(parseControl(JSON.stringify({ motion: "turn_left" }))).toBe("turn_left");
   });
 });

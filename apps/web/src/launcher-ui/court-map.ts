@@ -1,9 +1,7 @@
-import { HEIGHT_METRES_BY_LEVEL } from "../../../../tools/drive-probe/src/launch.js";
-import { flipped, type Assumptions } from "./assumptions.js";
+import { HEIGHT_METRES_BY_LEVEL, flipped, type Assumptions, SPANS, type FireMessage } from "@acemate/core";
 import { COURT, courtToSvg, courtViewBox, pixelToTarget, type CourtPoint, type Orientation } from "./court.js";
 import { h, s, segmented, slider, spinControl } from "./dom.js";
-import { SPANS } from "./ranges.js";
-import type { FireMessage, LauncherVariant } from "./variant.js";
+import { type LauncherVariant } from "./variant.js";
 
 export const MAX_SEQUENCE = 5;
 

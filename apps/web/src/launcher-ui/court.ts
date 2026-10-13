@@ -1,5 +1,4 @@
-import { flipped } from "./assumptions.js";
-import { SPANS, snapTo } from "./ranges.js";
+import { flipped, SPANS, snapTo } from "@acemate/core";
 
 // ITF court in metres, drill frame: x across (0 = centre line), z deep from the robot-side baseline.
 export const COURT = {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MOTION_RULE, combineInputs, resolveMotion, type MotionRule } from "../src/motion.js";
+import { MOTION_RULE, combineInputs, resolveMotion, type MotionRule } from "../src/drive/motion";
 
 const input = (x: number, y: number, turn: number) => ({ x, y, turn });
 

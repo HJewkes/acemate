@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { lineText, requests } from "../../../tools/drive-probe/src/protocol.js";
-import { runRequests } from "../../../tools/drive-probe/src/launch.js";
+import { lineText, requests, runRequests } from "@acemate/core";
 import {
   NUS,
   dashedUuid,

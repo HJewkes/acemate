@@ -1,7 +1,16 @@
 import { parseArgs } from "node:util";
-import { LaunchValidationError, ballMachine, runRequests, singleShot, targetShot, type Ball } from "./launch.js";
+import {
+  LaunchValidationError,
+  ballMachine,
+  runRequests,
+  singleShot,
+  targetShot,
+  type Ball,
+  parseMessage,
+  requests,
+  type Request,
+} from "@acemate/core";
 import type { Link } from "./link.js";
-import { parseMessage, requests, type Request } from "./protocol.js";
 
 export interface LaunchOptions {
   fire: boolean;

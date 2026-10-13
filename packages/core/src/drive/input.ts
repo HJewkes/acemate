@@ -1,4 +1,4 @@
-import { NEUTRAL, type DriveInput, type Motion } from "./motion.js";
+import { NEUTRAL, type DriveInput, type Motion } from "./motion";
 
 // KeyboardEvent.code values, so the layout (AZERTY, Dvorak) doesn't move the keys.
 const KEY_AXES: Record<string, Partial<DriveInput>> = {

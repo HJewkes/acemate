@@ -1,4 +1,4 @@
-import type { Request } from "../../../tools/drive-probe/src/protocol.js";
+import type { Request } from "@acemate/core";
 
 /** One connected robot, as the rest of the page sees it. BrowserBleLink talks to hardware; MockLink fakes it. */
 export interface Link {

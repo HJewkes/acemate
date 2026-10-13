@@ -1,5 +1,5 @@
 // Same stick model as the Expo app (feat/expo-app apps/controller/src/control/sticks.ts), plus pointer ownership for multi-touch.
-import type { DriveInput } from "../../../tools/web-drive/src/motion.js";
+import type { DriveInput } from "@acemate/core";
 
 /** A stick deflection in screen terms: x right, y down, each in [-1, 1] and inside the unit circle. */
 export interface Stick {

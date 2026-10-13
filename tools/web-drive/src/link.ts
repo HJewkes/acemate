@@ -2,15 +2,7 @@
 // Importing it would resolve @stoprocent/noble from drive-probe's node_modules and force a second install.
 // protocol.ts has no dependencies, so it is imported instead of copied.
 import noble, { type Characteristic, type Peripheral } from "@stoprocent/noble";
-import {
-  LineDecoder,
-  NUS_NOTIFY,
-  NUS_SERVICE,
-  NUS_WRITE,
-  chunk,
-  encodeLine,
-  type Request,
-} from "../../drive-probe/src/protocol.js";
+import { LineDecoder, NUS_NOTIFY, NUS_SERVICE, NUS_WRITE, chunk, encodeLine, type Request } from "@acemate/core";
 
 export interface Link {
   name: string;

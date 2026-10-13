@@ -1,8 +1,21 @@
-import { STOP_KEY, applyStopLatch, gamepadToInput, isDriveKey, keysToInput, pressKey, releaseKey } from "../input.js";
-import type { LaunchMessage } from "../launcher.js";
+import {
+  STOP_KEY,
+  applyStopLatch,
+  gamepadToInput,
+  isDriveKey,
+  keysToInput,
+  pressKey,
+  releaseKey,
+  type LaunchMessage,
+  MOTION_RULE,
+  NEUTRAL,
+  combineInputs,
+  resolveMotion,
+  type DriveInput,
+  type Motion,
+} from "@acemate/core";
 import { setupLaunchPanel, showLaunchStatus } from "./launch-panel.js";
 import { showPower, type CarStateView } from "./power.js";
-import { MOTION_RULE, NEUTRAL, combineInputs, resolveMotion, type DriveInput, type Motion } from "../motion.js";
 
 // The server stops the robot if this heartbeat goes quiet for 300 ms.
 const SEND_MS = 50;

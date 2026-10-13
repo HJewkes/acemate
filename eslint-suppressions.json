@@ -102,11 +102,6 @@
       "count": 2
     }
   },
-  "apps/web/src/launcher-ui/assumptions.ts": {
-    "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 1
-    }
-  },
   "apps/web/src/launcher-ui/controls.ts": {
     "titan/max-function-lines": {
       "count": 2
@@ -179,6 +174,37 @@
       "count": 1
     }
   },
+  "packages/core/src/controls/assumptions.ts": {
+    "@typescript-eslint/no-unsafe-type-assertion": {
+      "count": 1
+    }
+  },
+  "packages/core/src/drive/drive-loop.ts": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 2
+    }
+  },
+  "packages/core/src/launch/launch-controller.ts": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 6
+    },
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unsafe-type-assertion": {
+      "count": 3
+    }
+  },
+  "packages/core/src/protocol/launch.ts": {
+    "titan/max-function-lines": {
+      "count": 1
+    }
+  },
+  "packages/core/src/protocol/protocol.ts": {
+    "@typescript-eslint/no-unsafe-type-assertion": {
+      "count": 1
+    }
+  },
   "tools/drive-probe/src/cli.ts": {
     "@typescript-eslint/no-unnecessary-condition": {
       "count": 2
@@ -200,18 +226,8 @@
       "count": 2
     }
   },
-  "tools/drive-probe/src/launch.ts": {
-    "titan/max-function-lines": {
-      "count": 1
-    }
-  },
   "tools/drive-probe/src/link.ts": {
     "@typescript-eslint/no-unnecessary-condition": {
-      "count": 1
-    }
-  },
-  "tools/drive-probe/src/protocol.ts": {
-    "@typescript-eslint/no-unsafe-type-assertion": {
       "count": 1
     }
   },
@@ -221,22 +237,6 @@
     },
     "@typescript-eslint/no-unsafe-type-assertion": {
       "count": 1
-    }
-  },
-  "tools/web-drive/src/drive-loop.ts": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 2
-    }
-  },
-  "tools/web-drive/src/launcher.ts": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 6
-    },
-    "@typescript-eslint/no-unnecessary-condition": {
-      "count": 1
-    },
-    "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 3
     }
   },
   "tools/web-drive/src/link.ts": {

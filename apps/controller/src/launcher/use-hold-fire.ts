@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { createHoldFire, type HoldReading } from "../shared";
+import { createHoldFire, type HoldReading } from "@acemate/core";
 
 const TICK_MS = 16;
 // Half the shared 1200 ms default: the owner found 1.2 s too slow on the phone (2026-10-12).
