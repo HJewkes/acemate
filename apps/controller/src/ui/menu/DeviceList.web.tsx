@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { MOCK_MODE } from "../../robot/ble-channel.web";
 import type { RobotView } from "../../robot/use-robot";
 import { NO_WEB_BLUETOOTH, bluetoothOf } from "../../robot/web-bluetooth";
 import { useThemedStyles, type Palette } from "../theme";
@@ -6,7 +7,7 @@ import type { DeviceListProps } from "./DeviceList";
 
 function statusLine(robot: RobotView): string | null {
   if (robot.status === "scanning" || robot.status === "connecting") return "Connecting…";
-  if (bluetoothOf(navigator) === null) return NO_WEB_BLUETOOTH;
+  if (!MOCK_MODE && bluetoothOf(navigator) === null) return NO_WEB_BLUETOOTH;
   return robot.status === "disconnected" && robot.detail ? robot.detail : null;
 }
 

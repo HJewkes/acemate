@@ -4,6 +4,7 @@ export * from "./drive/motion";
 export * from "./drive/drive-loop";
 export * from "./drive/input";
 export * from "./launch/launch-controller";
+export * from "./mock/mock-robot";
 export * from "./controls/aim";
 export * from "./controls/assumptions";
 export * from "./controls/describe-shot";
