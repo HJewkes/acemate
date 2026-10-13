@@ -2,11 +2,14 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { deviceRows, rssiBars, type DeviceRow } from "../../robot/device-list";
 import type { RobotView } from "../../robot/use-robot";
 import type { NearbyRobots } from "../../robot/use-nearby-robots";
+import type { SavedRobot } from "../../storage/settings";
 import { useThemedStyles, type Palette } from "../theme";
 
-interface Props {
+export interface DeviceListProps {
   robot: RobotView;
   nearby: NearbyRobots;
+  /** Only the web list uses it, for its one-tap reconnect. */
+  lastRobot: SavedRobot | null;
 }
 
 function statusLine(robot: RobotView, nearby: NearbyRobots, empty: boolean): string | null {
@@ -17,7 +20,7 @@ function statusLine(robot: RobotView, nearby: NearbyRobots, empty: boolean): str
 }
 
 /** Nearby robots, strongest first; tap one to connect (switching from the current one). */
-export function DeviceList({ robot, nearby }: Props) {
+export function DeviceList({ robot, nearby }: DeviceListProps) {
   const styles = useThemedStyles(createStyles);
   const rows = deviceRows(nearby.robots, robot.current);
   const busy = robot.status === "scanning" || robot.status === "connecting";

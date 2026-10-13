@@ -27,6 +27,7 @@ describe("settings", () => {
       lastRobot: { id: "B1F2-ROBOT", name: "ACEMATE-XXXXX" },
       theme: "light" as const,
       allowDriveDuringRun: true,
+      maxUnackedWrite: 20 as const,
     };
 
     await saveSettings(store, saved);
@@ -68,6 +69,13 @@ describe("settings", () => {
     expect((await loadSettings(store)).allowDriveDuringRun).toBe(true);
     expect(parseSettings(JSON.stringify({ allowDriveDuringRun: "yes" })).allowDriveDuringRun).toBe(false);
     expect(parseSettings(JSON.stringify({ theme: "light" })).allowDriveDuringRun).toBe(false);
+  });
+
+  it("keeps only a known unacked-write limit, defaulting to one packet's worth", () => {
+    expect(DEFAULT_SETTINGS.maxUnackedWrite).toBe(180);
+    expect(parseSettings(JSON.stringify({ maxUnackedWrite: 100 })).maxUnackedWrite).toBe(100);
+    expect(parseSettings(JSON.stringify({ maxUnackedWrite: 500 })).maxUnackedWrite).toBe(180);
+    expect(parseSettings(JSON.stringify({ maxUnackedWrite: "20" })).maxUnackedWrite).toBe(180);
   });
 
   it("treats an unreadable store as empty rather than failing", async () => {

@@ -1,4 +1,4 @@
-import { useRef, useSyncExternalStore } from "react";
+import { useRef, useSyncExternalStore, type ReactNode } from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { devLog } from "../../debug/log-buffer";
 import { useThemedStyles, type Palette } from "../theme";
@@ -6,8 +6,8 @@ import { useThemedStyles, type Palette } from "../theme";
 const subscribe = (listener: () => void) => devLog.subscribe(listener);
 const snapshot = () => devLog.lines;
 
-/** The recent rx/tx and launch reports, newest at the bottom; follows new lines as they arrive. */
-export function DebugLog() {
+/** The recent rx/tx and launch reports, newest at the bottom; follows new lines as they arrive. Children go above. */
+export function DebugLog({ children }: { children?: ReactNode }) {
   const styles = useThemedStyles(createStyles);
   const lines = useSyncExternalStore(subscribe, snapshot);
   const scroll = useRef<ScrollView>(null);
@@ -16,6 +16,7 @@ export function DebugLog() {
       <View style={styles.header}>
         <Text style={styles.heading}>DEBUG LOG</Text>
       </View>
+      {children}
       <ScrollView
         ref={scroll}
         style={styles.log}

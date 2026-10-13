@@ -27,7 +27,13 @@ You need a Mac with Xcode, an iPhone and a cable for the first install. This is 
 
 ## Web build (preview)
 
-The same app builds for the browser with react-native-web. Pages serves it at `/acemate/next/`; the classic `apps/web` controller stays at `/acemate/`. It does not drive the robot yet: `src/robot/ble-channel.web.ts` stands in for the BLE channel, so react-native-ble-plx never reaches the web bundle, and the device menu says "Web Bluetooth link coming next".
+The same app builds for the browser with react-native-web. Pages serves it at `/acemate/next/`; the classic `apps/web` controller stays at `/acemate/`. Metro picks `src/robot/ble-channel.web.ts` for the web, which connects over Web Bluetooth (`src/robot/web-bluetooth.ts`), so react-native-ble-plx never reaches the web bundle. It needs HTTPS and Chrome or Edge on desktop or Android, or Bluefy on iPhone.
+
+- **Connect**: open the device menu and tap **Choose robot…**. The browser's chooser is the scan list. The web never connects on its own, because the chooser needs a tap; after a reload, **Reconnect <name>** opens the chooser for the saved robot only.
+- **Writes**: the same rules as native, through `RobotSession`. Each request is one write, without response up to 180 bytes and with response above that, serialised, with a 1 s timeout.
+- **Max write without response** (device menu → debug log, web only): if Android keeps a 23-byte MTU, a motion line written without response may be cut short. Pick 20 B to send motion with response.
+- **`?probe=1`**: a panel that lists the secure context, `navigator.bluetooth`, `getDevices`, `requestLEScan`, `writeValueWithoutResponse` and the user agent.
+- Hiding the tab stops the robot and drops the link, as backgrounding does on native.
 
 ```sh
 npm run web                                       # dev server at the root

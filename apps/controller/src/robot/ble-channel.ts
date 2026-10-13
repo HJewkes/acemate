@@ -1,7 +1,8 @@
 import { Buffer } from "buffer";
 import { BleManager, State, type Device } from "react-native-ble-plx";
 import { NUS_NOTIFY, NUS_SERVICE, NUS_WRITE } from "../shared";
-import type { ByteChannel } from "./channel";
+import type { SavedRobot } from "../storage/settings";
+import type { ByteChannel, OpenedRobot } from "./channel";
 import type { SeenRobot } from "./device-list";
 import { dashedUuid } from "./uuid";
 
@@ -10,6 +11,11 @@ const WRITE = dashedUuid(NUS_WRITE);
 const NOTIFY = dashedUuid(NUS_NOTIFY);
 // KCP in the stock app assumes 248; iOS negotiates on its own and ignores the request.
 const WANTED_MTU = 247;
+// Connecting looks for one known robot and only waits briefly: if it is not advertising, stay disconnected quietly.
+const CONNECT_SCAN_MS = 6_000;
+
+/** Native reconnects to the saved robot on launch and on return to the app, with a short scan. */
+export const AUTO_CONNECT: boolean = true;
 
 let manager: BleManager | null = null;
 const bleManager = () => (manager ??= new BleManager());
@@ -55,7 +61,7 @@ function startScan(
 const deviceName = (device: Device) => device.localName ?? device.name ?? device.id;
 
 /** Scans for a robot advertising the Nordic UART service: the one with preferId if given, otherwise the first. */
-export async function findRobot(timeoutMs = 10_000, preferId?: string): Promise<Device> {
+async function findRobot(timeoutMs: number, preferId?: string): Promise<Device> {
   await waitForPoweredOn(5_000);
   let stop: () => void = () => undefined;
   try {
@@ -101,7 +107,7 @@ export function scanRobots(onDevice: (robot: SeenRobot) => void, onError: (error
   };
 }
 
-export async function connectRobot(found: Device): Promise<ByteChannel> {
+async function connectRobot(found: Device): Promise<ByteChannel> {
   const ble = bleManager();
   await ble.connectToDevice(found.id);
   await ble.requestMTUForDevice(found.id, WANTED_MTU).catch(() => found);
@@ -127,4 +133,11 @@ export async function connectRobot(found: Device): Promise<ByteChannel> {
       await ble.cancelDeviceConnection(found.id).catch(() => undefined);
     },
   };
+}
+
+/** Scans for the saved robot, or the first one found when prefer is null, and connects to it. */
+export async function openRobot(prefer: SavedRobot | null, onFound: () => void): Promise<OpenedRobot> {
+  const device = await findRobot(CONNECT_SCAN_MS, prefer?.id);
+  onFound();
+  return { id: device.id, channel: await connectRobot(device) };
 }
