@@ -3,6 +3,19 @@
 Sources: jadx output of app 2.2.0, the T-3 review (`tennis/sources/T-3-sdk-review.md` §3.1), and live tests with `tools/drive-probe`.
 **[HW]** marks facts confirmed on hardware (robot `ACEMATE-XXXXX`, firmware `v2.1.3_install`, 2026-10-11). Everything else is static analysis.
 
+## How to use this document
+
+This is the reference for talking to the S10 over BLE. Read Transport and Session first: they are enough to connect and read state. Manual drive then covers `motion_control`, and Other message types lists everything else seen. Facts marked **[HW]** were confirmed on a real robot; unmarked facts come from static analysis of the stock app and may be wrong. Treat anything about the launcher (`set_mode`, `run_start`) as unverified until it appears here with **[HW]**. Source paths such as `bluetooth/BleCommandSender.java` refer to decompiled stock-app code, which is not in this repo. Robot IDs and MACs are redacted as `<robot-id>` and `<ble-mac>`.
+
+## Contents
+
+- [Transport](#transport)
+- [Session](#session)
+- [Manual drive](#manual-drive)
+  - [Implications for a dual-thumbstick controller](#implications-for-a-dual-thumbstick-controller)
+- [Other message types](#other-message-types)
+- [Open questions](#open-questions)
+
 ## Transport
 
 - BLE Nordic UART Service. The robot advertises service `6e400001-b5a3-f393-e0a9-e50e24dcca9e` with local name `ACEMATE-<5 hex>`. Write to `6e400002-...`, subscribe to notifications on `6e400003-...`. **[HW]**
@@ -58,6 +71,6 @@ Responses and pushes (`bluetooth/BluetoothMessageType.java`): `run_start`, `run_
 ## Open questions
 
 1. What is the exact dead-man timeout? Bisect with `pulse turn_left 1 --coast <ms>`.
-3. What is the full `set_mode` payload for ball machine, drills and rally (speed, spin, placement)? Being surveyed in `tennis/sources/capabilities-survey.md`.
-4. What runs on the Wi-Fi hotspot (ports and protocol for camera data)?
-5. What does `bat` mean in the heartbeat?
+2. What is the full `set_mode` payload for ball machine, drills and rally (speed, spin, placement)? Being surveyed in `tennis/sources/capabilities-survey.md`.
+3. What runs on the Wi-Fi hotspot (ports and protocol for camera data)?
+4. What does `bat` mean in the heartbeat?

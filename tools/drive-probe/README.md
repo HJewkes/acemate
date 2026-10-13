@@ -1,4 +1,6 @@
-# drive-probe (throwaway)
+# drive-probe
+
+Purpose: a laptop CLI for scanning, listening to and driving the robot, and for aimed launches. Commands: `scan`, `listen`, `drive`, `pulse`, `launch`. Keep a hand near the power switch and read the Safety sections below before sending anything.
 
 Laptop probe for confirming the Acemate S10 BLE link and manual-drive commands from `docs/protocol.md`.
 The real SDK replaces it (T-3/T-4); keep it only as long as it answers questions.

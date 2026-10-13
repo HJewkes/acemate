@@ -1,0 +1,155 @@
+import {
+  DEFAULT_LOOP,
+  DriveLoop,
+  LineDecoder,
+  encodeLine,
+  parseMessage,
+  requests,
+  type DriveLoopConfig,
+  type Motion,
+  type Request,
+} from "../shared";
+import { trace } from "../debug/log-buffer";
+import type { ByteChannel } from "./channel";
+import { LaunchLink } from "./launch-link";
+
+export type RobotMessage = ReturnType<typeof parseMessage>;
+
+export interface SessionConfig {
+  loop: DriveLoopConfig;
+  /** The app polls the heartbeat every few seconds, and only while the robot is stopped. */
+  heartbeatMs: number;
+}
+
+export const DEFAULT_SESSION: SessionConfig = { loop: DEFAULT_LOOP, heartbeatMs: 3000 };
+
+/**
+ * One connected robot: frames requests onto the channel, decodes its messages, and runs the drive loop.
+ * Call drive() with the wanted motion and tick() every ~10 ms; time comes only from now(), so tests use a fake clock.
+ */
+// On iOS, with-response writes at connect stalled the queue (2026-10-12); unacked writes up to one packet worked.
+// Only lines too big for one packet (iOS allows ~182 bytes unacked) go with response, as a long write.
+export const MAX_UNACKED_WRITE = 180;
+// A hung write must never block the queue: motion and stop have to keep flowing.
+export const WRITE_TIMEOUT_MS = 1000;
+
+// Motion is logged only when it changes, not every 50 ms resend.
+function debugLog(direction: "rx" | "tx", payload: unknown): void {
+  trace(`${direction} ${JSON.stringify(payload).slice(0, 240)}`);
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms} ms`)), ms);
+    promise.then(
+      (value) => (clearTimeout(timer), resolve(value)),
+      (error: unknown) => (clearTimeout(timer), reject(error)),
+    );
+  });
+}
+
+export class RobotSession {
+  readonly launch: LaunchLink;
+  /** The stock app blocks motion during a run, so how the firmware handles it is unknown; off by default. */
+  allowDriveDuringRun = false;
+  // The first motion of each run is logged, so a test drive shows up in Metro without flooding it.
+  private drivenThisRun = false;
+  private readonly loop: DriveLoop;
+  private readonly decoder = new LineDecoder();
+  private readonly unsubscribe: () => void;
+  private queue = Promise.resolve();
+  private lastHeartbeatAt: number;
+  private closed = false;
+
+  constructor(
+    private readonly channel: ByteChannel,
+    onMessage: (message: RobotMessage) => void,
+    private readonly now: () => number = Date.now,
+    private readonly config: SessionConfig = DEFAULT_SESSION,
+  ) {
+    this.loop = new DriveLoop((motion) => this.fire(requests.motion(motion)), now, config.loop);
+    this.launch = new LaunchLink({ send: (request) => this.send(request), driveStopped: () => this.loop.motion === "stop", now });
+    this.launch.listen({ report: (text) => trace(`launch ${text}`), carState: () => undefined });
+    this.unsubscribe = channel.onData((data) =>
+      this.decoder
+        .push(data)
+        .map(parseMessage)
+        .forEach((message) => {
+          debugLog("rx", message);
+          this.launch.onMessage(message);
+          onMessage(message);
+        }),
+    );
+    this.lastHeartbeatAt = now();
+    this.fire(requests.askInit());
+  }
+
+  get motion(): Motion {
+    return this.loop.motion;
+  }
+
+  /**
+   * While a launch run is active the robot is held at stop, whatever the sticks say, unless allowDriveDuringRun.
+   * Either way a new launch still needs the robot stopped.
+   */
+  drive(motion: Motion): void {
+    if (this.closed) return;
+    const running = this.launch.running;
+    const wanted = running && !this.allowDriveDuringRun ? "stop" : motion;
+    if (running && wanted !== "stop" && !this.drivenThisRun) trace(`driving during run: ${wanted}`);
+    this.drivenThisRun = running && (this.drivenThisRun || wanted !== "stop");
+    this.loop.update(wanted);
+  }
+
+  /** Stops driving at once, then stops any launch run. */
+  emergencyStop(): void {
+    this.drive("stop");
+    void this.launch.handle({ kind: "stop" });
+  }
+
+  tick(): void {
+    if (this.closed) return;
+    this.loop.tick();
+    if (this.loop.motion === "stop" && this.now() - this.lastHeartbeatAt >= this.config.heartbeatMs) {
+      this.lastHeartbeatAt = this.now();
+      this.fire(requests.heartbeat());
+    }
+  }
+
+  /** Stops the robot, waits for the stop to be written, then disconnects. Safe to call twice. */
+  async shutdown(): Promise<void> {
+    if (this.closed) return;
+    this.loop.release();
+    const stopped = this.send(requests.motion("stop"));
+    this.closed = true;
+    this.unsubscribe();
+    await stopped.catch(() => undefined);
+    await this.channel.close();
+  }
+
+  // A dropped write is tolerated: motions resend every 50 ms and stops repeat. Link loss surfaces as a disconnect.
+  private fire(request: Request): void {
+    this.send(request).catch(() => undefined);
+  }
+
+  // One request per write, queued so writes never overlap; a failed write doesn't jam the queue.
+  private lastLoggedMotion = "";
+
+  private logSend(request: Request): void {
+    const motion = (request.data as { motion?: string } | undefined)?.motion ?? "";
+    if (request.type === "motion_control" && motion === this.lastLoggedMotion) return;
+    this.lastLoggedMotion = request.type === "motion_control" ? motion : this.lastLoggedMotion;
+    debugLog("tx", request);
+  }
+
+  private send(request: Request): Promise<void> {
+    if (this.closed) return Promise.resolve();
+    const line = encodeLine(request);
+    const withResponse = line.length > MAX_UNACKED_WRITE;
+    this.logSend(request);
+    const write = () => withTimeout(this.channel.write(line, withResponse), WRITE_TIMEOUT_MS, request.type);
+    this.queue = this.queue.catch(() => undefined).then(write);
+    this.queue.catch((error: Error) => trace(`${request.type} write failed: ${error.message}`));
+    return this.queue;
+  }
+}
