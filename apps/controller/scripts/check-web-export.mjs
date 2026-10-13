@@ -6,7 +6,8 @@ import { Window } from "happy-dom";
 
 const NATIVE_ONLY = ["react-native-ble-plx", "BleManager"];
 const RENDER_WAIT_MS = 1_000;
-const PLACEHOLDER = "Web Bluetooth link coming next";
+const CHOOSER = "Choose robot…";
+const PROBE = "WEB BLUETOOTH PROBE";
 
 function assetUrls(html) {
   return [...html.matchAll(/<(?:script|link)\b[^>]*?\b(?:src|href)="([^"]+)"/g)].map((match) => match[1]);
@@ -31,18 +32,20 @@ function checkNativeOnly(bundles) {
 
 const settle = () => new Promise((resolve) => setTimeout(resolve, RENDER_WAIT_MS));
 
-// The drive screen must render, and the device menu must show the placeholder rather than crash on a missing BLE stack.
+// The drive screen and the ?probe=1 panel must render, and the device menu must offer the chooser rather than crash on
+// a browser without navigator.bluetooth.
 async function checkScreens(document) {
   const text = document.body.textContent ?? "";
+  if (!text.includes(PROBE)) throw new Error("the ?probe=1 panel did not render");
   const menu = document.querySelector('[aria-label="Open device menu"]');
   if (!text.includes("ACEMATE") || !menu) throw new Error(`drive screen did not render: "${text.slice(0, 200)}"`);
   menu.click();
   await settle();
-  if (!document.body.textContent.includes(PLACEHOLDER)) throw new Error(`device menu lacks "${PLACEHOLDER}"`);
+  if (!document.body.textContent.includes(CHOOSER)) throw new Error(`device menu lacks "${CHOOSER}"`);
 }
 
 async function renderDriveScreen(baseUrl, bundles) {
-  const window = new Window({ url: `https://example.test${baseUrl}/`, width: 844, height: 390 });
+  const window = new Window({ url: `https://example.test${baseUrl}/?probe=1`, width: 844, height: 390 });
   const errors = [];
   window.addEventListener("error", (event) => errors.push(event.error ?? event.message));
   window.document.body.innerHTML = '<div id="root"></div>';

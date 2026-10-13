@@ -4,25 +4,29 @@ import { useCallback, useEffect, useMemo, useState, type SetStateAction } from "
 import { AppState, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Controller } from "./src/control/controller";
+import { requestedProbe } from "./src/debug/probe-env";
 import type { Horizontal, Stick } from "./src/control/sticks";
 import { singleBall, type Shot } from "./src/launcher/shot";
 import { useHoldFire } from "./src/launcher/use-hold-fire";
 import { useRobot } from "./src/robot/use-robot";
-import type { SavedRobot } from "./src/storage/settings";
+import type { SavedRobot, UnackedLimit } from "./src/storage/settings";
 import { useSettings } from "./src/storage/use-settings";
 import { DriveScreen } from "./src/ui/drive/DriveScreen";
 import { DeviceMenu } from "./src/ui/menu/DeviceMenu";
+import { ProbePanel } from "./src/ui/ProbePanel";
 import { PALETTES, ThemeContext, type ThemeName } from "./src/ui/theme";
 
 export default function App() {
   const controller = useMemo(() => new Controller(), []);
+  const [probe, setProbe] = useState(requestedProbe);
   const { settings, loaded, update } = useSettings();
-  const { horizontal, shot: aimShot, theme, lastRobot, allowDriveDuringRun } = settings;
+  const { horizontal, shot: aimShot, theme, lastRobot, allowDriveDuringRun, maxUnackedWrite } = settings;
   const rememberRobot = useCallback((robot: SavedRobot) => update(() => ({ lastRobot: robot })), [update]);
   const robot = useRobot(controller, {
     lastRobot: loaded ? lastRobot : null,
     onConnected: rememberRobot,
     allowDriveDuringRun,
+    maxUnackedWrite,
   });
   const setAimShot = useCallback(
     (action: SetStateAction<Shot>) =>
@@ -33,6 +37,7 @@ export default function App() {
   const setHorizontal = useCallback((next: Horizontal) => update(() => ({ horizontal: next })), [update]);
   const setTheme = useCallback((next: ThemeName) => update(() => ({ theme: next })), [update]);
   const setAllowDrive = useCallback((allow: boolean) => update(() => ({ allowDriveDuringRun: allow })), [update]);
+  const setWriteLimit = useCallback((limit: UnackedLimit) => update(() => ({ maxUnackedWrite: limit })), [update]);
   useEffect(() => {
     controller.setHorizontal(horizontal);
   }, [controller, horizontal]);
@@ -69,11 +74,15 @@ export default function App() {
           visible={menu.open}
           onClose={menu.hide}
           robot={robot}
+          lastRobot={lastRobot}
           theme={theme}
           onTheme={setTheme}
           allowDriveDuringRun={allowDriveDuringRun}
           onAllowDriveDuringRun={setAllowDrive}
+          maxUnackedWrite={maxUnackedWrite}
+          onMaxUnackedWrite={setWriteLimit}
         />
+        {probe && <ProbePanel env={probe} onClose={() => setProbe(null)} />}
       </GestureHandlerRootView>
     </ThemeContext.Provider>
   );

@@ -4,7 +4,7 @@ import type { Controller, ControlState } from "../control/controller";
 import { NO_RUN, type RunInfo } from "../launcher/run-chip";
 import type { FireMessage } from "../shared";
 import type { SavedRobot } from "../storage/settings";
-import { connectRobot, findRobot } from "./ble-channel";
+import { AUTO_CONNECT, openRobot } from "./ble-channel";
 import type { LaunchListener } from "./launch-link";
 import { describeMessage } from "./messages";
 import { RobotSession } from "./session";
@@ -13,8 +13,6 @@ export type LinkStatus = "disconnected" | "scanning" | "connecting" | "connected
 
 const TICK_MS = 10;
 const LOG_LINES = 8;
-// Connecting looks for one known robot and only waits briefly: if it is not advertising, stay disconnected quietly.
-const CONNECT_SCAN_MS = 6_000;
 
 export interface LaunchView {
   /** car_state.bat from the last heartbeat; null until one arrives or when the robot omits it. */
@@ -40,8 +38,8 @@ export interface RobotView {
   launch: LaunchView;
   /** The robot this session is linked to; null unless connected. */
   current: SavedRobot | null;
-  /** Connects to this robot, dropping any other first. */
-  connectTo(robot: SavedRobot): void;
+  /** Connects to this robot, dropping any other first; null picks any (the browser's chooser on web). */
+  connectTo(robot: SavedRobot | null): void;
   disconnect(): void;
   fire(message: FireMessage): void;
   stopRun(): void;
@@ -93,6 +91,8 @@ export interface RobotOptions {
   lastRobot: SavedRobot | null;
   onConnected(robot: SavedRobot): void;
   allowDriveDuringRun: boolean;
+  /** Applied to each channel live, so the web debug menu can lower it mid-session. */
+  maxUnackedWrite: number;
 }
 
 /** Owns the BLE session: ticks the controller into the drive loop and stops the robot when the app leaves the foreground. */
@@ -128,7 +128,7 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
   }, []);
 
   const open = useCallback(
-    (preferId: string) => {
+    (prefer: SavedRobot | null) => {
       if (session.current || busy.current) return;
       busy.current = true;
       const mine = ++attempt.current;
@@ -142,7 +142,7 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
         setCurrent(robot);
         optionsRef.current.onConnected(robot);
       };
-      void openSession({ appendLog, setStatus, setDetail, onDrop, launch: listener, preferId, onConnected }).then(
+      void openSession({ appendLog, setStatus, setDetail, onDrop, launch: listener, prefer, onConnected }).then(
         (opened) => {
           busy.current = false;
           if (attempt.current === mine) session.current = opened;
@@ -154,10 +154,10 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
   );
 
   const connectTo = useCallback(
-    (robot: SavedRobot) => {
+    (robot: SavedRobot | null) => {
       userDisconnected.current = false;
       if (session.current) drop();
-      open(robot.id);
+      open(robot);
     },
     [drop, open],
   );
@@ -167,7 +167,7 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
   }, [drop]);
   const autoConnect = useCallback(() => {
     const last = optionsRef.current.lastRobot;
-    if (last && !userDisconnected.current) open(last.id);
+    if (AUTO_CONNECT && last && !userDisconnected.current) open(last);
   }, [open]);
 
   useEffect(() => {
@@ -193,7 +193,10 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
     const timer = setInterval(() => {
       const next = controller.read();
       setControl((shown) => (shown.motion === next.motion && shown.latched === next.latched ? shown : next));
-      if (session.current) session.current.allowDriveDuringRun = optionsRef.current.allowDriveDuringRun;
+      if (session.current) {
+        session.current.allowDriveDuringRun = optionsRef.current.allowDriveDuringRun;
+        session.current.channel.maxUnackedWrite = optionsRef.current.maxUnackedWrite;
+      }
       session.current?.drive(next.motion);
       session.current?.tick();
       const launch = session.current?.launch;
@@ -235,8 +238,8 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
 }
 
 interface SessionHooks {
-  /** Connect only to this robot, with a short scan. */
-  preferId: string;
+  /** Connect only to this robot; null takes any. */
+  prefer: SavedRobot | null;
   onConnected(robot: SavedRobot): void;
   appendLog(line: string): void;
   setStatus(status: LinkStatus): void;
@@ -246,18 +249,16 @@ interface SessionHooks {
 }
 
 async function openSession(hooks: SessionHooks): Promise<RobotSession | null> {
-  const { appendLog, setStatus, setDetail, onDrop, launch, preferId, onConnected } = hooks;
+  const { appendLog, setStatus, setDetail, onDrop, launch, prefer, onConnected } = hooks;
   try {
     setStatus("scanning");
-    const device = await findRobot(CONNECT_SCAN_MS, preferId);
-    setStatus("connecting");
-    const channel = await connectRobot(device);
+    const { id, channel } = await openRobot(prefer, () => setStatus("connecting"));
     const opened = new RobotSession(channel, (message) => appendLog(describeMessage(message)));
     opened.launch.listen(launch);
     channel.onDisconnect(() => onDrop(`${channel.name} disconnected`));
     setStatus("connected");
     setDetail(channel.name);
-    onConnected({ id: device.id, name: channel.name });
+    onConnected({ id, name: channel.name });
     return opened;
   } catch (error) {
     setStatus("disconnected");

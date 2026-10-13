@@ -1,10 +1,12 @@
-import { Modal, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { Modal, Platform, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { useNearbyRobots } from "../../robot/use-nearby-robots";
 import type { RobotView } from "../../robot/use-robot";
+import type { SavedRobot, UnackedLimit } from "../../storage/settings";
 import { Segmented } from "../launcher/inputs";
 import { useTheme, useThemedStyles, type Palette, type ThemeName } from "../theme";
 import { DebugLog } from "./DebugLog";
 import { DeviceList } from "./DeviceList";
+import { WriteLimit } from "./WriteLimit";
 
 const THEME_OPTIONS: { value: ThemeName; label: string }[] = [
   { value: "dark", label: "☾ Dark" },
@@ -16,16 +18,19 @@ export interface MenuSettings {
   onTheme(theme: ThemeName): void;
   allowDriveDuringRun: boolean;
   onAllowDriveDuringRun(allow: boolean): void;
+  maxUnackedWrite: UnackedLimit;
+  onMaxUnackedWrite(limit: UnackedLimit): void;
 }
 
 interface Props extends MenuSettings {
   visible: boolean;
   onClose(): void;
   robot: RobotView;
+  lastRobot: SavedRobot | null;
 }
 
 /** Devices, settings and the debug log. The caller centres the stick and blocks firing while it is open. */
-export function DeviceMenu({ visible, onClose, robot, ...settings }: Props) {
+export function DeviceMenu({ visible, onClose, robot, lastRobot, ...settings }: Props) {
   const styles = useThemedStyles(createStyles);
   // A scan replaces ble-plx's single scan slot, so it must not run while connect is scanning for its robot.
   const idle = robot.status === "connected" || robot.status === "disconnected";
@@ -47,9 +52,13 @@ export function DeviceMenu({ visible, onClose, robot, ...settings }: Props) {
             </Pressable>
           </View>
           <View style={styles.columns}>
-            <DeviceList robot={robot} nearby={nearby} />
+            <DeviceList robot={robot} nearby={nearby} lastRobot={lastRobot} />
             <SettingsColumn {...settings} />
-            <DebugLog />
+            <DebugLog>
+              {Platform.OS === "web" && (
+                <WriteLimit value={settings.maxUnackedWrite} onChange={settings.onMaxUnackedWrite} />
+              )}
+            </DebugLog>
           </View>
         </View>
       </View>

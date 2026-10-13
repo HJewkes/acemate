@@ -20,7 +20,12 @@ export interface Settings {
   theme: ThemeName;
   /** Lets the stick drive while a launch run is active; firing still needs the robot stopped. */
   allowDriveDuringRun: boolean;
+  /** Longest line written without response; the web debug menu lowers it if Android keeps a 23-byte MTU. */
+  maxUnackedWrite: UnackedLimit;
 }
+
+export const UNACKED_LIMITS = [180, 100, 20] as const;
+export type UnackedLimit = (typeof UNACKED_LIMITS)[number];
 
 export const SETTINGS_KEY = "acemate.settings.v1";
 export const DEFAULT_SETTINGS: Settings = {
@@ -29,6 +34,7 @@ export const DEFAULT_SETTINGS: Settings = {
   lastRobot: null,
   theme: "dark",
   allowDriveDuringRun: false,
+  maxUnackedWrite: 180,
 };
 
 const isNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
@@ -63,6 +69,8 @@ export function parseSettings(raw: string | null): Settings {
       lastRobot: parseRobot(value.lastRobot),
       theme: value.theme === "light" ? "light" : "dark",
       allowDriveDuringRun: value.allowDriveDuringRun === true,
+      maxUnackedWrite:
+        UNACKED_LIMITS.find((limit) => limit === value.maxUnackedWrite) ?? DEFAULT_SETTINGS.maxUnackedWrite,
     };
   } catch {
     return DEFAULT_SETTINGS;

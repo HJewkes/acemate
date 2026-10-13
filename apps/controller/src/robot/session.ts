@@ -62,7 +62,7 @@ export class RobotSession {
   private closed = false;
 
   constructor(
-    private readonly channel: ByteChannel,
+    readonly channel: ByteChannel,
     onMessage: (message: RobotMessage) => void,
     private readonly now: () => number = Date.now,
     private readonly config: SessionConfig = DEFAULT_SESSION,
@@ -154,7 +154,7 @@ export class RobotSession {
   private send(request: Request): Promise<void> {
     if (this.closed) return Promise.resolve();
     const line = encodeLine(request);
-    const withResponse = line.length > MAX_UNACKED_WRITE;
+    const withResponse = line.length > Math.min(MAX_UNACKED_WRITE, this.channel.maxUnackedWrite ?? MAX_UNACKED_WRITE);
     this.logSend(request);
     const write = () => withTimeout(this.channel.write(line, withResponse), WRITE_TIMEOUT_MS, request.type);
     this.queue = this.queue.catch(() => undefined).then(write);
