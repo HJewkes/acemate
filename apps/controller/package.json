@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
+    "@expo/metro-runtime": "~55.0.12",
     "@react-native-async-storage/async-storage": "2.2.0",
     "buffer": "^6.0.3",
     "expo": "~55.0.31",
@@ -10,13 +11,16 @@
     "expo-haptics": "~55.0.18",
     "expo-status-bar": "~55.0.6",
     "react": "19.2.0",
+    "react-dom": "19.2.0",
     "react-native": "0.83.10",
     "react-native-ble-plx": "^3.5.1",
-    "react-native-gesture-handler": "~2.30.0"
+    "react-native-gesture-handler": "~2.30.0",
+    "react-native-web": "^0.21.0"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
     "@types/react": "~19.2.2",
+    "happy-dom": "^21.0.1",
     "typescript": "~5.9.2",
     "vitest": "^4.1.11"
   },
@@ -24,7 +28,10 @@
     "start": "expo start --dev-client",
     "ios": "expo run:ios --device",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "web": "expo start --web",
+    "export:web": "expo export -p web",
+    "check:web": "node scripts/check-web-export.mjs dist \"$EXPO_BASE_URL\""
   },
   "private": true
 }
