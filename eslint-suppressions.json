@@ -94,6 +94,14 @@
       "count": 1
     }
   },
+  "apps/web/src/launch-status.ts": {
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unsafe-type-assertion": {
+      "count": 1
+    }
+  },
   "apps/web/src/launcher-ui/aim-pad.ts": {
     "@typescript-eslint/no-unnecessary-condition": {
       "count": 1
@@ -161,6 +169,11 @@
       "count": 3
     }
   },
+  "apps/web/src/power.ts": {
+    "@typescript-eslint/no-unsafe-type-assertion": {
+      "count": 1
+    }
+  },
   "apps/web/src/session.ts": {
     "@typescript-eslint/no-unsafe-type-assertion": {
       "count": 1
@@ -205,74 +218,23 @@
       "count": 1
     }
   },
-  "tools/drive-probe/src/cli.ts": {
-    "@typescript-eslint/no-unnecessary-condition": {
-      "count": 2
-    },
-    "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 1
-    },
-    "titan/max-function-lines": {
-      "count": 1
-    }
-  },
-  "tools/drive-probe/src/launch-cli.ts": {
+  "tools/cli/src/drive.ts": {
     "@typescript-eslint/no-unnecessary-condition": {
       "count": 1
     }
   },
-  "tools/drive-probe/src/launch-session.ts": {
+  "tools/cli/src/launch.ts": {
     "@typescript-eslint/no-unsafe-type-assertion": {
       "count": 2
     }
   },
-  "tools/drive-probe/src/link.ts": {
+  "tools/cli/src/link.ts": {
     "@typescript-eslint/no-unnecessary-condition": {
       "count": 1
     }
   },
-  "tools/web-drive/src/control-socket.ts": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 1
-    },
-    "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 1
-    }
-  },
-  "tools/web-drive/src/link.ts": {
+  "tools/cli/src/session.ts": {
     "@typescript-eslint/no-unnecessary-condition": {
-      "count": 2
-    }
-  },
-  "tools/web-drive/src/page/launch-panel.ts": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 1
-    },
-    "@typescript-eslint/no-unnecessary-condition": {
-      "count": 1
-    },
-    "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 2
-    }
-  },
-  "tools/web-drive/src/page/main.ts": {
-    "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 2
-    }
-  },
-  "tools/web-drive/src/page/power.ts": {
-    "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 1
-    }
-  },
-  "tools/web-drive/src/server.ts": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 3
-    },
-    "@typescript-eslint/no-unnecessary-condition": {
-      "count": 1
-    },
-    "@typescript-eslint/no-unsafe-type-assertion": {
       "count": 1
     }
   }

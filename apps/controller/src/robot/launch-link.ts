@@ -14,7 +14,7 @@ export interface LaunchLinkDeps {
   now(): number;
 }
 
-// The stock app resends set_time whenever the heartbeat says the clock is unset; web-drive throttles it to 30 s.
+// The stock app resends set_time whenever the heartbeat says the clock is unset; we throttle it to 30 s.
 export const SET_TIME_EVERY_MS = 30_000;
 
 export function setTimeRequest(now: number): Request {

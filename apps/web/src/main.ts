@@ -15,8 +15,8 @@ import {
   type DriveInput,
   type Motion,
 } from "@acemate/core";
-import { showLaunchStatus } from "../../../tools/web-drive/src/page/launch-panel.js";
-import { showPower } from "../../../tools/web-drive/src/page/power.js";
+import { showLaunchStatus } from "./launch-status.js";
+import { showPower } from "./power.js";
 import { bluetoothOf, requestBleLink } from "./ble-link.js";
 import type { Link } from "./link.js";
 import { isLauncherControl, setupLauncher } from "./launcher-ui/shell.js";

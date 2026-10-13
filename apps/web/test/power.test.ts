@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { batteryBars, powerText } from "../src/page/power.js";
+import { batteryBars, powerText } from "../src/power.js";
 
 describe("batteryBars", () => {
   it("matches the app's levels: 0 only at 0%, 1 for 1-19%, then 20% steps", () => {

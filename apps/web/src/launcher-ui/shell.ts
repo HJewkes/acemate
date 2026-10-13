@@ -1,4 +1,4 @@
-import { showLaunchStatus } from "../../../../tools/web-drive/src/page/launch-panel.js";
+import { showLaunchStatus } from "../launch-status.js";
 import {
   type LaunchMessage,
   ASSUMPTION_NOTES,

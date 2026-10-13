@@ -29,7 +29,7 @@ export interface LaunchDeps {
 }
 
 export const USAGE = [
-  "Usage: launch <single|sequence|target> [--fire]",
+  "Usage: acemate launch <single|sequence|target> [--fire]",
   "  single   --dir D --speed S --spin P --elev E",
   "  sequence --ball D,S,P,E [--ball …] [--interval 5] [--total N]",
   "  target   --x X --z Z --height-level H --spin P",

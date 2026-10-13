@@ -146,7 +146,8 @@ In a browser, the app never connects by itself, because the browser's chooser ne
 ## For developers
 
 - Use Node 24. Node 25 breaks the happy-dom tests.
-- The root is an npm workspace with one lockfile: run `npm ci` once at the root. `packages/core` (`@acemate/core`) holds the shared protocol, drive and launcher logic, consumed as TypeScript source by `apps/controller`, `apps/web`, `tools/drive-probe` and `tools/web-drive`.
+- The root is an npm workspace with one lockfile: run `npm ci` once at the root. `packages/core` (`@acemate/core`) holds the shared protocol, drive and launcher logic, consumed as TypeScript source by `apps/controller`, `apps/web` and `tools/cli`.
+- `tools/cli` (`@acemate/cli`) is a laptop CLI over Node BLE. Run `npx acemate --help` from the root for `scan`, `listen [--watch S]`, `drive`, `pulse`, `launch` (a dry run unless given `--fire`) and `send '<json>' [--watch S]`, which writes one raw request and prints every reply. `send` refuses OTA (any type with `ota` in it, `mcu_ota`, `ap` with purpose `ota`), the `upload` and `trigger_update` paths, `start_calib_extrinsic` and `set_court_profile`. Every frame is logged to `acemate.jsonl`.
 - Tests per package: `npm test` and `npm run typecheck` inside it, or both across every workspace from the root.
 - From the root: `npm run lint` and `npm run format:check`.
 - CI must be green before merge. Work on a feature branch and open a pull request; do not push to `main`.

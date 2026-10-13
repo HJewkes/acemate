@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        workspace: [packages/core, tools/drive-probe, tools/web-drive, apps/web, apps/controller]
+        workspace: [packages/core, tools/cli, apps/web, apps/controller]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

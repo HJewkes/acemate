@@ -1,4 +1,4 @@
-// The browser half of what tools/web-drive/src/server.ts does: inbox, set_time, heartbeat, car_state and the drive loop.
+// Talks to the robot from the browser: inbox, set_time, heartbeat, car_state and the drive loop.
 import {
   parseMessage,
   requests,
