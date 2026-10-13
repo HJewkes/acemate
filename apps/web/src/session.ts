@@ -1,6 +1,5 @@
 // The browser half of what tools/web-drive/src/server.ts does: inbox, set_time, heartbeat, car_state and the drive loop.
 import { parseMessage, requests, type Request } from "../../../tools/drive-probe/src/protocol.js";
-import { runRequests } from "../../../tools/drive-probe/src/launch.js";
 import { DriveLoop } from "../../../tools/web-drive/src/drive-loop.js";
 import { LaunchController, type LaunchMessage } from "../../../tools/web-drive/src/launcher.js";
 import type { Motion } from "../../../tools/web-drive/src/motion.js";
@@ -137,10 +136,10 @@ export class RobotSession {
     return this.launcher.handle({ kind: "stop" });
   }
 
-  /** Stops the robot, waits for the stop to be written, then disconnects. */
+  /** Stops the robot and any launch run that may be going (active or awaiting rsp_set_mode), then disconnects. */
   async shutdown(): Promise<void> {
     this.loop.release();
-    if (this.launcher.running) await this.send(runRequests.stop());
+    if (this.launcher.mayBeRunning) await this.launcher.handle({ kind: "stop" });
     await this.send(requests.motion("stop"));
     await this.link.close();
   }

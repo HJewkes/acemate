@@ -100,7 +100,8 @@ function update(): void {
   const result = applyStopLatch(latched, focused ? resolveMotion(input) : "stop");
   latched = result.latched;
   active?.session.drive(result.motion);
-  launcher.setState({ connected: active !== null, running: active?.session.launcher.running ?? false });
+  const launch = active?.session.launcher;
+  launcher.setState({ connected: active !== null, running: launch?.running ?? false, inFlight: launch?.inFlight ?? false });
   render(result.motion, input, aiming ? "ignored while the launcher has the controls" : pad.label);
 }
 

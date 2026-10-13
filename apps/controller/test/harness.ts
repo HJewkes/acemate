@@ -15,6 +15,8 @@ export function harness(respond: Responder = () => undefined) {
   const sent: [number, Sent][] = [];
   const modes: [string, boolean][] = [];
   const events: string[] = [];
+  // Writes and close in the order they reached the link.
+  const timeline: string[] = [];
   const listeners: ((data: Buffer) => void)[] = [];
   const notify = (text: string) => listeners.forEach((listener) => listener(Buffer.from(text, "utf8")));
   const channel: ByteChannel = {
@@ -24,6 +26,7 @@ export function harness(respond: Responder = () => undefined) {
       expect(text.endsWith("\r\n")).toBe(true);
       const request = JSON.parse(text.slice(0, -2)) as Sent;
       sent.push([now, request]);
+      timeline.push(request.type === "motion_control" ? `motion:${(request.data as { motion: string }).motion}` : request.type);
       modes.push([request.type, withResponse]);
       const reply = respond(request);
       if (reply) setTimeout(() => notify(reply), 0);
@@ -35,6 +38,7 @@ export function harness(respond: Responder = () => undefined) {
     onDisconnect: () => () => undefined,
     async close() {
       events.push("close");
+      timeline.push("close");
     },
   };
   const messages: RobotMessage[] = [];
@@ -57,5 +61,5 @@ export function harness(respond: Responder = () => undefined) {
   };
   const motions = () => sent.filter(([, r]) => r.type === "motion_control");
   const types = () => sent.map(([, r]) => r.type);
-  return { session, drive, sent, modes, events, messages, advance, jump, notify, motions, types };
+  return { session, drive, sent, modes, events, timeline, messages, advance, jump, notify, motions, types };
 }

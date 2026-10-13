@@ -15,7 +15,9 @@ class FakeLink implements Link {
     this.listener = listener;
   }
   onDisconnect(): void {}
-  async close(): Promise<void> {}
+  async close(): Promise<void> {
+    this.sent.push({ type: "close" });
+  }
 
   receive(message: Request): void {
     this.listener(`${JSON.stringify(message)}`);
@@ -126,15 +128,16 @@ describe("robot messages", () => {
   });
 });
 
+async function startRun() {
+  const fixture = setup();
+  const fired = fixture.session.launch({ kind: "machine", direction: 0, speed: 3, spin: 0, elevation: 20, count: 1, interval: 5 });
+  await vi.advanceTimersByTimeAsync(0);
+  fixture.link.receive({ type: "rsp_set_mode", data: { result: "ok" } });
+  await fired;
+  return fixture;
+}
+
 describe("launching", () => {
-  async function startRun() {
-    const fixture = setup();
-    const fired = fixture.session.launch({ kind: "machine", direction: 0, speed: 3, spin: 0, elevation: 20, count: 1, interval: 5 });
-    await vi.advanceTimersByTimeAsync(0);
-    fixture.link.receive({ type: "rsp_set_mode", data: { result: "ok" } });
-    await fired;
-    return fixture;
-  }
 
   it("starts a run only after rsp_set_mode, then holds drive input at stop", async () => {
     const { link, session } = await startRun();
@@ -161,5 +164,49 @@ describe("launching", () => {
     await session.emergencyStop();
 
     expect(link.types()).toEqual(["motion:turn_right", "motion:stop", "run_stop"]);
+  });
+
+  it("sends one set_mode when a second fire arrives before rsp_set_mode", async () => {
+    const { link, session, events } = setup();
+    const shot = { kind: "machine", direction: 0, speed: 3, spin: 0, elevation: 20, count: 1, interval: 5 } as const;
+
+    const first = session.launch(shot);
+    await session.launch(shot);
+    await vi.advanceTimersByTimeAsync(0);
+    link.receive({ type: "rsp_set_mode", data: { result: "ok" } });
+    await first;
+
+    expect(link.types()).toEqual(["set_mode", "run_start"]);
+    expect(events.report).toHaveBeenCalledWith("Still waiting for the last launch; try again.");
+  });
+});
+
+describe("shutdown", () => {
+  it("sends run_stop, then stop, then closes when a run is active", async () => {
+    const { link, session } = await startRun();
+
+    await session.shutdown();
+
+    expect(link.types()).toEqual(["set_mode", "run_start", "run_stop", "motion:stop", "close"]);
+  });
+
+  it("sends run_stop while set_mode waits for its reply", async () => {
+    const { link, session } = setup();
+    const fired = session.launch({ kind: "machine", direction: 0, speed: 3, spin: 0, elevation: 20, count: 1, interval: 5 });
+    await vi.advanceTimersByTimeAsync(0);
+
+    await session.shutdown();
+    link.receive({ type: "rsp_set_mode", data: { result: "ok" } });
+    await fired;
+
+    expect(link.types()).toEqual(["set_mode", "run_stop", "motion:stop", "close"]);
+  });
+
+  it("sends no run_stop when no run is active", async () => {
+    const { link, session } = setup();
+
+    await session.shutdown();
+
+    expect(link.types()).toEqual(["motion:stop", "close"]);
   });
 });

@@ -36,7 +36,6 @@ export class LaunchLink {
   private readonly waiters = new Set<Waiter>();
   private readonly listeners = new Set<LaunchListener>();
   private timeSentAt: number | null = null;
-  private firing = false;
   private runInfo: RunInfo = NO_RUN;
 
   constructor(private readonly deps: LaunchLinkDeps) {
@@ -56,7 +55,12 @@ export class LaunchLink {
 
   /** True while a fire waits for its set_mode reply, before the run counts as active. */
   get inFlight(): boolean {
-    return this.firing;
+    return this.controller.inFlight;
+  }
+
+  /** A run is active or a set_mode is in flight, so closing the link needs a run_stop first. */
+  get mayBeRunning(): boolean {
+    return this.controller.mayBeRunning;
   }
 
   /** The latest run's mode and start, kept after it ends; reset by the next set_mode. */
@@ -71,16 +75,10 @@ export class LaunchLink {
 
   /** Never rejects: a failed write is reported, and the controller's own checks report refusals. */
   async handle(message: LaunchMessage): Promise<void> {
-    const fire = message.kind !== "stop" && message.kind !== "pause";
-    // The controller only marks a run active once rsp_set_mode arrives; this covers the wait before it.
-    if (fire && this.firing) return this.report("Still waiting for the last launch; try again.");
-    this.firing ||= fire;
     try {
       await this.controller.handle(message);
     } catch (error) {
       this.report(`${message.kind} failed: ${(error as Error).message}`);
-    } finally {
-      if (fire) this.firing = false;
     }
   }
 

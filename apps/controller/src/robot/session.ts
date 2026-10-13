@@ -116,14 +116,19 @@ export class RobotSession {
     }
   }
 
-  /** Stops the robot, waits for the stop to be written, then disconnects. Safe to call twice. */
+  /**
+   * Stops the robot, then any launch run that may be going, waits for those writes, then disconnects. Safe to call twice.
+   * Whether the robot ends a run on link loss is unverified, so a run is never left to outlive the session.
+   */
   async shutdown(): Promise<void> {
     if (this.closed) return;
     this.loop.release();
     const stopped = this.send(requests.motion("stop"));
+    const runStopped = this.launch.mayBeRunning ? this.launch.handle({ kind: "stop" }) : Promise.resolve();
     this.closed = true;
     this.unsubscribe();
     await stopped.catch(() => undefined);
+    await runStopped;
     await this.channel.close();
   }
 
