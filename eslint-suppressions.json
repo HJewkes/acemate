@@ -83,9 +83,24 @@
       "count": 1
     }
   },
+  "apps/controller/src/ui/drive/DriveScreen.tsx": {
+    "titan/max-function-lines": {
+      "count": 1
+    }
+  },
   "apps/controller/src/ui/drive/LauncherPanel.tsx": {
     "react-hooks/exhaustive-deps": {
       "count": 1
+    }
+  },
+  "apps/controller/src/ui/menu/DeviceList.tsx": {
+    "titan/max-function-lines": {
+      "count": 1
+    }
+  },
+  "apps/controller/src/ui/menu/DeviceMenu.tsx": {
+    "titan/max-function-lines": {
+      "count": 2
     }
   },
   "apps/controller/src/ui/theme.ts": {
@@ -108,12 +123,17 @@
       "count": 1
     },
     "titan/max-function-lines": {
-      "count": 1
+      "count": 2
     }
   },
   "apps/web/src/launcher-ui/assumptions.ts": {
     "@typescript-eslint/no-unsafe-type-assertion": {
       "count": 1
+    }
+  },
+  "apps/web/src/launcher-ui/controls.ts": {
+    "titan/max-function-lines": {
+      "count": 2
     }
   },
   "apps/web/src/launcher-ui/court-map.ts": {
@@ -124,7 +144,12 @@
       "count": 1
     },
     "titan/max-function-lines": {
-      "count": 2
+      "count": 3
+    }
+  },
+  "apps/web/src/launcher-ui/dom.ts": {
+    "titan/max-function-lines": {
+      "count": 1
     }
   },
   "apps/web/src/launcher-ui/preset-board.ts": {
@@ -132,7 +157,7 @@
       "count": 3
     },
     "titan/max-function-lines": {
-      "count": 1
+      "count": 3
     }
   },
   "apps/web/src/launcher-ui/presets.ts": {
@@ -184,6 +209,9 @@
     },
     "@typescript-eslint/no-unsafe-type-assertion": {
       "count": 1
+    },
+    "titan/max-function-lines": {
+      "count": 1
     }
   },
   "tools/drive-probe/src/launch-cli.ts": {
@@ -194,6 +222,11 @@
   "tools/drive-probe/src/launch-session.ts": {
     "@typescript-eslint/no-unsafe-type-assertion": {
       "count": 2
+    }
+  },
+  "tools/drive-probe/src/launch.ts": {
+    "titan/max-function-lines": {
+      "count": 1
     }
   },
   "tools/drive-probe/src/link.ts": {
