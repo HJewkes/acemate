@@ -19,6 +19,7 @@ function page() {
       updateAim: () => undefined,
       flipDirection: false,
       stopRobot: () => robot.session.emergencyStop(),
+      closeLink: () => void robot.session.shutdown(),
     }),
   );
   return { robot, controller, hold, input };
@@ -51,6 +52,30 @@ describe("web input stops", () => {
     expect(controller.read()).toEqual({ motion: "stop", latched: true });
     controller.setStick({ x: 0, y: 0 });
     expect(controller.read()).toEqual({ motion: "stop", latched: false });
+  });
+
+  it.each(["hidden", "pagehide"] as const)(
+    "stops the run and then closes the link when the page is %s",
+    async (reason) => {
+      const { robot, controller, input } = page();
+      input.keyDown("KeyW", false);
+      await robot.drive(controller.read().motion);
+      const before = robot.timeline.length;
+
+      input.leave(reason);
+      await flush();
+
+      expect(robot.timeline.slice(before)).toEqual(["motion:stop", "run_stop", "motion:stop", "close"]);
+    },
+  );
+
+  it("keeps the link on blur", async () => {
+    const { robot, input } = page();
+
+    input.leave("blur");
+    await flush();
+
+    expect(robot.events).not.toContain("close");
   });
 
   it("keeps the run going on blur but stops it when the page is hidden", async () => {

@@ -34,6 +34,7 @@ export function useKeysAndPad(controller: Controller, wiring: Wiring, menuOpen: 
         updateAim: (change) => latest.current.setShot((shot) => ({ ...shot, ...change(shot) })),
         flipDirection: DEFAULT_ASSUMPTIONS.flipDirection,
         stopRobot: () => latest.current.robot.emergencyStop(),
+        closeLink: () => latest.current.robot.disconnect(),
       }),
     [controller],
   );
