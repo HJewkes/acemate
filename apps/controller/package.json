@@ -22,6 +22,7 @@
     "@types/node": "^24.19.2",
     "@types/react": "~19.2.2",
     "happy-dom": "^21.0.1",
+    "playwright": "^1.64.0",
     "typescript": "~5.9.2",
     "vitest": "^4.1.11"
   },
@@ -32,7 +33,8 @@
     "typecheck": "tsc --noEmit",
     "web": "expo start --web",
     "export:web": "expo export -p web",
-    "check:web": "node scripts/check-web-export.mjs dist \"$EXPO_BASE_URL\""
+    "check:web": "node scripts/check-web-export.mjs dist \"$EXPO_BASE_URL\"",
+    "screenshots": "node scripts/capture-screenshots.mjs dist ../../assets"
   },
   "private": true
 }

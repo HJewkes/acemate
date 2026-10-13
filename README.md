@@ -55,12 +55,15 @@ Safari and Chrome on iOS have no Web Bluetooth. Install the free Bluefy browser 
 
 ## Screenshots
 
-<!-- TODO screenshot: drive-dark -->
-<!-- TODO screenshot: drive-light -->
-<!-- TODO screenshot: device-menu -->
-<!-- TODO screenshot: hold-to-fire -->
+![Drive screen, dark theme](assets/drive-dark.png)
 
-_Screenshots are coming in a later update._
+![Drive screen, light theme](assets/drive-light.png)
+
+![Device menu](assets/device-menu.png)
+
+![Hold to fire, part-way through the hold](assets/hold-to-fire.png)
+
+_Captured from the web build with a stand-in robot: `npm run export:web && npm run screenshots` in `apps/controller`._
 
 ## Screen tour
 
