@@ -4,7 +4,6 @@ import { parseArgs } from "node:util";
 import { context } from "esbuild";
 import { WebSocketServer, type WebSocket } from "ws";
 import { parseMessage, requests, type Request } from "../../drive-probe/src/protocol.js";
-import { runRequests } from "../../drive-probe/src/launch.js";
 import { attachControl, type LaunchHooks } from "./control-socket.js";
 import { DriveLoop } from "./drive-loop.js";
 import { LaunchController } from "./launcher.js";
@@ -183,7 +182,7 @@ function stopOnExit(link: Link, loop: DriveLoop, launcher: LaunchController): vo
     if (exiting) return;
     exiting = true;
     loop.release();
-    if (launcher.running) await sendLogged(link, runRequests.stop());
+    if (launcher.mayBeRunning) await launcher.handle({ kind: "stop" });
     await sendLogged(link, requests.motion("stop"));
     await link.close().catch(() => undefined);
     process.exit(code);

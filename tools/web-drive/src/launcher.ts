@@ -52,9 +52,14 @@ export interface LaunchDeps {
   now(): number;
 }
 
-/** One run at a time; refuses to fire while driving, and only starts after the robot acknowledges set_mode. */
+/**
+ * One run at a time; refuses to fire while driving or while a set_mode awaits its reply,
+ * and only starts after the robot acknowledges set_mode.
+ */
 export class LaunchController {
   private active = false;
+  private firing = false;
+  private stoppedWhileFiring = false;
   private sawRunning = false;
   private startedAt = 0;
 
@@ -62,6 +67,16 @@ export class LaunchController {
 
   get running(): boolean {
     return this.active;
+  }
+
+  /** True while a fire waits for its set_mode reply, before the run counts as active. */
+  get inFlight(): boolean {
+    return this.firing;
+  }
+
+  /** A run may be going on the robot: it is active, or a set_mode was sent and its reply is pending. */
+  get mayBeRunning(): boolean {
+    return this.active || this.firing;
   }
 
   async handle(message: LaunchMessage): Promise<void> {
@@ -79,6 +94,8 @@ export class LaunchController {
   }
 
   private async fire(message: Extract<LaunchMessage, { kind: "machine" | "machine-queue" | "target" }>): Promise<void> {
+    // active is only set once rsp_set_mode arrives (up to 3 s); firing covers the wait before it.
+    if (this.firing) return this.deps.report("Still waiting for the last launch; try again.");
     if (this.active) return this.deps.report("A run is already active; stop it first.");
     if (!this.deps.driveStopped()) return this.deps.report("Stop driving before launching.");
     let setMode: Request;
@@ -87,9 +104,17 @@ export class LaunchController {
     } catch (error) {
       return this.deps.report(`Rejected: ${(error as Error).message}`);
     }
-    await this.deps.send(setMode);
-    const reply = await this.deps.waitFor("rsp_set_mode", SET_MODE_TIMEOUT_MS);
+    this.firing = true;
+    this.stoppedWhileFiring = false;
+    let reply: Request | null;
+    try {
+      await this.deps.send(setMode);
+      reply = await this.deps.waitFor("rsp_set_mode", SET_MODE_TIMEOUT_MS);
+    } finally {
+      this.firing = false;
+    }
     if (!reply) return this.deps.report("No rsp_set_mode within 3 s; not starting.");
+    if (this.stoppedWhileFiring) return this.deps.report("Stopped before the run started; not starting.");
     this.deps.report(`rsp_set_mode ${JSON.stringify(reply.data ?? {})}`);
     this.active = true;
     this.sawRunning = false;
@@ -98,6 +123,7 @@ export class LaunchController {
   }
 
   private async stop(): Promise<void> {
+    this.stoppedWhileFiring ||= this.firing;
     await this.command(runRequests.stop(), "run_stop sent");
     this.finish(null);
   }

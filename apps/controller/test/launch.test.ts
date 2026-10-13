@@ -94,6 +94,27 @@ describe("launch", () => {
     expect(reports[0]).toBe("Still waiting for the last launch; try again.");
   });
 
+  it("sends stop, then run_stop, then closes when shut down mid-run", async () => {
+    const { session, timeline } = launchHarness();
+    await session.launch.handle(oneBall);
+
+    await session.shutdown();
+
+    expect(timeline.slice(-4)).toEqual(["run_start", "motion:stop", "run_stop", "close"]);
+  });
+
+  it("sends run_stop on shutdown while set_mode waits for its reply, and never starts the run", async () => {
+    const { session, timeline } = launchHarness(() => undefined);
+    const firing = session.launch.handle(oneBall);
+    await flush();
+
+    await session.shutdown();
+    session.launch.onMessage({ type: "rsp_set_mode", data: { result: 0 } });
+    await firing;
+
+    expect(timeline.slice(1)).toEqual(["set_mode", "motion:stop", "run_stop", "close"]);
+  });
+
   it("refuses to fire while the robot is driving", async () => {
     const { session, drive, types, reports } = launchHarness();
     await drive("go_front");

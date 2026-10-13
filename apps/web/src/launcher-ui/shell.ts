@@ -19,7 +19,7 @@ export function isLauncherControl(target: EventTarget | null): boolean {
 
 export interface Launcher {
   /** Fire is only enabled while connected, with no run active, and with a shot to send. */
-  setState(state: { connected: boolean; running: boolean }): void;
+  setState(state: FireState): void;
   /** Drops any Fire hold in progress without sending. */
   cancelHold(): void;
   /** True while a launcher control has focus or a pointer is down anywhere in the launcher. */
@@ -28,13 +28,22 @@ export interface Launcher {
 
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
+export type FireState = { connected: boolean; running: boolean; inFlight: boolean };
+
+/** Why Fire is locked, or "" when it may be held. */
+export function fireLock(status: FireState): string {
+  if (!status.connected) return "Connect first";
+  if (status.running) return "A run is active";
+  return status.inFlight ? "Waiting for the robot" : "";
+}
+
 type FireBar = Omit<Launcher, "ownsInput"> & { refresh(): void };
 
 /** Fire (press and hold), Pause and Stop. */
 function fireBar(shot: () => FireMessage | null, describe: (shot: FireMessage | null) => string, send: (message: LaunchMessage) => void, fired: () => void): FireBar {
   const fire = element<HTMLButtonElement>("l-fire");
   const hold = createHoldFire();
-  let status = { connected: false, running: false };
+  let status: FireState = { connected: false, running: false, inFlight: false };
   let timer: ReturnType<typeof setInterval> | undefined;
   const show = (progress: number) => fire.style.setProperty("--hold", String(progress));
   const settle = (reading: HoldReading) => {
@@ -57,8 +66,8 @@ function fireBar(shot: () => FireMessage | null, describe: (shot: FireMessage | 
   const refresh = () => {
     const next = shot();
     element("l-summary").textContent = describe(next);
-    fire.disabled = !status.connected || status.running || next === null;
-    fire.title = !status.connected ? "Connect first" : status.running ? "A run is active" : "";
+    fire.title = fireLock(status);
+    fire.disabled = fire.title !== "" || next === null;
     if (fire.disabled) cancel();
   };
   fire.addEventListener("pointerdown", (event) => event.button === 0 && press());
@@ -79,7 +88,7 @@ function fireBar(shot: () => FireMessage | null, describe: (shot: FireMessage | 
   return {
     refresh,
     setState(next) {
-      if (next.connected === status.connected && next.running === status.running) return;
+      if (next.connected === status.connected && next.running === status.running && next.inFlight === status.inFlight) return;
       status = next;
       refresh();
     },

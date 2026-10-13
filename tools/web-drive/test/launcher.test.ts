@@ -17,6 +17,26 @@ function harness(options: { stopped?: boolean; ack?: boolean } = {}) {
   return { controller, sent, reports };
 }
 
+// rsp_set_mode arrives only when the test calls answer(), so a fire can be held in flight.
+function pendingHarness() {
+  const sent: string[] = [];
+  const reports: string[] = [];
+  let answer: (reply: Request | null) => void = () => undefined;
+  const controller = new LaunchController({
+    send: async (request: Request) => void sent.push(request.type),
+    waitFor: () => new Promise((resolve) => (answer = resolve)),
+    driveStopped: () => true,
+    report: (text) => void reports.push(text),
+    now: () => 1000,
+  });
+  // Lets the set_mode write land and the wait begin before answering.
+  const ack = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    answer({ type: "rsp_set_mode", data: { result: "ok" } });
+  };
+  return { controller, sent, reports, ack };
+}
+
 describe("parseLaunch", () => {
   it("accepts launch messages and ignores drive messages", () => {
     expect(parseLaunch('{"launch":{"kind":"stop"}}')).toEqual({ kind: "stop" });
@@ -113,5 +133,64 @@ describe("LaunchController", () => {
 
     expect(controller.running).toBe(false);
     expect(reports.at(-1)).toMatch(/did not start/);
+  });
+});
+
+describe("LaunchController while set_mode is in flight", () => {
+  it("sends one set_mode when a second fire arrives before rsp_set_mode, and refuses the second", async () => {
+    const { controller, sent, reports, ack } = pendingHarness();
+
+    const first = controller.handle(single);
+    const second = controller.handle(single);
+    await second;
+    await ack();
+    await first;
+
+    expect(sent).toEqual(["set_mode", "run_start"]);
+    expect(reports[0]).toBe("Still waiting for the last launch; try again.");
+  });
+
+  it("reports in flight until the reply, and may be running from set_mode on", async () => {
+    const { controller, ack } = pendingHarness();
+
+    const firing = controller.handle(single);
+    const during = { inFlight: controller.inFlight, mayBeRunning: controller.mayBeRunning };
+    await ack();
+    await firing;
+
+    expect(during).toEqual({ inFlight: true, mayBeRunning: true });
+    expect({ inFlight: controller.inFlight, mayBeRunning: controller.mayBeRunning }).toEqual({ inFlight: false, mayBeRunning: true });
+  });
+
+  it("never starts the run when stop arrives before rsp_set_mode", async () => {
+    const { controller, sent, reports, ack } = pendingHarness();
+
+    const firing = controller.handle(single);
+    await controller.handle({ kind: "stop" });
+    await ack();
+    await firing;
+
+    expect(sent).toEqual(["set_mode", "run_stop"]);
+    expect(controller.mayBeRunning).toBe(false);
+    expect(reports.at(-1)).toBe("Stopped before the run started; not starting.");
+  });
+
+  it("allows a new fire once a failed set_mode write clears the wait", async () => {
+    let failNext = true;
+    const controller = new LaunchController({
+      send: async () => {
+        if (failNext) throw new Error("write failed");
+      },
+      waitFor: async () => ({ type: "rsp_set_mode" }),
+      driveStopped: () => true,
+      report: () => undefined,
+      now: () => 1000,
+    });
+    await controller.handle(single).catch(() => undefined);
+    failNext = false;
+
+    await controller.handle(single);
+
+    expect(controller.running).toBe(true);
   });
 });

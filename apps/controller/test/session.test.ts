@@ -90,6 +90,15 @@ describe("robot session", () => {
     expect(motions().filter(([, r]) => (r as { data: { motion: string } }).data.motion === "go_right")).toHaveLength(1);
   });
 
+  it("sends no run_stop on shutdown when no run is active", async () => {
+    const { session, timeline } = harness();
+    await flush();
+
+    await session.shutdown();
+
+    expect(timeline).toEqual(["ask_init_data", "motion:stop", "close"]);
+  });
+
   it("reassembles robot messages split across notifications on the +==ACE==+ marker", () => {
     const { notify, messages } = harness();
 
