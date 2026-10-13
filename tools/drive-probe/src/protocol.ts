@@ -35,8 +35,7 @@ export function chunk(buffer: Buffer, size: number): Buffer[] {
   return parts;
 }
 
-// Robot-to-app messages end with this marker (BluetoothService.java:101), not CRLF.
-export const MESSAGE_END = "+==ACE==+";
+// Robot-to-app messages end with the +==ACE==+ marker (BluetoothService.java:101), not CRLF.
 const MESSAGE_BOUNDARY = /\+==ACE==\+|\r?\n/;
 
 // Notifications may split or merge messages, so reassemble on the end marker; newlines are accepted defensively.

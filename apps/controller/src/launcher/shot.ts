@@ -1,4 +1,4 @@
-import { SPIN_STYLES, spinStyle, spinValue, type FireMessage } from "../shared";
+import type { FireMessage } from "../shared";
 
 /** The ball-machine fields both A (Controls) and C (Aim pad) edit; each layout keeps its own copy. */
 export interface Shot {
@@ -20,11 +20,4 @@ export function shotMessage(shot: Shot): FireMessage {
 /** The drive screen's fire: always exactly one ball, whatever count the shot carries. */
 export function singleBall(shot: Shot): FireMessage {
   return shotMessage({ ...shot, count: 1 });
-}
-
-/** Slice → flat → topspin → slice, at each style's coarse value. */
-export function nextSpin(spin: number): number {
-  const index = SPIN_STYLES.findIndex((entry) => entry.style === spinStyle(spin));
-  const next = SPIN_STYLES[(index + 1) % SPIN_STYLES.length];
-  return next ? spinValue(next.style) : 0;
 }
