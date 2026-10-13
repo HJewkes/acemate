@@ -57,7 +57,8 @@ export interface TargetShotOptions {
 
 function check(name: string, value: number, range: Range): number {
   if (!Number.isFinite(value)) throw new LaunchValidationError(`${name} must be a number, got ${value}`);
-  if (range.integer && !Number.isInteger(value)) throw new LaunchValidationError(`${name} must be an integer, got ${value}`);
+  if (range.integer && !Number.isInteger(value))
+    throw new LaunchValidationError(`${name} must be an integer, got ${value}`);
   if (value < range.min || value > range.max) {
     throw new LaunchValidationError(`${name} ${value} is outside the S10 range ${range.min}..${range.max}`);
   }
@@ -124,7 +125,11 @@ export function targetShot(options: TargetShotOptions): Request {
       serve_rhythm_offset_s: DEFAULT_SERVE_RHYTHM_OFFSET_S,
       balls: [
         {
-          shot: { target: [target], spin: check("spin", options.spin, S10_LIMITS.spin), height: HEIGHT_METRES_BY_LEVEL[level - 1] },
+          shot: {
+            target: [target],
+            spin: check("spin", options.spin, S10_LIMITS.spin),
+            height: HEIGHT_METRES_BY_LEVEL[level - 1],
+          },
           receiving_area: null,
         },
       ],

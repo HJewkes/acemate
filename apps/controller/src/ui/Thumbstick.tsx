@@ -38,7 +38,10 @@ export function Thumbstick({ size, knob, onChange }: Props) {
 
   return (
     <GestureDetector gesture={gesture}>
-      <View style={[styles.pad, { width: size, height: size, borderRadius: size / 2 }]} accessibilityLabel="Drive stick">
+      <View
+        style={[styles.pad, { width: size, height: size, borderRadius: size / 2 }]}
+        accessibilityLabel="Drive stick"
+      >
         <View style={[styles.travel, { width: radius * 2, height: radius * 2, borderRadius: radius }]} />
         <View
           style={[

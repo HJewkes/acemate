@@ -8,9 +8,12 @@ import type { Motion } from "../src/motion.js";
 function harness() {
   let now = 0;
   const sent: [number, Motion][] = [];
-  const loop = new DriveLoop((motion) => sent.push([now, motion]), () => now);
+  const loop = new DriveLoop(
+    (motion) => sent.push([now, motion]),
+    () => now,
+  );
   const advance = (ms: number) => {
-    for (const end = now + ms; now < end; ) {
+    for (const end = now + ms; now < end;) {
       now += 10;
       loop.tick();
     }
@@ -29,7 +32,13 @@ describe("drive loop", () => {
       loop.update("go_front");
     }
 
-    expect(sent).toEqual([[0, "go_front"], [50, "go_front"], [100, "go_front"], [150, "go_front"], [200, "go_front"]]);
+    expect(sent).toEqual([
+      [0, "go_front"],
+      [50, "go_front"],
+      [100, "go_front"],
+      [150, "go_front"],
+      [200, "go_front"],
+    ]);
   });
 
   it("sends stop immediately, without waiting for the resend slot", () => {
@@ -50,7 +59,12 @@ describe("drive loop", () => {
 
     advance(500);
 
-    expect(sent).toEqual([[0, "go_back"], [0, "stop"], [50, "stop"], [100, "stop"]]);
+    expect(sent).toEqual([
+      [0, "go_back"],
+      [0, "stop"],
+      [50, "stop"],
+      [100, "stop"],
+    ]);
   });
 
   it("stops when the page goes quiet for 300 ms", () => {
@@ -82,7 +96,10 @@ describe("drive loop", () => {
 
     loop.update("turn_right");
 
-    expect(sent).toEqual([[0, "go_front"], [0, "turn_right"]]);
+    expect(sent).toEqual([
+      [0, "go_front"],
+      [0, "turn_right"],
+    ]);
   });
 });
 
@@ -95,7 +112,10 @@ describe("control socket", () => {
     socket.emit("message", Buffer.from(JSON.stringify({ motion: "go_left" })));
     socket.emit("close");
 
-    expect(sent).toEqual([[0, "go_left"], [0, "stop"]]);
+    expect(sent).toEqual([
+      [0, "go_left"],
+      [0, "stop"],
+    ]);
   });
 
   it("treats malformed or unknown messages as stop", () => {

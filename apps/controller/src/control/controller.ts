@@ -12,7 +12,11 @@ export class Controller {
   private stick: Stick = CENTERED;
   private latched = false;
   private suspended = false;
-  horizontal: Horizontal = "strafe";
+  private horizontal: Horizontal = "strafe";
+
+  setHorizontal(horizontal: Horizontal): void {
+    this.horizontal = horizontal;
+  }
 
   setStick(stick: Stick): void {
     if (!this.suspended) this.stick = stick;

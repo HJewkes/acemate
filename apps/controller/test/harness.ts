@@ -26,7 +26,9 @@ export function harness(respond: Responder = () => undefined) {
       expect(text.endsWith("\r\n")).toBe(true);
       const request = JSON.parse(text.slice(0, -2)) as Sent;
       sent.push([now, request]);
-      timeline.push(request.type === "motion_control" ? `motion:${(request.data as { motion: string }).motion}` : request.type);
+      timeline.push(
+        request.type === "motion_control" ? `motion:${(request.data as { motion: string }).motion}` : request.type,
+      );
       modes.push([request.type, withResponse]);
       const reply = respond(request);
       if (reply) setTimeout(() => notify(reply), 0);
@@ -42,9 +44,13 @@ export function harness(respond: Responder = () => undefined) {
     },
   };
   const messages: RobotMessage[] = [];
-  const session = new RobotSession(channel, (message) => messages.push(message), () => now);
+  const session = new RobotSession(
+    channel,
+    (message) => messages.push(message),
+    () => now,
+  );
   const advance = async (ms: number) => {
-    for (const end = now + ms; now < end; ) {
+    for (const end = now + ms; now < end;) {
       now += 10;
       session.tick();
       await flush();

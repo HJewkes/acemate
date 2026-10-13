@@ -28,18 +28,43 @@ This is the reference for talking to the S10 over BLE. Read Transport and Sessio
 
 1. Connect, subscribe, send `{"type":"ask_init_data"}`. **[HW]** Reply:
    ```json
-   {"type":"rsp_init_data","data":{"robot_id":"<robot-id>","rk_software_version":"v2.1.3_install","mode":"hdr","used_gb":15.53,"free_gb":40.55,"fire_music_volume":5,"servo_offsets":[10,14,0,10,130,22,0,90,61],"ble_mac":"<ble-mac>"}}
+   {
+     "type": "rsp_init_data",
+     "data": {
+       "robot_id": "<robot-id>",
+       "rk_software_version": "v2.1.3_install",
+       "mode": "hdr",
+       "used_gb": 15.53,
+       "free_gb": 40.55,
+       "fire_music_volume": 5,
+       "servo_offsets": [10, 14, 0, 10, 130, 22, 0, 90, 61],
+       "ble_mac": "<ble-mac>"
+     }
+   }
    ```
 2. Poll `{"type":"ask_heartbeat"}` periodically. The app skips heartbeats while moving. **[HW]** Reply:
    ```json
-   {"type":"rsp_heartbeat","data":{"car_state":{"car_loc_status":0,"time_is_set":false,"mode":"rally","running":false,"train_id":null,"runner_state":0,"bat":0}}}
+   {
+     "type": "rsp_heartbeat",
+     "data": {
+       "car_state": {
+         "car_loc_status": 0,
+         "time_is_set": false,
+         "mode": "rally",
+         "running": false,
+         "train_id": null,
+         "runner_state": 0,
+         "bat": 0
+       }
+     }
+   }
    ```
    If `time_is_set` is false, the app sends `set_time` (epoch seconds, timezone id, country code). Meaning of `bat: 0` is unknown.
 
 ## Manual drive
 
 ```json
-{"type":"motion_control","data":{"motion":"turn_left","shot_switch":"off"}}
+{ "type": "motion_control", "data": { "motion": "turn_left", "shot_switch": "off" } }
 ```
 
 - `motion` is one of: `go_front`, `go_back`, `go_left`, `go_right` (strafe), `turn_left`, `turn_right`, `stop`.

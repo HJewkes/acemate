@@ -5,21 +5,25 @@ export function useNow(active: boolean, everyMs = 500): number {
   const [now, setNow] = useState(Date.now);
   useEffect(() => {
     if (!active) return;
-    setNow(Date.now());
-    const timer = setInterval(() => setNow(Date.now()), everyMs);
-    return () => clearInterval(timer);
+    const tick = () => setNow(Date.now());
+    // Refresh straight away rather than showing the time frozen at the last deactivation for a whole period.
+    const first = setTimeout(tick, 0);
+    const timer = setInterval(tick, everyMs);
+    return () => {
+      clearTimeout(first);
+      clearInterval(timer);
+    };
   }, [active, everyMs]);
   return now;
 }
 
 /** Shows `text` for `forMs` each time `at` changes, then clears it. */
 export function useFlash(text: string | null, at: number, forMs: number): string | null {
-  const [shown, setShown] = useState<string | null>(null);
+  const [expired, setExpired] = useState<{ text: string; at: number } | null>(null);
   useEffect(() => {
-    setShown(text);
     if (!text) return;
-    const timer = setTimeout(() => setShown(null), forMs);
+    const timer = setTimeout(() => setExpired({ text, at }), forMs);
     return () => clearTimeout(timer);
   }, [text, at, forMs]);
-  return shown;
+  return text && !(expired?.text === text && expired.at === at) ? text : null;
 }

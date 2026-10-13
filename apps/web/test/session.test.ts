@@ -1,7 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Request } from "../../../tools/drive-probe/src/protocol.js";
 import type { Link } from "../src/link.js";
-import { HEARTBEAT_MS, RobotSession, SET_TIME_RETRY_MS, heartbeatDue, needsSetTime, type CarState, type SessionEvents } from "../src/session.js";
+import {
+  HEARTBEAT_MS,
+  RobotSession,
+  SET_TIME_RETRY_MS,
+  heartbeatDue,
+  needsSetTime,
+  type CarState,
+  type SessionEvents,
+} from "../src/session.js";
 
 class FakeLink implements Link {
   readonly name = "fake";
@@ -23,7 +31,9 @@ class FakeLink implements Link {
     this.listener(`${JSON.stringify(message)}`);
   }
   types(): string[] {
-    return this.sent.map((r) => (r.type === "motion_control" ? `motion:${(r.data as { motion: string }).motion}` : r.type));
+    return this.sent.map((r) =>
+      r.type === "motion_control" ? `motion:${(r.data as { motion: string }).motion}` : r.type,
+    );
   }
 }
 
@@ -57,7 +67,10 @@ describe("set_time", () => {
     link.receive(heartbeat({ time_is_set: false, running: false }));
 
     expect(link.sent).toEqual([
-      { type: "set_time", data: { unix_timestamp: 1_760_000_000, time_zone: "America/Los_Angeles", country_code: "US" } },
+      {
+        type: "set_time",
+        data: { unix_timestamp: 1_760_000_000, time_zone: "America/Los_Angeles", country_code: "US" },
+      },
     ]);
   });
 
@@ -130,7 +143,15 @@ describe("robot messages", () => {
 
 async function startRun() {
   const fixture = setup();
-  const fired = fixture.session.launch({ kind: "machine", direction: 0, speed: 3, spin: 0, elevation: 20, count: 1, interval: 5 });
+  const fired = fixture.session.launch({
+    kind: "machine",
+    direction: 0,
+    speed: 3,
+    spin: 0,
+    elevation: 20,
+    count: 1,
+    interval: 5,
+  });
   await vi.advanceTimersByTimeAsync(0);
   fixture.link.receive({ type: "rsp_set_mode", data: { result: "ok" } });
   await fired;
@@ -138,7 +159,6 @@ async function startRun() {
 }
 
 describe("launching", () => {
-
   it("starts a run only after rsp_set_mode, then holds drive input at stop", async () => {
     const { link, session } = await startRun();
 
@@ -192,7 +212,15 @@ describe("shutdown", () => {
 
   it("sends run_stop while set_mode waits for its reply", async () => {
     const { link, session } = setup();
-    const fired = session.launch({ kind: "machine", direction: 0, speed: 3, spin: 0, elevation: 20, count: 1, interval: 5 });
+    const fired = session.launch({
+      kind: "machine",
+      direction: 0,
+      speed: 3,
+      spin: 0,
+      elevation: 20,
+      count: 1,
+      interval: 5,
+    });
     await vi.advanceTimersByTimeAsync(0);
 
     await session.shutdown();

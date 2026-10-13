@@ -17,7 +17,11 @@ function connectSocket(): void {
   const ws = new WebSocket(`ws://${location.host}/control`);
   ws.onopen = () => (view("link").textContent = "connected");
   ws.onmessage = (event) => {
-    const message = JSON.parse(String(event.data)) as { sent?: string; launch_status?: string; car_state?: CarStateView };
+    const message = JSON.parse(String(event.data)) as {
+      sent?: string;
+      launch_status?: string;
+      car_state?: CarStateView;
+    };
     if (message.sent) view("sent").textContent = message.sent;
     if (message.launch_status) showLaunchStatus(message.launch_status);
     if (message.car_state) showPower(message.car_state);

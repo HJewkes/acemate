@@ -3,15 +3,7 @@ export const NUS_SERVICE = "6e400001b5a3f393e0a9e50e24dcca9e";
 export const NUS_WRITE = "6e400002b5a3f393e0a9e50e24dcca9e";
 export const NUS_NOTIFY = "6e400003b5a3f393e0a9e50e24dcca9e";
 
-export const MOTIONS = [
-  "go_front",
-  "go_back",
-  "go_left",
-  "go_right",
-  "turn_left",
-  "turn_right",
-  "stop",
-] as const;
+export const MOTIONS = ["go_front", "go_back", "go_left", "go_right", "turn_left", "turn_right", "stop"] as const;
 export type Motion = (typeof MOTIONS)[number];
 
 export type Request = Record<string, unknown> & { type: string };
@@ -43,8 +35,7 @@ export function chunk(buffer: Buffer, size: number): Buffer[] {
   return parts;
 }
 
-// Robot-to-app messages end with this marker (BluetoothService.java:101), not CRLF.
-export const MESSAGE_END = "+==ACE==+";
+// Robot-to-app messages end with the +==ACE==+ marker (BluetoothService.java:101), not CRLF.
 const MESSAGE_BOUNDARY = /\+==ACE==\+|\r?\n/;
 
 // Notifications may split or merge messages, so reassemble on the end marker; newlines are accepted defensively.

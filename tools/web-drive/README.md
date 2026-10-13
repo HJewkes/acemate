@@ -19,19 +19,18 @@ Then open http://localhost:8765 and keep that tab focused.
 - `npm start -- --dry-run` serves the page with no robot, so you can try the keys and gamepad at a desk.
 - Other flags: `--port 8765`, `--log web-drive.jsonl`, `--chunk 512`, `--heartbeat 3000`.
 
-
 **Hot reload:** edits to `src/page/*` rebuild and reload open tabs without dropping the robot connection (a reload closes the control socket, which sends stop). Use `npm run dev` to also restart the server on server-side edits; that reconnects BLE.
 
 ## Controls
 
-| Input | Action |
-| --- | --- |
-| `W` / `S` or `↑` / `↓` | forward / back |
-| `A` / `D` or `←` / `→` | turn left / right |
-| `Q` / `E` | strafe left / right |
-| `Space`, gamepad B / circle | emergency stop |
-| Gamepad left stick | translate |
-| Gamepad right stick (horizontal) | turn |
+| Input                            | Action              |
+| -------------------------------- | ------------------- |
+| `W` / `S` or `↑` / `↓`           | forward / back      |
+| `A` / `D` or `←` / `→`           | turn left / right   |
+| `Q` / `E`                        | strafe left / right |
+| `Space`, gamepad B / circle      | emergency stop      |
+| Gamepad left stick               | translate           |
+| Gamepad right stick (horizontal) | turn                |
 
 After an emergency stop the page stays stopped until every input is neutral: release the sticks and press keys afresh.
 

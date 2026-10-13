@@ -21,6 +21,7 @@ jobs:
         with:
           node-version: 24
       - run: npm ci
+      - run: npm run format:check
       # Type-aware rules resolve each package's own dependencies.
       - run: |
           for dir in tools/drive-probe tools/web-drive apps/web apps/controller; do

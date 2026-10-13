@@ -43,7 +43,10 @@ describe("run chip", () => {
   });
 
   it("shows while set_mode is in flight, before the run has a start time", () => {
-    expect(runChip({ runActive: false, inFlight: true, run: NO_RUN, now: SENT_AT })).toEqual({ mode: "Starting", elapsed: "--:--" });
+    expect(runChip({ runActive: false, inFlight: true, run: NO_RUN, now: SENT_AT })).toEqual({
+      mode: "Starting",
+      elapsed: "--:--",
+    });
   });
 
   it("labels unknown modes readably", () => {

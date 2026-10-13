@@ -9,7 +9,15 @@ export class MockLink implements Link {
   readonly sent: Request[] = [];
   private readonly lineListeners: ((line: string) => void)[] = [];
   private readonly disconnectListeners: (() => void)[] = [];
-  private carState = { car_loc_status: 0, time_is_set: false, mode: "rally", running: false, train_id: null, runner_state: 0, bat: 76 };
+  private carState = {
+    car_loc_status: 0,
+    time_is_set: false,
+    mode: "rally",
+    running: false,
+    train_id: null,
+    runner_state: 0,
+    bat: 76,
+  };
   private runSeconds = 1;
   private runTimer: ReturnType<typeof setTimeout> | undefined;
 

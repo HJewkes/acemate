@@ -5,7 +5,10 @@ import { LaunchController, type LaunchMessage } from "../../../tools/web-drive/s
 import type { Motion } from "../../../tools/web-drive/src/motion.js";
 import type { Link } from "./link.js";
 
-export type CarState = { running?: boolean; bat?: number | null; mode?: string; time_is_set?: boolean } & Record<string, unknown>;
+export type CarState = { running?: boolean; bat?: number | null; mode?: string; time_is_set?: boolean } & Record<
+  string,
+  unknown
+>;
 
 export const HEARTBEAT_MS = 3000;
 export const SET_TIME_RETRY_MS = 30_000;
@@ -167,6 +170,8 @@ export class RobotSession {
   }
 
   private send(request: Request): Promise<void> {
-    return this.link.send(request).catch((error: unknown) => this.events.report(`${request.type} failed: ${String(error)}`));
+    return this.link
+      .send(request)
+      .catch((error: unknown) => this.events.report(`${request.type} failed: ${String(error)}`));
   }
 }

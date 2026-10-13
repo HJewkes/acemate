@@ -33,7 +33,11 @@ async function waitForPoweredOn(timeoutMs: number): Promise<void> {
 // ble-plx runs one scan at a time and a new one replaces the last, so each stop only ends its own scan.
 let activeScan = 0;
 
-function startScan(onDevice: (device: Device) => void, onError: (error: Error) => void, allowDuplicates = false): () => void {
+function startScan(
+  onDevice: (device: Device) => void,
+  onError: (error: Error) => void,
+  allowDuplicates = false,
+): () => void {
   const ble = bleManager();
   const mine = ++activeScan;
   void ble.startDeviceScan([SERVICE], { allowDuplicates }, (error, device) => {
@@ -81,7 +85,11 @@ export function scanRobots(onDevice: (robot: SeenRobot) => void, onError: (error
   waitForPoweredOn(5_000).then(
     () => {
       if (cancelled) return;
-      stop = startScan((device) => onDevice({ id: device.id, name: deviceName(device), rssi: device.rssi }), onError, true);
+      stop = startScan(
+        (device) => onDevice({ id: device.id, name: deviceName(device), rssi: device.rssi }),
+        onError,
+        true,
+      );
     },
     (error: Error) => {
       if (!cancelled) onError(error);

@@ -1,7 +1,6 @@
 import { createContext, useContext, useMemo } from "react";
 
 export type ThemeName = "dark" | "light";
-export const THEME_NAMES: readonly ThemeName[] = ["dark", "light"];
 
 export interface Palette {
   page: string;

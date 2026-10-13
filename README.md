@@ -92,12 +92,12 @@ Force-quit the stock Acemate app on every phone first: the robot accepts one BLE
 
 ## Browser support for Web Bluetooth
 
-| Browser | Works |
-| --- | --- |
-| Chrome or Edge, desktop | yes |
-| Chrome on Android | yes |
-| iPhone / iPad | only in the Bluefy browser; Safari and iOS Chrome have no Web Bluetooth |
-| Firefox, Safari | no |
+| Browser                 | Works                                                                   |
+| ----------------------- | ----------------------------------------------------------------------- |
+| Chrome or Edge, desktop | yes                                                                     |
+| Chrome on Android       | yes                                                                     |
+| iPhone / iPad           | only in the Bluefy browser; Safari and iOS Chrome have no Web Bluetooth |
+| Firefox, Safari         | no                                                                      |
 
 ## Repo layout
 

@@ -68,7 +68,11 @@ export class RobotSession {
     private readonly config: SessionConfig = DEFAULT_SESSION,
   ) {
     this.loop = new DriveLoop((motion) => this.fire(requests.motion(motion)), now, config.loop);
-    this.launch = new LaunchLink({ send: (request) => this.send(request), driveStopped: () => this.loop.motion === "stop", now });
+    this.launch = new LaunchLink({
+      send: (request) => this.send(request),
+      driveStopped: () => this.loop.motion === "stop",
+      now,
+    });
     this.launch.listen({ report: (text) => trace(`launch ${text}`), carState: () => undefined });
     this.unsubscribe = channel.onData((data) =>
       this.decoder

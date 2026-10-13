@@ -17,7 +17,10 @@
     </p>
 
     <main class="drive">
-      <div id="stick-left" class="stick" data-side="left"><div class="knob"></div><span>move</span></div>
+      <div id="stick-left" class="stick" data-side="left">
+        <div class="knob"></div>
+        <span>move</span>
+      </div>
       <div class="centre">
         <div id="motion" class="stopped">stop</div>
         <button id="estop" type="button" class="estop">STOP</button>
@@ -25,12 +28,16 @@
         <div id="input" class="detail"></div>
         <div class="detail">gamepad: <span id="pad"></span></div>
       </div>
-      <div id="stick-right" class="stick" data-side="right"><div class="knob"></div><span>turn</span></div>
+      <div id="stick-right" class="stick" data-side="right">
+        <div class="knob"></div>
+        <span>turn</span>
+      </div>
     </main>
 
     <p class="help">
-      <kbd>W</kbd>/<kbd>S</kbd> forward/back · <kbd>A</kbd>/<kbd>D</kbd> or <kbd>←</kbd>/<kbd>→</kbd> turn · <kbd>Q</kbd>/<kbd>E</kbd> strafe ·
-      <kbd>Space</kbd> stop. Gamepad: left stick moves, right stick turns, B / circle stops. Leaving this tab stops the robot.
+      <kbd>W</kbd>/<kbd>S</kbd> forward/back · <kbd>A</kbd>/<kbd>D</kbd> or <kbd>←</kbd>/<kbd>→</kbd> turn ·
+      <kbd>Q</kbd>/<kbd>E</kbd> strafe · <kbd>Space</kbd> stop. Gamepad: left stick moves, right stick turns, B / circle
+      stops. Leaving this tab stops the robot.
     </p>
 
     <section id="launcher" class="launcher" aria-label="Launcher">
@@ -44,7 +51,9 @@
         <aside class="fire-bar" aria-label="Fire">
           <div id="l-summary" class="summary"></div>
           <div class="fire-row">
-            <button id="l-fire" type="button" class="fire" disabled><span class="fire-label">Hold to fire</span></button>
+            <button id="l-fire" type="button" class="fire" disabled>
+              <span class="fire-label">Hold to fire</span>
+            </button>
           </div>
           <div class="fire-row">
             <button id="l-pause" type="button">Pause run</button>

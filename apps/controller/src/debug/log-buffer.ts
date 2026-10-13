@@ -12,7 +12,10 @@ export class LogBuffer {
   }
 
   push(line: string): void {
-    const kept = this.snapshot.length >= this.capacity ? this.snapshot.slice(this.snapshot.length - this.capacity + 1) : this.snapshot;
+    const kept =
+      this.snapshot.length >= this.capacity
+        ? this.snapshot.slice(this.snapshot.length - this.capacity + 1)
+        : this.snapshot;
     this.replace([...kept, line]);
   }
 

@@ -26,7 +26,7 @@ describe("stick mapping", () => {
 describe("controller", () => {
   const read = (stick: Stick, horizontal: Horizontal = "strafe") => {
     const controller = new Controller();
-    controller.horizontal = horizontal;
+    controller.setHorizontal(horizontal);
     controller.setStick(stick);
     return controller.read().motion;
   };

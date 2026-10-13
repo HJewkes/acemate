@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AppState } from "react-native";
 import type { Controller, ControlState } from "../control/controller";
 import { NO_RUN, type RunInfo } from "../launcher/run-chip";
@@ -65,16 +65,23 @@ function useLaunchView() {
   const [launch, setLaunch] = useState<LaunchView>(NO_LAUNCH);
   const listener = useMemo<LaunchListener>(
     () => ({
-      report: (text) => setLaunch((view) => ({ ...view, log: [text, ...view.log].slice(0, LOG_LINES), reportedAt: Date.now() })),
+      report: (text) =>
+        setLaunch((view) => ({ ...view, log: [text, ...view.log].slice(0, LOG_LINES), reportedAt: Date.now() })),
       carState: (car) =>
-        setLaunch((view) => ({ ...view, battery: typeof car.bat === "number" ? car.bat : null, robotRunning: car.running === true })),
+        setLaunch((view) => ({
+          ...view,
+          battery: typeof car.bat === "number" ? car.bat : null,
+          robotRunning: car.running === true,
+        })),
     }),
     [],
   );
   const setRunState = useCallback(
     (runActive: boolean, inFlight: boolean, run: RunInfo) =>
       setLaunch((view) =>
-        view.runActive === runActive && view.inFlight === inFlight && view.run === run ? view : { ...view, runActive, inFlight, run },
+        view.runActive === runActive && view.inFlight === inFlight && view.run === run
+          ? view
+          : { ...view, runActive, inFlight, run },
       ),
     [],
   );
@@ -106,7 +113,10 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
   // An explicit Disconnect pauses auto-connect until the next launch or a connect from the device menu.
   const userDisconnected = useRef(false);
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+  // A layout effect, so the auto-connect effect below already sees this render's options.
+  useLayoutEffect(() => {
+    optionsRef.current = options;
+  });
 
   const drop = useCallback(() => {
     const closing = session.current;
@@ -132,11 +142,13 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
         setCurrent(robot);
         optionsRef.current.onConnected(robot);
       };
-      void openSession({ appendLog, setStatus, setDetail, onDrop, launch: listener, preferId, onConnected }).then((opened) => {
-        busy.current = false;
-        if (attempt.current === mine) session.current = opened;
-        else if (opened) void opened.shutdown().finally(() => (setStatus("disconnected"), setCurrent(null)));
-      });
+      void openSession({ appendLog, setStatus, setDetail, onDrop, launch: listener, preferId, onConnected }).then(
+        (opened) => {
+          busy.current = false;
+          if (attempt.current === mine) session.current = opened;
+          else if (opened) void opened.shutdown().finally(() => (setStatus("disconnected"), setCurrent(null)));
+        },
+      );
     },
     [appendLog, drop, listener],
   );
@@ -169,7 +181,10 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
     },
     [listener],
   );
-  const fire = useCallback((message: FireMessage) => withSession((current) => current.launch.handle(message)), [withSession]);
+  const fire = useCallback(
+    (message: FireMessage) => withSession((current) => current.launch.handle(message)),
+    [withSession],
+  );
   const stopRun = useCallback(() => withSession((current) => current.launch.handle({ kind: "stop" })), [withSession]);
   const pauseRun = useCallback(() => withSession((current) => current.launch.handle({ kind: "pause" })), [withSession]);
   const emergencyStop = useCallback(() => session.current?.emergencyStop(), []);
@@ -203,7 +218,20 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
     };
   }, [drop, autoConnect]);
 
-  return { status, detail, control, log, launch, current, connectTo, disconnect, fire, stopRun, pauseRun, emergencyStop };
+  return {
+    status,
+    detail,
+    control,
+    log,
+    launch,
+    current,
+    connectTo,
+    disconnect,
+    fire,
+    stopRun,
+    pauseRun,
+    emergencyStop,
+  };
 }
 
 interface SessionHooks {

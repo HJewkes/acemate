@@ -19,9 +19,14 @@ export default function App() {
   const { settings, loaded, update } = useSettings();
   const { horizontal, shot: aimShot, theme, lastRobot, allowDriveDuringRun } = settings;
   const rememberRobot = useCallback((robot: SavedRobot) => update(() => ({ lastRobot: robot })), [update]);
-  const robot = useRobot(controller, { lastRobot: loaded ? lastRobot : null, onConnected: rememberRobot, allowDriveDuringRun });
+  const robot = useRobot(controller, {
+    lastRobot: loaded ? lastRobot : null,
+    onConnected: rememberRobot,
+    allowDriveDuringRun,
+  });
   const setAimShot = useCallback(
-    (action: SetStateAction<Shot>) => update((current) => ({ shot: typeof action === "function" ? action(current.shot) : action })),
+    (action: SetStateAction<Shot>) =>
+      update((current) => ({ shot: typeof action === "function" ? action(current.shot) : action })),
     [update],
   );
   const setStick = useCallback((stick: Stick) => controller.setStick(stick), [controller]);
@@ -29,7 +34,7 @@ export default function App() {
   const setTheme = useCallback((next: ThemeName) => update(() => ({ theme: next })), [update]);
   const setAllowDrive = useCallback((allow: boolean) => update(() => ({ allowDriveDuringRun: allow })), [update]);
   useEffect(() => {
-    controller.horizontal = horizontal;
+    controller.setHorizontal(horizontal);
   }, [controller, horizontal]);
   const hold = useHoldFire(() => {
     if (menu.open) return;

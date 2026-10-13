@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createHoldFire, type HoldReading } from "../shared";
 
 const TICK_MS = 16;
@@ -18,7 +18,9 @@ export function useHoldFire(onFire: () => void, holdMs: number = APP_HOLD_MS): H
   const hold = useRef(createHoldFire(holdMs));
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const fireRef = useRef(onFire);
-  fireRef.current = onFire;
+  useLayoutEffect(() => {
+    fireRef.current = onFire;
+  });
   const [progress, setProgress] = useState(0);
 
   const stopTicking = useCallback(() => {

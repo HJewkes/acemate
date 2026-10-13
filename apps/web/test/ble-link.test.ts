@@ -1,7 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 import { lineText, requests } from "../../../tools/drive-probe/src/protocol.js";
 import { runRequests } from "../../../tools/drive-probe/src/launch.js";
-import { NUS, dashedUuid, requestBleLink, type BleCharacteristic, type BleDevice, type BluetoothLike } from "../src/ble-link.js";
+import {
+  NUS,
+  dashedUuid,
+  requestBleLink,
+  type BleCharacteristic,
+  type BleDevice,
+  type BluetoothLike,
+} from "../src/ble-link.js";
 
 type Write = { mode: "with" | "without"; text: string };
 
@@ -52,7 +59,9 @@ function fakeBluetooth() {
     disconnect,
     getPrimaryService: async (uuid: string) => {
       if (uuid !== NUS.service) throw new Error(`no service ${uuid}`);
-      return { getCharacteristic: async (c: string) => chars[c] ?? Promise.reject(new Error(`no characteristic ${c}`)) };
+      return {
+        getCharacteristic: async (c: string) => chars[c] ?? Promise.reject(new Error(`no characteristic ${c}`)),
+      };
     },
   };
   const device = Object.assign(new EventTarget(), { id: "dev-1", name: "ACEMATE-XXXXX", gatt: server }) as BleDevice;
@@ -101,13 +110,21 @@ describe("writing", () => {
     const slow = deferred();
     fake.writer.gates.push(slow.promise);
 
-    const sends = [link.send(runRequests.start()), link.send(requests.motion("go_front")), link.send(requests.heartbeat())];
+    const sends = [
+      link.send(runRequests.start()),
+      link.send(requests.motion("go_front")),
+      link.send(requests.heartbeat()),
+    ];
     await Promise.resolve();
     slow.resolve();
     await Promise.all(sends);
 
     expect(fake.writer.maxInFlight).toBe(1);
-    expect(fake.writer.writes.map((w) => JSON.parse(w.text).type)).toEqual(["run_start", "motion_control", "ask_heartbeat"]);
+    expect(fake.writer.writes.map((w) => JSON.parse(w.text).type)).toEqual([
+      "run_start",
+      "motion_control",
+      "ask_heartbeat",
+    ]);
   });
 
   it("sends motion without response and launcher, time and init commands with response", async () => {
@@ -115,7 +132,8 @@ describe("writing", () => {
     const link = await requestBleLink(fake.bluetooth);
     const setTime = { type: "set_time", data: { unix_timestamp: 1 } };
 
-    for (const request of [requests.motion("stop"), runRequests.stop(), setTime, requests.askInit()]) await link.send(request);
+    for (const request of [requests.motion("stop"), runRequests.stop(), setTime, requests.askInit()])
+      await link.send(request);
 
     expect(fake.writer.writes.map((w) => w.mode)).toEqual(["without", "with", "with", "with"]);
     expect(fake.writer.writes[0]?.text).toBe(lineText(requests.motion("stop")));

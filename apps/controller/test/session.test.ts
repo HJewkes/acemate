@@ -142,7 +142,11 @@ describe("write queue", () => {
       onDisconnect: () => () => undefined,
       close: async () => undefined,
     };
-    const session = new RobotSession(channel, () => undefined, () => 0);
+    const session = new RobotSession(
+      channel,
+      () => undefined,
+      () => 0,
+    );
 
     session.drive("go_front");
     await new Promise((resolve) => setTimeout(resolve, 1100));

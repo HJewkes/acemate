@@ -67,7 +67,9 @@ async function runListen(): Promise<void> {
 
 async function runDrive(): Promise<void> {
   if (!process.stdin.isTTY) {
-    throw new Error("drive needs an interactive terminal (raw key input); run it in a terminal window, not via `!` or a pipe");
+    throw new Error(
+      "drive needs an interactive terminal (raw key input); run it in a terminal window, not via `!` or a pipe",
+    );
   }
   const link = await open();
   await sendLogged(link, requests.askInit());
@@ -79,7 +81,12 @@ async function runDrive(): Promise<void> {
     await link.close().catch(() => undefined);
     process.exit(0);
   });
-  startTicker(link, config, () => hold, (next) => (hold = next));
+  startTicker(
+    link,
+    config,
+    () => hold,
+    (next) => (hold = next),
+  );
   startHeartbeat(link, () => hold.motion === null);
   readKeys((key) => {
     const action = keyAction(key);
@@ -161,10 +168,17 @@ function once(fn: () => Promise<void>): () => Promise<void> {
   return () => (started ??= fn());
 }
 
-const commands: Record<string, () => Promise<void>> = { scan: runScan, listen: runListen, drive: runDrive, pulse: runPulse };
+const commands: Record<string, () => Promise<void>> = {
+  scan: runScan,
+  listen: runListen,
+  drive: runDrive,
+  pulse: runPulse,
+};
 const command = commands[positionals[0] ?? ""];
 if (!command) {
-  console.log("Usage: drive-probe <scan|listen|drive|pulse <motion> <ms>> [--name S10] [--interval 200] [--repeat-hold 90] [--remote-mode]");
+  console.log(
+    "Usage: drive-probe <scan|listen|drive|pulse <motion> <ms>> [--name S10] [--interval 200] [--repeat-hold 90] [--remote-mode]",
+  );
   process.exit(2);
 }
 command().catch((error: unknown) => {

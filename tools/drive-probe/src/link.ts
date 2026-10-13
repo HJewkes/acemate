@@ -57,7 +57,12 @@ function pick(characteristics: Characteristic[], uuid: string): Characteristic {
   return found;
 }
 
-function buildLink(peripheral: Peripheral, writer: Characteristic, notifier: Characteristic, options: WriteOptions): Link {
+function buildLink(
+  peripheral: Peripheral,
+  writer: Characteristic,
+  notifier: Characteristic,
+  options: WriteOptions,
+): Link {
   const decoder = new LineDecoder();
   let queue = Promise.resolve();
   return {
