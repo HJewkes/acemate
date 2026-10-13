@@ -12,7 +12,7 @@ export interface Link {
 
 export type WriteMode = "withResponse" | "withoutResponse";
 
-// Motion resends every 50 ms, which only works without response (docs/protocol.md "Rate").
+// Motion resends every 50 ms, which only works without response: a write with response costs a 40-60 ms round trip.
 // Everything else is rare and must arrive, so it waits for the ATT acknowledgement, as the stock app does.
 export function writeModeFor(request: Request): WriteMode {
   return request.type === "motion_control" ? "withoutResponse" : "withResponse";
