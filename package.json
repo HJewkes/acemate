@@ -1,0 +1,25 @@
+{
+  "name": "acemate",
+  "private": true,
+  "description": "Dev tooling only: lint and format for every package in this repo.",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:baseline": "eslint . --suppress-all",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@titan-design/eslint-plugin": "0.2.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.71.2"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
