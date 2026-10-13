@@ -94,15 +94,6 @@ New here:
   one `LauncherVariant` interface, the shared fire bar and switch (`shell.ts`), and the pure mappings they use
   (`court.ts`, `aim.ts`, `presets.ts`, `spin.ts`, `ranges.ts`, `assumptions.ts`).
 
-## Publishing to GitHub Pages (not done yet)
+## Publishing to GitHub Pages
 
-**Before any public repo:** `docs/protocol.md` contains this robot's `robot_id` and `ble_mac`. Redact both, and check
-the rest of the history for them, before pushing anywhere public.
-
-1. Create the GitHub repo and push the branch.
-2. Add a workflow such as `.github/workflows/pages.yml` that runs on push to `main`. It should run `npm ci`,
-   `npm test` and `npm run build` in `apps/web`, then call `actions/upload-pages-artifact` with `path: apps/web/dist`
-   and `actions/deploy-pages`. The `tools/` sources are imported at build time, so check out the whole repo.
-3. In the repo, open Settings > Pages and set Source to "GitHub Actions".
-4. The site is then served at `https://<user>.github.io/<repo>/`. The build uses `base: "./"`, so it works under
-   that subpath unchanged, and Pages serves it over HTTPS, which Web Bluetooth requires.
+The site is published at https://hjewkes.github.io/acemate/. The build uses `base: "./"`, so it works under a subpath, and Pages serves it over HTTPS, which Web Bluetooth requires. The `tools/` sources are imported at build time, so a build needs the whole repo checked out.

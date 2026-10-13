@@ -15,7 +15,7 @@
 APKPure has served tampered apps before. We only read this artifact statically; never install it.
 Before trusting byte-level details, compare against an APK pulled from the owner's phone with `adb`.
 
-## Where things live (basement)
+## Where things live
 
 - `~/re/acemate/apk/`: the downloaded XAPK
 - `~/re/acemate/xapk/`: unpacked splits

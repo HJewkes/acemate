@@ -1,4 +1,4 @@
-# web-drive (throwaway)
+# web-drive
 
 Browser drive controller for the Acemate S10. Unlike `drive-probe`, a browser sees real key-up events and gamepad sticks,
 so release is exact rather than inferred from key-repeat. The real SDK and controllers (T-4, T-5) replace it.
