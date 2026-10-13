@@ -55,7 +55,7 @@ function pick(characteristics: Characteristic[], uuid: string): Characteristic {
   return found;
 }
 
-// Always writes without response: that is what makes the 50 ms resend rate possible (docs/protocol.md).
+// Always writes without response: that is what makes the 50 ms resend rate possible (with response costs 40-60 ms).
 function buildLink(peripheral: Peripheral, writer: Characteristic, notifier: Characteristic, chunkSize: number): Link {
   const decoder = new LineDecoder();
   let queue = Promise.resolve();

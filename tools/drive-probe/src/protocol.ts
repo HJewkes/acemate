@@ -1,4 +1,4 @@
-// Static-analysis findings from app 2.2.0; see docs/protocol.md.
+// Nordic UART over BLE: one compact JSON line per write; robot messages end with +==ACE==+, not a newline.
 export const NUS_SERVICE = "6e400001b5a3f393e0a9e50e24dcca9e";
 export const NUS_WRITE = "6e400002b5a3f393e0a9e50e24dcca9e";
 export const NUS_NOTIFY = "6e400003b5a3f393e0a9e50e24dcca9e";

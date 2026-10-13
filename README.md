@@ -1,129 +1,156 @@
 # Acemate Drive
 
-An unofficial controller for the Acemate S10 tennis robot. It drives the robot, and aims and fires its ball launcher, over Bluetooth Low Energy. The protocol was reverse-engineered for interoperability with the author's own robot. This project is not affiliated with, endorsed by or sponsored by Acemate or SwitchBot.
+An unofficial controller for the Acemate S10 tennis robot. It drives the robot with a thumbstick, and aims and fires its ball launcher, over Bluetooth Low Energy, from an iPhone or a web browser. This project is not affiliated with, endorsed by or sponsored by Acemate or SwitchBot.
 
-## Safety notice
+## Safety
 
-This software moves a heavy machine and fires tennis balls. Use it only with your own robot, on a clear court.
+**This software moves a heavy machine and fires tennis balls. Use it only with your own robot, on a clear court.**
 
 - Keep clear of the robot and of the launcher's firing arc. Never stand in front of it.
-- Keep the robot in sight and stay close enough to reach it and its power switch.
-- The firmware has a dead-man stop: if commands stop arriving, the robot halts on its own in under 2 s. That is the last line of defence, not the plan.
-- Fire is hold-to-fire in every app: nothing launches on a tap, and releasing early cancels.
-- Every app stops the robot when you leave it (blur, background, lock, close) and on an emergency stop.
+- Keep the robot in sight, and stay close enough to reach it and its power switch.
+- Releasing the stick stops the robot. So does leaving the app: switching app or tab, locking the phone or closing the page.
+- If the link drops, the robot's firmware stops it by itself within 2 s. Treat that as the last line of defence, not the plan.
+- Fire is hold-to-fire. Nothing launches on a tap, and letting go early cancels the shot.
 
-## Features
+## Getting started
 
-- Drive with a thumbstick: forward, back, strafe and turn, at the robot's 50 ms command rate.
-- Aim and fire the launcher: direction, elevation, speed and spin, single balls or runs.
-- iPhone app, static web app, and two laptop tools, all sharing one tested core.
-- Emergency stop that latches until every input is neutral.
-- A mock robot in the web app, so the whole UI can be tried at a desk.
+Before connecting from any system, power on the robot and force-quit the stock Acemate app on every phone nearby. The robot accepts only one Bluetooth connection.
 
-## Architecture
+There are two web versions:
 
-```mermaid
-flowchart LR
-  subgraph Apps
-    ctl["apps/controller<br/>Expo iPhone app"]
-    web["apps/web<br/>Web Bluetooth page"]
-  end
-  subgraph Tools
-    probe["tools/drive-probe<br/>Node CLI"]
-    wd["tools/web-drive<br/>browser + local BLE bridge"]
-  end
-  subgraph Shared["Shared modules (imported, not copied)"]
-    proto["protocol.ts, launch.ts<br/>(drive-probe)"]
-    rules["resolveMotion, DriveLoop,<br/>LaunchController (web-drive)"]
-    ui["launcher-ui mappings,<br/>hold-to-fire (apps/web)"]
-  end
-  robot(("Acemate S10<br/>Nordic UART"))
+- https://hjewkes.github.io/acemate/ is the classic web app.
+- https://hjewkes.github.io/acemate/next/ is the new app, the same one that runs natively on iPhone. It does not drive the robot over Web Bluetooth yet, so use the classic app in a browser for now.
 
-  ctl --> proto & rules & ui
-  web --> proto & rules
-  wd --> proto
-  ctl -- "ble-plx" --> robot
-  web -- "Web Bluetooth" --> robot
-  probe -- "noble" --> robot
-  wd -- "WebSocket to local server, then BLE" --> robot
-```
+Web Bluetooth needs HTTPS (or `localhost`). Safari and Firefox do not support it.
 
-Over BLE every app does the same thing: connect to the Nordic UART service, subscribe to notifications, send `ask_init_data`, then write one compact JSON line per message. `motion_control` is written without response every 50 ms; the robot answers with `+==ACE==+`-terminated messages. See [docs/protocol.md](docs/protocol.md).
+### iPhone (native app)
 
-## Quick starts
+The native app is built from source with Expo. You need a Mac with Xcode, Node 24, the iPhone and a cable for the first install.
 
-Use Node 24 (`nvm install 24 && nvm use 24`). Node 25 breaks the web and controller tests (see the controller troubleshooting section). Run `npm install` inside each package; there is no root workspace.
+1. On the iPhone, turn on Developer Mode: Settings → Privacy & Security → Developer Mode, then restart.
+2. Build and install:
 
-**iPhone app** (macOS with Xcode, a cable for the first install). Full guide in [apps/controller](apps/controller/README.md).
+   ```sh
+   cd apps/controller
+   npm ci
+   npx expo prebuild --platform ios --clean
+   npx expo run:ios --device
+   ```
 
-```sh
-cd apps/controller
-npm install
-npx expo prebuild --platform ios --clean
-npx expo run:ios --device
-```
+3. If Xcode reports a signing error, open `ios/AcemateDrive.xcworkspace`, go to the target → Signing & Capabilities, tick "Automatically manage signing" and choose your Personal Team. A free Apple ID works, with two limits: an app expires after 7 days, so rebuild to renew it, and only 3 apps can be installed at once. If the bundle id is taken, change `ios.bundleIdentifier` in `app.json` and prebuild again.
+4. Trust the developer profile on the phone: Settings → General → VPN & Device Management → your Apple ID → Trust.
+5. Open Acemate Drive and allow Bluetooth when asked.
 
-**Web app** (any Web Bluetooth browser). Live at https://hjewkes.github.io/acemate/, or locally:
+### Android (Chrome)
 
-```sh
-cd apps/web
-npm install
-npm run dev          # http://localhost:5173, add ?mock=1 for a pretend robot
-```
+Open https://hjewkes.github.io/acemate/ in Chrome, tap **Connect** and pick the `ACEMATE-XXXXX` device. Allow Bluetooth and Nearby devices if Android asks.
 
-**Laptop probe** (macOS, robot on, stock app closed). See [tools/drive-probe](tools/drive-probe/README.md).
+### Desktop (Chrome or Edge)
 
-```sh
-cd tools/drive-probe
-npm install
-npm run scan
-npm run drive
-```
+Open https://hjewkes.github.io/acemate/ in Chrome or Edge on macOS, Windows, Linux or ChromeOS, click **Connect** and pick the robot. Add `?mock=1` to the address to try the whole page with a pretend robot.
 
-**Browser drive via local bridge.** See [tools/web-drive](tools/web-drive/README.md).
+### iPhone (Bluefy browser)
 
-```sh
-cd tools/web-drive
-npm install
-npm start            # then open http://localhost:8765
-```
+Safari and Chrome on iOS have no Web Bluetooth. Install the free Bluefy browser from the App Store, open https://hjewkes.github.io/acemate/ in it, and connect as above.
 
-Force-quit the stock Acemate app on every phone first: the robot accepts one BLE connection.
+## Screenshots
 
-## Browser support for Web Bluetooth
+<!-- TODO screenshot: drive-dark -->
+<!-- TODO screenshot: drive-light -->
+<!-- TODO screenshot: device-menu -->
+<!-- TODO screenshot: hold-to-fire -->
 
-| Browser                 | Works                                                                   |
-| ----------------------- | ----------------------------------------------------------------------- |
-| Chrome or Edge, desktop | yes                                                                     |
-| Chrome on Android       | yes                                                                     |
-| iPhone / iPad           | only in the Bluefy browser; Safari and iOS Chrome have no Web Bluetooth |
-| Firefox, Safari         | no                                                                      |
+_Screenshots are coming in a later update._
 
-## Repo layout
+## Screen tour
 
-```
-apps/
-  controller/     Expo (SDK 55) iPhone app
-  web/            static Web Bluetooth app (Vite), published to GitHub Pages
-tools/
-  drive-probe/    Node CLI: scan, listen, drive, pulse, launch
-  web-drive/      browser page plus local BLE bridge server
-docs/
-  protocol.md     BLE protocol reference
-```
+The drive screen is landscape, with three parts:
 
-## Contributing
+- **Left: the stick.** Push up or down to drive forward or back. Sideways either strafes or turns, chosen by the **Strafe / Turn** switch under the stick. The robot runs one motion at a time, so the strongest push wins.
+- **Centre: the wordmark and device chip.** The chip shows the link status. Tap it to open the device menu, which has:
+  - nearby robots, with connect and disconnect;
+  - the theme (dark or light);
+  - **Allow driving during runs**;
+  - the debug log, with a Clear button.
+- **Right: the launcher.**
+  - Spin: slice, flat or topspin.
+  - Speed from 1 to 10. The bar fills from right to left.
+  - The aim pad: across sets direction, and up sets elevation.
+  - The fire bar. Hold it until it fills to fire one ball.
+- **Top right: the run chip.** It appears while a run is active, showing the mode and the elapsed time. Tap it to stop the run.
 
-- Work on a feature branch and open a pull request; do not push to `main`.
-- CI runs on the `check` job and must be green before merge.
-- Before opening a PR, run `npm test` and `npm run typecheck` in each package you touched.
-- Never commit a real robot ID, BLE MAC or device name. Use `<robot-id>`, `<ble-mac>` and `ACEMATE-XXXXX`.
-- Decompiled vendor code and binaries stay out of the repo.
+## Controls
 
-## Legal and trademarks
+### Touch
 
-This is an interoperability project. It talks to a robot the author owns, using a protocol learned by observing that robot and the stock app. No vendor code or assets are included. Acemate is a trademark of its owner, and SwitchBot is a trademark of its owner; they are named here only to say what the software works with. Use at your own risk, and check that doing so is lawful where you live.
+| Control         | Action                                 |
+| --------------- | -------------------------------------- |
+| Stick           | drive; release to stop                 |
+| Strafe / Turn   | choose what sideways on the stick does |
+| Spin, speed     | set up the shot                        |
+| Aim pad         | set direction and elevation            |
+| Fire bar (hold) | fire one ball when the bar fills       |
+| Run chip        | stop the run                           |
+| Device chip     | open the device menu                   |
 
-## Licence
+### Keyboard
+
+Keyboard and gamepad control are arriving with the web keyboard update.
+
+| Key      | Action                                          |
+| -------- | ----------------------------------------------- |
+| `W`, `S` | forward, back                                   |
+| `A`, `D` | left, right, following the Strafe / Turn switch |
+| `Q`, `E` | left, right, in the other mode                  |
+| Arrows   | aim                                             |
+| `Space`  | hold to fire                                    |
+| `Escape` | stop                                            |
+
+### Gamepad
+
+| Input       | Action |
+| ----------- | ------ |
+| Left stick  | drive  |
+| Right stick | aim    |
+| Trigger     | fire   |
+
+## Launching
+
+A launch fires one ball. The app tells the robot to switch to ball-machine mode with your shot (direction, elevation, speed and spin), waits for it to confirm, then starts a one-ball run. The robot fires from wherever it stands, and the run chip shows the run until it ends.
+
+Fire is locked, with the reason shown on the bar, while:
+
+- the robot is not connected;
+- the robot is driving, because the shot is aimed from where the robot stands, and a ball fired on the move would go somewhere you did not aim;
+- the app is waiting for the robot to confirm the shot;
+- a run is already active.
+
+Driving is held at stop during a run unless you turn on **Allow driving during runs** in the device menu.
+
+## Settings and auto-connect
+
+The app remembers your Strafe / Turn choice, your last shot, the theme, the driving-during-runs option and the last robot you connected to.
+
+When it opens, and when you return to it, the app reconnects to that robot by itself. If you tap Disconnect, it stays disconnected until you connect from the device menu or open the app again.
+
+## Troubleshooting
+
+- **The robot connects but ignores commands.** Power-cycle the robot, then reconnect.
+- **Can't connect, or the robot isn't listed.** Another phone or the stock Acemate app is holding the connection. Only one connection is allowed, so force-quit the stock app everywhere.
+- **The iPhone app won't open.** Trust the developer profile: Settings → General → VPN & Device Management → your Apple ID → Trust. If it worked before and stopped after a week, the free signature has expired, so rebuild.
+- **Bluetooth permission.** On iPhone, turn on Bluetooth for Acemate Drive (or Bluefy) in Settings → Privacy & Security → Bluetooth. On Android, allow Chrome to use Nearby devices. On desktop, check the browser's site settings and that Bluetooth is on.
+- **"Bluetooth not available" in the browser.** Use Chrome, Edge or Bluefy over HTTPS. Safari and Firefox are not supported.
+
+## For developers
+
+- Use Node 24. Node 25 breaks the happy-dom tests.
+- There is no root workspace. Run `npm ci` at the root for lint and format, and inside each package you work on.
+- Tests per package, in `apps/controller`, `apps/web`, `tools/drive-probe` and `tools/web-drive`: `npm test` and `npm run typecheck`.
+- From the root: `npm run lint` and `npm run format:check`.
+- CI must be green before merge. Work on a feature branch and open a pull request; do not push to `main`.
+
+## Licence and trademarks
 
 MIT. See [LICENSE](LICENSE).
+
+This is an interoperability project for a robot the author owns. No vendor code or assets are included. Acemate is a trademark of its owner, and SwitchBot is a trademark of its owner; they are named here only to say what the software works with. Use at your own risk, and check that doing so is lawful where you live.
