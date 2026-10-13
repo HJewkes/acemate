@@ -34,7 +34,7 @@ export default function App() {
   const setTheme = useCallback((next: ThemeName) => update(() => ({ theme: next })), [update]);
   const setAllowDrive = useCallback((allow: boolean) => update(() => ({ allowDriveDuringRun: allow })), [update]);
   useEffect(() => {
-    controller.horizontal = horizontal;
+    controller.setHorizontal(horizontal);
   }, [controller, horizontal]);
   const hold = useHoldFire(() => {
     if (menu.open) return;

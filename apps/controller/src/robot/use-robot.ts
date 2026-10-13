@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AppState } from "react-native";
 import type { Controller, ControlState } from "../control/controller";
 import { NO_RUN, type RunInfo } from "../launcher/run-chip";
@@ -113,7 +113,10 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
   // An explicit Disconnect pauses auto-connect until the next launch or a connect from the device menu.
   const userDisconnected = useRef(false);
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+  // A layout effect, so the auto-connect effect below already sees this render's options.
+  useLayoutEffect(() => {
+    optionsRef.current = options;
+  });
 
   const drop = useCallback(() => {
     const closing = session.current;

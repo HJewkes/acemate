@@ -1,8 +1,5 @@
 {
   "apps/controller/App.tsx": {
-    "react-hooks/immutability": {
-      "count": 1
-    },
     "titan/max-function-lines": {
       "count": 1
     }
@@ -10,9 +7,6 @@
   "apps/controller/src/launcher/use-hold-fire.ts": {
     "@typescript-eslint/no-confusing-void-expression": {
       "count": 2
-    },
-    "react-hooks/refs": {
-      "count": 1
     }
   },
   "apps/controller/src/polyfills.ts": {
@@ -57,16 +51,8 @@
       "count": 1
     }
   },
-  "apps/controller/src/robot/use-nearby-robots.ts": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
   "apps/controller/src/robot/use-robot.ts": {
     "@typescript-eslint/no-confusing-void-expression": {
-      "count": 1
-    },
-    "react-hooks/refs": {
       "count": 1
     },
     "titan/max-function-lines": {
@@ -88,11 +74,6 @@
       "count": 1
     }
   },
-  "apps/controller/src/ui/drive/LauncherPanel.tsx": {
-    "react-hooks/exhaustive-deps": {
-      "count": 1
-    }
-  },
   "apps/controller/src/ui/menu/DeviceList.tsx": {
     "titan/max-function-lines": {
       "count": 1
@@ -106,11 +87,6 @@
   "apps/controller/src/ui/theme.ts": {
     "@typescript-eslint/no-unsafe-type-assertion": {
       "count": 1
-    }
-  },
-  "apps/controller/src/ui/use-clock.ts": {
-    "react-hooks/set-state-in-effect": {
-      "count": 2
     }
   },
   "apps/web/src/ble-link.ts": {

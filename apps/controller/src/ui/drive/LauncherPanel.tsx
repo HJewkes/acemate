@@ -58,10 +58,11 @@ function FireBar({ robot, hold }: Pick<Props, "robot" | "hold">) {
     runActive: launch.runActive,
   });
   const locked = lock !== null;
+  const { cancel } = hold;
   // A disabled Pressable may never see the finger lift, so drop any hold rather than leave it spent.
   useEffect(() => {
-    if (locked) hold.cancel();
-  }, [locked, hold.cancel]);
+    if (locked) cancel();
+  }, [locked, cancel]);
   return (
     <Pressable
       style={[styles.fire, locked && styles.fireLocked]}
