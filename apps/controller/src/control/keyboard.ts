@@ -36,16 +36,45 @@ const AIM_KEYS: Record<string, AimStep> = {
 export const FIRE_KEY = "Space";
 export const STOP_KEY = "Escape";
 
-/** What the keys do, for the on-screen help. */
-export const KEY_HELP: readonly { keys: string; action: string }[] = [
-  { keys: "W S", action: "Forward, back" },
-  { keys: "A D", action: "Left, right (follows the switch)" },
-  { keys: "Q E", action: "Left, right (the other mode)" },
-  { keys: "← →", action: "Aim direction" },
-  { keys: "↑ ↓", action: "Aim elevation" },
-  { keys: "Space", action: "Hold to fire" },
-  { keys: "Esc", action: "Stop" },
+/** Every KeyboardEvent.code this module acts on. */
+export const BOUND_KEYS: readonly string[] = [...Object.keys(DRIVE_KEYS), ...Object.keys(AIM_KEYS), FIRE_KEY, STOP_KEY];
+
+const KEY_NAMES: Record<string, string> = {
+  ArrowLeft: "←",
+  ArrowRight: "→",
+  ArrowUp: "↑",
+  ArrowDown: "↓",
+  Escape: "Esc",
+};
+
+/** The printed name of a KeyboardEvent.code: KeyW is "W", ArrowLeft is "←". */
+export function keyName(code: string): string {
+  return KEY_NAMES[code] ?? code.replace(/^Key/, "");
+}
+
+export interface HelpRow {
+  keys: string;
+  action: string;
+}
+
+const KEY_ACTIONS: readonly { codes: readonly string[]; action: string }[] = [
+  { codes: ["KeyW", "KeyS"], action: "Forward, back" },
+  { codes: ["KeyA", "KeyD"], action: "Left, right (follows the switch)" },
+  { codes: ["KeyQ", "KeyE"], action: "Left, right (the other mode)" },
+  { codes: ["ArrowLeft", "ArrowRight"], action: "Aim direction" },
+  { codes: ["ArrowUp", "ArrowDown"], action: "Aim elevation" },
+  { codes: [FIRE_KEY], action: "Hold to fire" },
+  { codes: [STOP_KEY], action: "Stop" },
 ];
+
+/** The codes the on-screen help covers; a test holds this equal to BOUND_KEYS so the help cannot drift. */
+export const HELPED_KEYS: readonly string[] = KEY_ACTIONS.flatMap(({ codes }) => codes);
+
+/** What the keys do, for the on-screen help, with key names derived from the bound codes. */
+export const KEY_HELP: readonly HelpRow[] = KEY_ACTIONS.map(({ codes, action }) => ({
+  keys: codes.map(keyName).join(" "),
+  action,
+}));
 
 /** Opposing keys (W+S) cancel to zero on that axis. */
 export function keysToAxes(held: ReadonlySet<string>): DriveAxes {

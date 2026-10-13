@@ -15,6 +15,7 @@ import { useSettings } from "./src/storage/use-settings";
 import { DriveScreen } from "./src/ui/drive/DriveScreen";
 import { DeviceMenu } from "./src/ui/menu/DeviceMenu";
 import { ProbePanel } from "./src/ui/ProbePanel";
+import { WebShell } from "./src/ui/shell/WebShell";
 import { PALETTES, ThemeContext, type ThemeName } from "./src/ui/theme";
 
 export default function App() {
@@ -61,17 +62,19 @@ export default function App() {
     <ThemeContext.Provider value={PALETTES[theme]}>
       <GestureHandlerRootView style={[styles.root, { backgroundColor: PALETTES[theme].page }]}>
         <StatusBar hidden />
-        <DriveScreen
-          robot={robot}
-          robotName={robotName}
-          onOpenMenu={menu.show}
-          horizontal={horizontal}
-          onHorizontal={setHorizontal}
-          onStick={setStick}
-          shot={aimShot}
-          onShot={setAimShot}
-          hold={hold}
-        />
+        <WebShell robot={robot} shot={aimShot}>
+          <DriveScreen
+            robot={robot}
+            robotName={robotName}
+            onOpenMenu={menu.show}
+            horizontal={horizontal}
+            onHorizontal={setHorizontal}
+            onStick={setStick}
+            shot={aimShot}
+            onShot={setAimShot}
+            hold={hold}
+          />
+        </WebShell>
         <DeviceMenu
           visible={menu.open}
           onClose={menu.hide}

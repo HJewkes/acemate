@@ -1,5 +1,5 @@
 // Checks a web export: assets carry the Pages base URL, no native-only module was bundled, and the bundle
-// renders the drive screen in happy-dom. Usage: node scripts/check-web-export.mjs <dist> <base-url>
+// renders the drive screen in happy-dom, framed beside the side panel on a laptop window and full-window on a phone. Usage: node scripts/check-web-export.mjs <dist> <base-url>
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { Window } from "happy-dom";
@@ -44,19 +44,43 @@ async function checkScreens(document) {
   if (!document.body.textContent.includes(CHOOSER)) throw new Error(`device menu lacks "${CHOOSER}"`);
 }
 
-async function renderDriveScreen(baseUrl, bundles) {
-  const window = new Window({ url: `https://example.test${baseUrl}/?probe=1`, width: 844, height: 390 });
+// happy-dom reports a fine pointer (no touch points), so the window size alone picks the shell.
+const KEYS_CHIP = "⌨ Keys";
+const PANEL = ["KEYBOARD", "GAMEPAD", "LIVE", "DEBUG LOG"];
+
+function checkShell(expected) {
+  return async (document) => {
+    const text = document.body.textContent ?? "";
+    const panel = PANEL.every((heading) => text.includes(heading));
+    const chip = text.includes(KEYS_CHIP);
+    if (expected === "framed" && !panel) throw new Error("the laptop frame did not render its side panel");
+    if (expected === "framed" && chip) throw new Error("the laptop frame still shows the Keys chip");
+    if (expected === "phone" && text.includes("LIVE")) throw new Error("the phone layout rendered the side panel");
+    if (expected === "phone" && !chip) throw new Error("the phone layout lost its Keys chip");
+  };
+}
+
+async function render(baseUrl, bundles, { query = "", width, height }, check) {
+  const window = new Window({ url: `https://example.test${baseUrl}/${query}`, width, height });
+  // happy-dom does no layout (documentElement.clientWidth is 0), so react-native-web reads the size from here.
+  window.visualViewport = { width, height, scale: 1, addEventListener: () => undefined };
   const errors = [];
   window.addEventListener("error", (event) => errors.push(event.error ?? event.message));
   window.document.body.innerHTML = '<div id="root"></div>';
   try {
     for (const file of bundles) window.eval(readFileSync(file, "utf8"));
     await settle();
-    await checkScreens(window.document);
+    await check(window.document);
     if (errors.length > 0) throw new Error(`bundle threw: ${errors.map(String).join("; ")}`);
   } finally {
     await window.happyDOM.close();
   }
+}
+
+async function renderScreens(baseUrl, bundles) {
+  await render(baseUrl, bundles, { query: "?probe=1", width: 844, height: 390 }, checkScreens);
+  await render(baseUrl, bundles, { width: 1440, height: 900 }, checkShell("framed"));
+  await render(baseUrl, bundles, { width: 390, height: 844 }, checkShell("phone"));
 }
 
 async function main([dist, baseUrl]) {
@@ -64,8 +88,10 @@ async function main([dist, baseUrl]) {
   const html = readFileSync(path.join(dist, "index.html"), "utf8");
   const bundles = checkAssets(dist, baseUrl, html);
   checkNativeOnly(bundles);
-  await renderDriveScreen(baseUrl, bundles);
-  console.log(`web export OK: ${bundles.length} bundle(s) under ${baseUrl}/, drive screen rendered`);
+  await renderScreens(baseUrl, bundles);
+  console.log(
+    `web export OK: ${bundles.length} bundle(s) under ${baseUrl}/, drive screen, laptop frame and phone rendered`,
+  );
 }
 
 main(process.argv.slice(2)).catch((error) => {

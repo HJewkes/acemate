@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { createHoldFire } from "@acemate/core";
 import { Controller } from "../src/control/controller";
-import { KeyboardInput, type AimStep, type InputTarget } from "../src/control/keyboard";
+import {
+  BOUND_KEYS,
+  HELPED_KEYS,
+  KEY_HELP,
+  KeyboardInput,
+  type AimStep,
+  type InputTarget,
+} from "../src/control/keyboard";
 import type { Horizontal } from "../src/control/sticks";
 import { createInputActions, nudgeAim } from "../src/control/web-input";
 import { APP_HOLD_MS } from "../src/launcher/use-hold-fire";
@@ -166,6 +173,7 @@ describe("space holds to fire", () => {
       updateAim: () => undefined,
       flipDirection: false,
       stopRobot: () => undefined,
+      closeLink: () => undefined,
     });
     const keys = new KeyboardInput(actions);
     const wait = (ms: number) => {
@@ -229,5 +237,21 @@ describe("space holds to fire", () => {
     wait(APP_HOLD_MS);
 
     expect(fired()).toBe(0);
+  });
+});
+
+describe("keyboard help", () => {
+  it("covers every bound key exactly once and no unbound key", () => {
+    expect([...HELPED_KEYS].sort()).toEqual([...BOUND_KEYS].sort());
+  });
+
+  it("lists only keys the keyboard actually handles", () => {
+    const { keys } = drivenBy("strafe");
+
+    expect(BOUND_KEYS.filter((code) => !keys.down(code, false))).toEqual([]);
+  });
+
+  it("prints key names rather than event codes", () => {
+    expect(KEY_HELP.map((row) => row.keys)).toEqual(["W S", "A D", "Q E", "← →", "↑ ↓", "Space", "Esc"]);
   });
 });
