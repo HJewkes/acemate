@@ -49,6 +49,8 @@ Open https://hjewkes.github.io/acemate/next/ in Chrome. Tap the device chip, the
 
 Open https://hjewkes.github.io/acemate/next/ in Chrome or Edge on macOS, Windows, Linux or ChromeOS, and connect the same way.
 
+To try the controller without a robot, open https://hjewkes.github.io/acemate/next/?mock=1 in any browser. **Choose robot…** then connects to a pretend robot, `ACEMATE-MOCK0`, which answers like an S10 and runs launches without firing anything.
+
 ### iPhone (Bluefy browser)
 
 Safari and Chrome on iOS have no Web Bluetooth. Install the free Bluefy browser from the App Store, open https://hjewkes.github.io/acemate/next/ in it, and connect as above.
@@ -63,7 +65,7 @@ Safari and Chrome on iOS have no Web Bluetooth. Install the free Bluefy browser 
 
 ![Hold to fire, part-way through the hold](assets/hold-to-fire.png)
 
-_Captured from the web build with a stand-in robot: `npm run export:web && npm run screenshots` in `apps/controller`._
+_Captured from the web build in mock mode: `npm run export:web && npm run screenshots` in `apps/controller`._
 
 ## Screen tour
 

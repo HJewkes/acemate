@@ -1,4 +1,5 @@
 import type * as Native from "./ble-channel";
+import { mockRequested, openMockRobot } from "./mock-channel";
 import { NO_WEB_BLUETOOTH, bluetoothOf, openChannel, requestRobot } from "./web-bluetooth";
 
 // Metro picks this file for the web build, so react-native-ble-plx never reaches the browser bundle.
@@ -6,8 +7,11 @@ import { NO_WEB_BLUETOOTH, bluetoothOf, openChannel, requestRobot } from "./web-
 // requestDevice needs a tap, so the web never connects on its own; the device menu offers "Reconnect <name>".
 export const AUTO_CONNECT: typeof Native.AUTO_CONNECT = false;
 
+export const MOCK_MODE = typeof location !== "undefined" && mockRequested(location.search);
+
 /** Opens the chooser at once, keeping the tap's user gesture: every robot, or only the saved one when reconnecting. */
 export const openRobot: typeof Native.openRobot = (prefer, onFound) => {
+  if (MOCK_MODE) return Promise.resolve(openMockRobot()).then((robot) => (onFound(), robot));
   const bluetooth = typeof navigator === "undefined" ? null : bluetoothOf(navigator);
   if (!bluetooth) return Promise.reject(new Error(NO_WEB_BLUETOOTH));
   return requestRobot(bluetooth, prefer?.name).then(async (device) => {

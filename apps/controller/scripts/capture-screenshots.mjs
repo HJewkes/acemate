@@ -1,4 +1,4 @@
-// Captures the README screenshots from a web export, with a stubbed navigator.bluetooth standing in for the robot.
+// Captures the README screenshots from a web export in mock mode (?mock=1), so no robot is needed.
 // Usage: node scripts/capture-screenshots.mjs <dist dir> <output dir>
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
@@ -28,58 +28,14 @@ function serve(root) {
   return new Promise((done) => server.listen(0, "127.0.0.1", () => done(server)));
 }
 
-// Runs in the page: the NUS characteristic of a pretend S10 that answers like apps/web/src/mock-link.ts.
-function installFakeLink() {
-  const carState = { car_loc_status: 0, time_is_set: false, mode: "rally", running: false, bat: 76 };
-  const replies = {
-    ask_init_data: () => ({ type: "rsp_init_data", data: { robot_id: "MOCK", rk_software_version: "mock" } }),
-    ask_heartbeat: () => ({ type: "rsp_heartbeat", data: { car_state: { ...carState } } }),
-    set_time: () => ((carState.time_is_set = true), { type: "rsp_set_time", data: { result: "ok" } }),
-    set_mode: (request) => ({ type: "rsp_set_mode", data: { mode: request.data?.mode, result: "ok" } }),
-  };
-  const link = new EventTarget();
-  link.value = null;
-  const emit = (message) => {
-    const bytes = new TextEncoder().encode(`${JSON.stringify(message)}\r\n`);
-    link.value = new DataView(bytes.buffer);
-    link.dispatchEvent(new Event("characteristicvaluechanged"));
-  };
-  const write = async (data) => {
-    for (const line of new TextDecoder().decode(data).split(/\r?\n/).filter(Boolean)) {
-      const request = JSON.parse(line);
-      const reply = replies[request.type]?.(request);
-      if (reply) setTimeout(() => emit(reply), 30);
-    }
-  };
-  link.writeValueWithResponse = write;
-  link.writeValueWithoutResponse = write;
-  link.startNotifications = async () => link;
-  globalThis.fakeRobotLink = link;
-}
-
-// Runs in the page after installFakeLink: a navigator.bluetooth whose chooser always picks the pretend S10.
-function installFakeBluetooth() {
-  const link = globalThis.fakeRobotLink;
-  const device = new EventTarget();
-  const server = {
-    connect: async () => server,
-    disconnect: () => device.dispatchEvent(new Event("gattserverdisconnected")),
-    getPrimaryService: async () => ({ getCharacteristic: async () => link }),
-  };
-  Object.assign(device, { id: "mock-s10", name: "ACEMATE-S10", gatt: server });
-  Object.defineProperty(navigator, "bluetooth", { value: { requestDevice: async () => device } });
-}
-
 async function openApp(browser, url, theme) {
   const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
-  await context.addInitScript(installFakeLink);
-  await context.addInitScript(installFakeBluetooth);
   await context.addInitScript(
     ([key, value]) => localStorage.setItem(key, value),
     [SETTINGS_KEY, JSON.stringify({ theme })],
   );
   const page = await context.newPage();
-  await page.goto(url);
+  await page.goto(`${url}?mock=1`);
   await page.getByLabel("Open device menu").click();
   await page.getByText("Choose robot…").click();
   await page.getByText("Disconnect").waitFor();
@@ -92,7 +48,10 @@ async function closeMenu(page) {
 }
 
 async function capture(browser, url, out) {
-  const shot = (page, name) => page.screenshot({ path: join(out, `${name}.png`) });
+  const shot = async (page, name) => {
+    await page.waitForFunction(() => document.getAnimations().length === 0);
+    await page.screenshot({ path: join(out, `${name}.png`) });
+  };
   for (const theme of ["dark", "light"]) {
     const page = await openApp(browser, url, theme);
     if (theme === "dark") await shot(page, "device-menu");
