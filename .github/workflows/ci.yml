@@ -13,6 +13,21 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      # Type-aware rules resolve each package's own dependencies.
+      - run: |
+          for dir in tools/drive-probe tools/web-drive apps/web apps/controller; do
+            npm ci --prefix "$dir"
+          done
+      - run: npm run lint
+
   drive-probe:
     runs-on: ubuntu-latest
     defaults:
@@ -72,7 +87,7 @@ jobs:
 
   check:
     if: always()
-    needs: [drive-probe, web-drive, web, apps-controller]
+    needs: [lint, drive-probe, web-drive, web, apps-controller]
     runs-on: ubuntu-latest
     steps:
       - uses: HJewkes/ci/actions/all-green@v1
