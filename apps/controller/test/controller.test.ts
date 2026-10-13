@@ -90,4 +90,38 @@ describe("controller", () => {
     controller.setStick({ x: 0, y: -1 });
     expect(controller.read()).toEqual({ motion: "go_front", latched: false });
   });
+
+  it("sends one motion when the stick and a key push different ways", () => {
+    const controller = new Controller();
+    controller.setStick({ x: 0.4, y: 0 });
+    controller.setSource("keys", { forward: 1, side: 0, other: 0 });
+
+    expect(controller.read().motion).toBe("go_front");
+  });
+
+  it("stays latched after an emergency stop until every source is back to neutral", () => {
+    const controller = new Controller();
+    controller.setSource("keys", { forward: 1, side: 0, other: 0 });
+    controller.setSource("pad", { forward: 0, side: 1, other: 0 });
+    controller.emergencyStop();
+    controller.read();
+
+    controller.setSource("keys", { forward: 0, side: 0, other: 0 });
+    const padStillHeld = controller.read();
+    controller.setSource("pad", { forward: 0, side: 0, other: 0 });
+
+    expect(padStillHeld).toEqual({ motion: "stop", latched: true });
+    expect(controller.read()).toEqual({ motion: "stop", latched: false });
+  });
+
+  it("clears keys and pad as well as the stick when the device menu suspends it", () => {
+    const controller = new Controller();
+    controller.setSource("keys", { forward: 1, side: 0, other: 0 });
+    controller.setSource("pad", { forward: 1, side: 0, other: 0 });
+
+    controller.suspend(true);
+    controller.suspend(false);
+
+    expect(controller.read().motion).toBe("stop");
+  });
 });

@@ -95,24 +95,30 @@ The drive screen is landscape, with three parts:
 
 ### Keyboard
 
-Keyboard and gamepad control are arriving with the web keyboard update.
+On the web build only. Tap **⌨ Keys** under the device chip for a reminder. Keys do nothing while the device menu is open or while you are typing in a field.
 
-| Key      | Action                                          |
-| -------- | ----------------------------------------------- |
-| `W`, `S` | forward, back                                   |
-| `A`, `D` | left, right, following the Strafe / Turn switch |
-| `Q`, `E` | left, right, in the other mode                  |
-| Arrows   | aim                                             |
-| `Space`  | hold to fire                                    |
-| `Escape` | stop                                            |
+| Key      | Action                                                                    |
+| -------- | ------------------------------------------------------------------------- |
+| `W`, `S` | forward, back; release to stop                                            |
+| `A`, `D` | left, right, following the Strafe / Turn switch                           |
+| `Q`, `E` | left, right, in the other mode                                            |
+| `←`, `→` | aim direction, one step per press; hold to repeat                         |
+| `↑`, `↓` | aim elevation, one step per press; hold to repeat                         |
+| `Space`  | hold to fire, like the fire bar; release early to cancel                  |
+| `Escape` | stop: halts driving until every key and stick is released, and ends a run |
 
 ### Gamepad
 
-| Input       | Action |
-| ----------- | ------ |
-| Left stick  | drive  |
-| Right stick | aim    |
-| Trigger     | fire   |
+On the web build only, for pads with the standard layout.
+
+| Input         | Action                                    |
+| ------------- | ----------------------------------------- |
+| Left stick    | drive; sideways follows the switch        |
+| Right stick   | move the aim; push further to move faster |
+| Right trigger | hold to fire                              |
+| `B` / `○`     | stop, as `Escape`                         |
+
+Leaving the page (switching tab or window) lets go of every key, stick and fire hold. Hiding or closing the page also ends a run.
 
 ## Launching
 

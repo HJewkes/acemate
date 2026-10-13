@@ -1,6 +1,6 @@
 import { useCallback, useEffect, type Dispatch, type SetStateAction } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { fireLock } from "../../launcher/fire-lock";
+import { robotFireLock } from "../../launcher/fire-lock";
 import { launchNotice } from "../../launcher/notice";
 import { singleBall, type Shot } from "../../launcher/shot";
 import type { HoldFireView } from "../../launcher/use-hold-fire";
@@ -50,13 +50,7 @@ export function LauncherPanel({ robot, shot, onShot, hold, width }: Props) {
 
 function FireBar({ robot, hold }: Pick<Props, "robot" | "hold">) {
   const styles = useThemedStyles(createStyles);
-  const { launch } = robot;
-  const lock = fireLock({
-    connected: robot.status === "connected",
-    motion: robot.control.motion,
-    inFlight: launch.inFlight,
-    runActive: launch.runActive,
-  });
+  const lock = robotFireLock(robot);
   const locked = lock !== null;
   const { cancel } = hold;
   // A disabled Pressable may never see the finger lift, so drop any hold rather than leave it spent.

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState, type SetStateAction } from "
 import { AppState, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Controller } from "./src/control/controller";
+import { useKeysAndPad } from "./src/control/use-keys-and-pad";
 import { requestedProbe } from "./src/debug/probe-env";
 import type { Horizontal, Stick } from "./src/control/sticks";
 import { singleBall, type Shot } from "./src/launcher/shot";
@@ -49,6 +50,7 @@ export default function App() {
   });
   useLatchOnBackground(controller, hold.cancel);
   const menu = useDeviceMenu(controller, hold.cancel);
+  useKeysAndPad(controller, { robot, hold, setShot: setAimShot }, menu.open);
 
   useEffect(() => {
     void Haptics.selectionAsync();

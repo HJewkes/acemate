@@ -8,6 +8,7 @@ import { Thumbstick } from "../Thumbstick";
 import { useDriveLayout } from "../use-layout";
 import { Segmented } from "../launcher/inputs";
 import { useThemedStyles, type Palette } from "../theme";
+import { KeysHelp } from "./KeysHelp";
 import { LauncherPanel } from "./LauncherPanel";
 import { ConnectionChip, TopBar } from "./TopBar";
 
@@ -58,6 +59,7 @@ export function DriveScreen({
         <View style={styles.centre}>
           <Text style={styles.wordmark}>ACEMATE</Text>
           <ConnectionChip robot={robot} robotName={robotName} onOpenMenu={onOpenMenu} />
+          <KeysHelp />
         </View>
         <View style={{ transform: [{ translateX: -layout.nudgeX }] }}>
           <LauncherPanel robot={robot} shot={shot} onShot={onShot} hold={hold} width={layout.column} />

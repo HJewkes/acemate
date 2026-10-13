@@ -20,8 +20,25 @@ export function offsetToStick(dx: number, dy: number, radius: number): Stick {
 /** What the stick's horizontal axis does; vertical is always forward/back. */
 export type Horizontal = "strafe" | "turn";
 
-/** Up is forward; sideways feeds strafe or turn, so resolveMotion still picks the one motion to send. */
+/** Drive input in switch terms, each in [-1, 1]: side follows the Strafe/Turn switch and other is the mode it is not on. */
+export interface DriveAxes {
+  forward: number;
+  side: number;
+  other: number;
+}
+
+export const IDLE: DriveAxes = { forward: 0, side: 0, other: 0 };
+
+/** Feeds side and other to strafe or turn, so resolveMotion still picks the one motion to send. */
+export function axesToInput({ forward, side, other }: DriveAxes, horizontal: Horizontal): DriveInput {
+  return horizontal === "strafe" ? { x: side, y: forward, turn: other } : { x: other, y: forward, turn: side };
+}
+
+/** Up is forward; sideways follows the switch. */
+export function stickToAxes(stick: Stick): DriveAxes {
+  return { forward: 0 - stick.y, side: stick.x, other: 0 };
+}
+
 export function stickToInput(stick: Stick, horizontal: Horizontal): DriveInput {
-  const y = 0 - stick.y;
-  return horizontal === "strafe" ? { x: stick.x, y, turn: 0 } : { x: 0, y, turn: stick.x };
+  return axesToInput(stickToAxes(stick), horizontal);
 }
