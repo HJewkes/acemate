@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { openRobot } from "../src/robot/ble-channel.web";
+import { AUTO_CONNECT, openRobot } from "../src/robot/ble-channel.web";
 import { RobotSession, type RobotMessage } from "../src/robot/session";
 import {
   NUS,
@@ -138,6 +138,10 @@ describe("choosing a robot", () => {
     expect(onFound).toHaveBeenCalledTimes(1);
     expect(opened.id).toBe("dev-1");
     expect(opened.channel.name).toBe("ACEMATE-XXXXX");
+  });
+
+  it("never reconnects on its own: launching or returning to the page waits for a tap", () => {
+    expect(AUTO_CONNECT).toBe(false);
   });
 
   it("explains a browser without Web Bluetooth instead of throwing a TypeError", async () => {

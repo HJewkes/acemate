@@ -19,6 +19,8 @@ export interface InputDeps {
   flipDirection: boolean;
   /** Writes stop at once, then run_stop. */
   stopRobot(): void;
+  /** Stops and drops the link, as native does on going to the background; reconnecting then needs a tap. */
+  closeLink(): void;
 }
 
 /** Steps the aim on the pad's axes and clamps it to the ranges; right honours the direction flip like the pad does. */
@@ -48,10 +50,13 @@ export function createInputActions(deps: InputDeps): InputActions {
       latch();
       deps.stopRobot();
     },
-    // Blur keeps the link and any run; hidden and pagehide stop the run too, since the page may never come back.
+    // Blur keeps the link and any run. Hidden and pagehide stop the run and drop the link, since the page may never
+    // come back: a reload or a closed tab must not leave a run going.
     leave: (reason) => {
       latch();
-      if (reason !== "blur") deps.stopRobot();
+      if (reason === "blur") return;
+      deps.stopRobot();
+      deps.closeLink();
     },
   };
 }
