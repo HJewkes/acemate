@@ -18,8 +18,8 @@ Before connecting from any system, power on the robot and force-quit the stock A
 
 There are two web versions:
 
-- https://hjewkes.github.io/acemate/ is the classic web app.
-- https://hjewkes.github.io/acemate/next/ is the new app, the same one that runs natively on iPhone. It does not drive the robot over Web Bluetooth yet, so use the classic app in a browser for now.
+- https://hjewkes.github.io/acemate/next/ is the new app, the same one that runs natively on iPhone. This guide describes it.
+- https://hjewkes.github.io/acemate/ is the classic web app, which stays up while the new one settles. It has its own **Connect** button and a `?mock=1` pretend robot for trying it at a desk.
 
 Web Bluetooth needs HTTPS (or `localhost`). Safari and Firefox do not support it.
 
@@ -43,15 +43,15 @@ The native app is built from source with Expo. You need a Mac with Xcode, Node 2
 
 ### Android (Chrome)
 
-Open https://hjewkes.github.io/acemate/ in Chrome, tap **Connect** and pick the `ACEMATE-XXXXX` device. Allow Bluetooth and Nearby devices if Android asks.
+Open https://hjewkes.github.io/acemate/next/ in Chrome. Tap the device chip, then **Choose robot…**, and pick the `ACEMATE-XXXXX` device in the browser's chooser. Allow Bluetooth and Nearby devices if Android asks.
 
 ### Desktop (Chrome or Edge)
 
-Open https://hjewkes.github.io/acemate/ in Chrome or Edge on macOS, Windows, Linux or ChromeOS, click **Connect** and pick the robot. Add `?mock=1` to the address to try the whole page with a pretend robot.
+Open https://hjewkes.github.io/acemate/next/ in Chrome or Edge on macOS, Windows, Linux or ChromeOS, and connect the same way.
 
 ### iPhone (Bluefy browser)
 
-Safari and Chrome on iOS have no Web Bluetooth. Install the free Bluefy browser from the App Store, open https://hjewkes.github.io/acemate/ in it, and connect as above.
+Safari and Chrome on iOS have no Web Bluetooth. Install the free Bluefy browser from the App Store, open https://hjewkes.github.io/acemate/next/ in it, and connect as above.
 
 ## Screenshots
 
@@ -131,7 +131,9 @@ Driving is held at stop during a run unless you turn on **Allow driving during r
 
 The app remembers your Strafe / Turn choice, your last shot, the theme, the driving-during-runs option and the last robot you connected to.
 
-When it opens, and when you return to it, the app reconnects to that robot by itself. If you tap Disconnect, it stays disconnected until you connect from the device menu or open the app again.
+The iPhone app reconnects to that robot by itself when it opens and when you return to it. If you tap Disconnect, it stays disconnected until you connect from the device menu or open the app again.
+
+In a browser, the app never connects by itself, because the browser's chooser needs a tap. After a reload, the device menu offers **Reconnect <name>**, which opens the chooser for the saved robot only. Hiding the tab stops the robot and drops the link.
 
 ## Troubleshooting
 
