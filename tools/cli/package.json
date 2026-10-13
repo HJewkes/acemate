@@ -1,0 +1,23 @@
+{
+  "name": "@acemate/cli",
+  "private": true,
+  "description": "Laptop CLI for the Acemate S10 over BLE: scan, listen, drive, pulse, send and launch.",
+  "type": "module",
+  "bin": {
+    "acemate": "bin/acemate.js"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@acemate/core": "*",
+    "@stoprocent/noble": "2.8.0",
+    "tsx": "^4.23.15"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0"
+  }
+}

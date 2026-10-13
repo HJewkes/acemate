@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { parseLaunchArgs, runLaunch, type LaunchDeps } from "../src/launch-session.js";
+import { parseLaunchArgs, runLaunch, type LaunchDeps } from "../src/launch.js";
 import type { Link } from "../src/link.js";
 import type { Request } from "@acemate/core";
 
