@@ -26,6 +26,17 @@ jobs:
         working-directory: apps/web
       - run: npm run build
         working-directory: apps/web
+      # Preview of the Expo web build under /acemate/next/; the classic app stays at the site root.
+      - run: npm ci
+        working-directory: apps/controller
+      - run: npm run export:web && npm run check:web
+        working-directory: apps/controller
+        env:
+          EXPO_BASE_URL: /acemate/next
+      # Expo's generated folders start with an underscore, which Jekyll would drop.
+      - run: |
+          cp -R apps/controller/dist apps/web/dist/next
+          touch apps/web/dist/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/web/dist

@@ -25,6 +25,18 @@ You need a Mac with Xcode, an iPhone and a cable for the first install. This is 
 5. The first launch asks for Bluetooth permission; allow it.
 6. Later, with the app installed, run Metro with `npm start`. The dev client reloads on save.
 
+## Web build (preview)
+
+The same app builds for the browser with react-native-web. Pages serves it at `/acemate/next/`; the classic `apps/web` controller stays at `/acemate/`. It does not drive the robot yet: `src/robot/ble-channel.web.ts` stands in for the BLE channel, so react-native-ble-plx never reaches the web bundle, and the device menu says "Web Bluetooth link coming next".
+
+```sh
+npm run web                                       # dev server at the root
+EXPO_BASE_URL=/acemate/next npm run export:web    # static export to dist/
+EXPO_BASE_URL=/acemate/next npm run check:web     # asset prefixes, no ble-plx, renders in happy-dom
+```
+
+`EXPO_BASE_URL` sets `experiments.baseUrl` in `app.config.ts`; native builds never set it.
+
 ## Driving
 
 1. Force-quit the stock Acemate app on every phone nearby. The robot takes one BLE connection.

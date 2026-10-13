@@ -86,9 +86,25 @@ jobs:
       - run: npm run typecheck
       - run: npm test
 
+  apps-controller-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/controller
+    env:
+      EXPO_BASE_URL: /acemate/next
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npm run export:web
+      - run: npm run check:web
+
   check:
     if: always()
-    needs: [lint, drive-probe, web-drive, web, apps-controller]
+    needs: [lint, drive-probe, web-drive, web, apps-controller, apps-controller-web]
     runs-on: ubuntu-latest
     steps:
       - uses: HJewkes/ci/actions/all-green@v1
