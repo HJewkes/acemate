@@ -1,4 +1,4 @@
-import { MAX_TOTAL_BALLS, S10_LIMITS } from "../../../../tools/drive-probe/src/launch.js";
+import { MAX_TOTAL_BALLS, S10_LIMITS } from "../protocol/launch";
 
 export interface Span {
   min: number;

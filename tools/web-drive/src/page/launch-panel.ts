@@ -1,4 +1,4 @@
-import type { LaunchMessage } from "../launcher.js";
+import type { LaunchMessage } from "@acemate/core";
 
 type Send = (message: LaunchMessage) => void;
 

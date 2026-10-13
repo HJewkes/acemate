@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    // DOM only for the Storage type that loadAssumptions and saveAssumptions accept.
+    "lib": ["ES2023", "DOM"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    // "node" for the Buffer that encodeLine and chunk return; the Expo app polyfills it.
+    "types": ["node"]
+  },
+  "include": ["src", "test"]
+}

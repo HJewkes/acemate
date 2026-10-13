@@ -1,4 +1,4 @@
-import type { DriveInput } from "../shared";
+import type { DriveInput } from "@acemate/core";
 
 /** A stick deflection in screen terms: x right, y down, each in [-1, 1] and inside the unit circle. */
 export interface Stick {

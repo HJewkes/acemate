@@ -5,7 +5,7 @@ import { launchNotice } from "../../launcher/notice";
 import { singleBall, type Shot } from "../../launcher/shot";
 import type { HoldFireView } from "../../launcher/use-hold-fire";
 import type { RobotView } from "../../robot/use-robot";
-import { DEFAULT_ASSUMPTIONS, SPANS, describeShot, type Aim } from "../../shared";
+import { DEFAULT_ASSUMPTIONS, SPANS, describeShot, type Aim } from "@acemate/core";
 import { AimPad } from "../launcher/AimPad";
 import { SpinSegmented, HorizontalSlider } from "../launcher/inputs";
 import { useThemedStyles, type Palette } from "../theme";

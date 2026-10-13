@@ -9,7 +9,7 @@ import {
   type BleDevice,
   type BluetoothLike,
 } from "../src/robot/web-bluetooth";
-import { encodeLine, requests } from "../src/shared";
+import { encodeLine, requests } from "@acemate/core";
 import { flush } from "./harness";
 
 const END = "+==ACE==+";

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { parseLaunchArgs, runLaunch, type LaunchDeps } from "../src/launch-session.js";
 import type { Link } from "../src/link.js";
-import type { Request } from "../src/protocol.js";
+import type { Request } from "@acemate/core";
 
 const SINGLE = ["single", "--dir", "0", "--speed", "3", "--spin", "0", "--elev", "20"];
 const IDLE = { type: "rsp_heartbeat", data: { car_state: { running: false } } };

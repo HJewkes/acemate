@@ -1,4 +1,4 @@
-import type { Motion } from "./protocol.js";
+import type { Motion } from "@acemate/core";
 
 export type KeyAction = { kind: "motion"; motion: Motion } | { kind: "quit" } | { kind: "ignore" };
 

@@ -1,5 +1,5 @@
 import noble, { type Characteristic, type Peripheral } from "@stoprocent/noble";
-import { LineDecoder, NUS_NOTIFY, NUS_SERVICE, NUS_WRITE, chunk, encodeLine, type Request } from "./protocol.js";
+import { LineDecoder, NUS_NOTIFY, NUS_SERVICE, NUS_WRITE, chunk, encodeLine, type Request } from "@acemate/core";
 
 export interface Link {
   peripheral: Peripheral;

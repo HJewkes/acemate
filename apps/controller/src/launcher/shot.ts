@@ -1,4 +1,4 @@
-import type { FireMessage } from "../shared";
+import type { FireMessage } from "@acemate/core";
 
 /** The ball-machine fields both A (Controls) and C (Aim pad) edit; each layout keeps its own copy. */
 export interface Shot {

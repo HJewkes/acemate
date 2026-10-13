@@ -1,10 +1,6 @@
-import type { LaunchMessage } from "../../../../tools/web-drive/src/launcher.js";
-import type { Assumptions } from "./assumptions.js";
-import { directionLabel } from "./aim.js";
-import { spinLabel } from "./spin.js";
+import type { Assumptions, FireMessage } from "@acemate/core";
 
 export type VariantId = "a" | "b" | "c" | "d";
-export type FireMessage = Extract<LaunchMessage, { kind: "machine" | "machine-queue" | "target" }>;
 
 /** One way of specifying a shot. Each keeps its own state, so switching away and back loses nothing. */
 export interface LauncherVariant {
@@ -27,15 +23,4 @@ export function variantIdOf(value: string | null | undefined): VariantId | null 
 /** The URL wins over the stored choice, which wins over A. */
 export function initialVariant(urlValue: string | null, stored: string | null): VariantId {
   return variantIdOf(urlValue) ?? variantIdOf(stored) ?? "a";
-}
-
-/** One line for the Fire bar, in the same left/right words the variants use. */
-export function describeShot(message: FireMessage | null, flipDirection: boolean): string {
-  if (!message) return "nothing to fire";
-  if (message.kind === "target") {
-    return `target x ${message.x.toFixed(1)} m, z ${message.z.toFixed(1)} m · height ${message.heightLevel} · ${spinLabel(message.spin)}`;
-  }
-  if (message.kind === "machine-queue") return `${message.balls.length}-ball queue · every ${message.interval} s`;
-  const balls = message.count === 1 ? "1 ball" : `${message.count} balls every ${message.interval} s`;
-  return `${directionLabel(message.direction, flipDirection)} · elev ${message.elevation}° · speed ${message.speed} · ${spinLabel(message.spin)} · ${balls}`;
 }

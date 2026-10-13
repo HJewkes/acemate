@@ -1,6 +1,4 @@
-import { MAX_TOTAL_BALLS, type Ball } from "../../../../tools/drive-probe/src/launch.js";
-import { SPANS, snapTo, type Span } from "./ranges.js";
-import type { FireMessage } from "./variant.js";
+import { MAX_TOTAL_BALLS, type Ball, SPANS, snapTo, type Span, type FireMessage } from "@acemate/core";
 
 export type MachinePreset = { name: string; kind: "machine" } & Ball;
 export type TargetPreset = { name: string; kind: "target"; x: number; z: number; heightLevel: number; spin: number };

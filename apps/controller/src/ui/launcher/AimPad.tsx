@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { aimToPad, pixelToAim, type Aim } from "../../shared";
+import { aimToPad, pixelToAim, type Aim } from "@acemate/core";
 import { useThemedStyles, type Palette } from "../theme";
 
 interface Props {

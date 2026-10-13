@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { Request } from "../../drive-probe/src/protocol.js";
-import { LaunchController, parseLaunch, setModeFor, type LaunchMessage } from "../src/launcher.js";
+import type { Request } from "../src/protocol/protocol";
+import { LaunchController, parseLaunch, setModeFor, type LaunchMessage } from "../src/launch/launch-controller";
 
 const single: LaunchMessage = {
   kind: "machine",

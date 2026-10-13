@@ -1,5 +1,5 @@
-import { ballMachine, runRequests, singleShot, targetShot, type Ball } from "../../drive-probe/src/launch.js";
-import type { Request } from "../../drive-probe/src/protocol.js";
+import { ballMachine, runRequests, singleShot, targetShot, type Ball } from "../protocol/launch";
+import type { Request } from "../protocol/protocol";
 
 export type LaunchMessage =
   | {

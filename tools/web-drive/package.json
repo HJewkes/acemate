@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@acemate/core": "*",
     "@stoprocent/noble": "2.8.0",
     "esbuild": "^0.28.0",
     "ws": "^8.18.0"

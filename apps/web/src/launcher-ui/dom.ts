@@ -1,5 +1,4 @@
-import { SPANS, snapTo, stepBy, type Span } from "./ranges.js";
-import { SPIN_STYLES, spinStyle, spinValue, type SpinStyle } from "./spin.js";
+import { SPANS, snapTo, stepBy, type Span, SPIN_STYLES, spinStyle, spinValue, type SpinStyle } from "@acemate/core";
 
 type Attrs = Record<string, string | number | boolean | undefined>;
 

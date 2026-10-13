@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { applyStopLatch, gamepadToInput, keysToInput, pressKey, releaseKey } from "../src/input.js";
-import { resolveMotion } from "../src/motion.js";
+import { applyStopLatch, gamepadToInput, keysToInput, pressKey, releaseKey } from "../src/drive/input";
+import { resolveMotion } from "../src/drive/motion";
 
 const press = (...codes: string[]) => codes.reduce(pressKey, new Set<string>());
 const motionOf = (held: ReadonlySet<string>) => resolveMotion(keysToInput(held));

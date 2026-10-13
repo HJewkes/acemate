@@ -1,13 +1,15 @@
 {
   "name": "acemate",
   "private": true,
-  "description": "Dev tooling only: lint and format for every package in this repo.",
+  "description": "npm workspaces root: lint, format, typecheck and test for every package in this repo.",
   "type": "module",
   "scripts": {
     "lint": "eslint .",
     "lint:baseline": "eslint . --suppress-all",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm test --workspaces --if-present"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
@@ -21,5 +23,10 @@
   },
   "engines": {
     "node": ">=24"
-  }
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "tools/*"
+  ]
 }

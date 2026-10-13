@@ -1,5 +1,5 @@
 // Launcher payloads from app 2.2.0 (ui/drills/DrillSetModeHelper.java); see capabilities-survey.md §1.
-import type { Request } from "./protocol.js";
+import type { Request } from "./protocol";
 
 export class LaunchValidationError extends Error {}
 

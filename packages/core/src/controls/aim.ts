@@ -1,5 +1,5 @@
-import { flipped } from "./assumptions.js";
-import { SPANS, clamp, snapTo } from "./ranges.js";
+import { flipped } from "./assumptions";
+import { SPANS, clamp, snapTo } from "./ranges";
 
 export interface Aim {
   direction: number;

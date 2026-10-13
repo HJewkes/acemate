@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { SPIN_STYLES, clamp, snapTo, spinStyle, spinValue, type Span, type SpinStyle } from "../../shared";
+import { SPIN_STYLES, clamp, snapTo, spinStyle, spinValue, type Span, type SpinStyle } from "@acemate/core";
 import { useThemedStyles, type Palette } from "../theme";
 
 interface SegmentedProps<T extends string> {

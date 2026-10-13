@@ -1,4 +1,4 @@
-import type { Motion } from "../shared";
+import type { Motion } from "@acemate/core";
 
 export interface FireConditions {
   connected: boolean;

@@ -1,8 +1,16 @@
-import { aimToPad, directionLabel, pixelToAim, type Aim } from "./aim.js";
-import { flipped, type Assumptions } from "./assumptions.js";
+import {
+  aimToPad,
+  directionLabel,
+  pixelToAim,
+  type Aim,
+  flipped,
+  type Assumptions,
+  SPANS,
+  stepBy,
+  type FireMessage,
+} from "@acemate/core";
 import { h, s, slider, spinControl } from "./dom.js";
-import { SPANS, stepBy } from "./ranges.js";
-import type { FireMessage, LauncherVariant } from "./variant.js";
+import { type LauncherVariant } from "./variant.js";
 
 const TICK_EVERY = 5;
 const PAD = 100; // The pad's SVG is 100 × 100 user units, stretched to the square.

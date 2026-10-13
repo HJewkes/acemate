@@ -1,5 +1,5 @@
 import { NO_RUN, runStartMs, type RunInfo } from "../launcher/run-chip";
-import { LaunchController, type LaunchMessage, type Request } from "../shared";
+import { LaunchController, type LaunchMessage, type Request } from "@acemate/core";
 
 export type CarState = { running?: boolean; bat?: number | null; time_is_set?: boolean } & Record<string, unknown>;
 

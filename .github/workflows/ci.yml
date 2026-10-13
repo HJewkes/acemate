@@ -22,18 +22,14 @@ jobs:
           node-version: 24
       - run: npm ci
       - run: npm run format:check
-      # Type-aware rules resolve each package's own dependencies.
-      - run: |
-          for dir in tools/drive-probe tools/web-drive apps/web apps/controller; do
-            npm ci --prefix "$dir"
-          done
       - run: npm run lint
 
-  drive-probe:
+  workspace:
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: [packages/core, tools/drive-probe, tools/web-drive, apps/web, apps/controller]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: tools/drive-probe
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,56 +37,15 @@ jobs:
           node-version: 24
       - run: npm ci
       - run: npm run typecheck
+        working-directory: ${{ matrix.workspace }}
       - run: npm test
-
-  web-drive:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: tools/web-drive
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
-
-  web:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
+        working-directory: ${{ matrix.workspace }}
+      - if: matrix.workspace == 'apps/web'
+        run: npm run build
         working-directory: apps/web
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
-
-  apps-controller:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/controller
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
 
   apps-controller-web:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/controller
     env:
       EXPO_BASE_URL: /acemate/next
     steps:
@@ -100,11 +55,13 @@ jobs:
           node-version: 24
       - run: npm ci
       - run: npm run export:web
+        working-directory: apps/controller
       - run: npm run check:web
+        working-directory: apps/controller
 
   check:
     if: always()
-    needs: [lint, drive-probe, web-drive, web, apps-controller, apps-controller-web]
+    needs: [lint, workspace, apps-controller-web]
     runs-on: ubuntu-latest
     steps:
       - uses: HJewkes/ci/actions/all-green@v1

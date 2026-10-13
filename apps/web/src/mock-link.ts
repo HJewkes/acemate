@@ -1,4 +1,4 @@
-import type { Request } from "../../../tools/drive-probe/src/protocol.js";
+import type { Request } from "@acemate/core";
 import type { Link } from "./link.js";
 
 const REPLY_DELAY_MS = 30;

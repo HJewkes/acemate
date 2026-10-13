@@ -31,8 +31,8 @@ The native app is built from source with Expo. You need a Mac with Xcode, Node 2
 2. Build and install:
 
    ```sh
-   cd apps/controller
    npm ci
+   cd apps/controller
    npx expo prebuild --platform ios --clean
    npx expo run:ios --device
    ```
@@ -146,8 +146,8 @@ In a browser, the app never connects by itself, because the browser's chooser ne
 ## For developers
 
 - Use Node 24. Node 25 breaks the happy-dom tests.
-- There is no root workspace. Run `npm ci` at the root for lint and format, and inside each package you work on.
-- Tests per package, in `apps/controller`, `apps/web`, `tools/drive-probe` and `tools/web-drive`: `npm test` and `npm run typecheck`.
+- The root is an npm workspace with one lockfile: run `npm ci` once at the root. `packages/core` (`@acemate/core`) holds the shared protocol, drive and launcher logic, consumed as TypeScript source by `apps/controller`, `apps/web`, `tools/drive-probe` and `tools/web-drive`.
+- Tests per package: `npm test` and `npm run typecheck` inside it, or both across every workspace from the root.
 - From the root: `npm run lint` and `npm run format:check`.
 - CI must be green before merge. Work on a feature branch and open a pull request; do not push to `main`.
 

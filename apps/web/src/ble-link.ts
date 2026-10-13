@@ -1,11 +1,4 @@
-import {
-  LineDecoder,
-  NUS_NOTIFY,
-  NUS_SERVICE,
-  NUS_WRITE,
-  lineText,
-  type Request,
-} from "../../../tools/drive-probe/src/protocol.js";
+import { LineDecoder, NUS_NOTIFY, NUS_SERVICE, NUS_WRITE, lineText, type Request } from "@acemate/core";
 import { writeModeFor, type Link } from "./link.js";
 
 // The slice of Web Bluetooth this uses, so tests can pass a fake navigator.bluetooth.

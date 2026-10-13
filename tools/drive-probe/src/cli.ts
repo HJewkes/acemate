@@ -3,7 +3,7 @@ import { parseArgs } from "node:util";
 import { DEFAULT_HOLD, initialHold, press, tick, type HoldConfig, type HoldState } from "./hold.js";
 import { KEY_HELP, keyAction } from "./keys.js";
 import { connect, findFirst, scan, type Link } from "./link.js";
-import { MOTIONS, parseMessage, requests, type Motion, type Request } from "./protocol.js";
+import { MOTIONS, parseMessage, requests, type Motion, type Request } from "@acemate/core";
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,

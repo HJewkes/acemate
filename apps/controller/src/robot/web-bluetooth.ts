@@ -1,4 +1,4 @@
-import { NUS_NOTIFY, NUS_SERVICE, NUS_WRITE } from "../shared";
+import { NUS_NOTIFY, NUS_SERVICE, NUS_WRITE } from "@acemate/core";
 import type { ByteChannel } from "./channel";
 import { dashedUuid } from "./uuid";
 

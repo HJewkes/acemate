@@ -1,4 +1,4 @@
-import type { Motion } from "./motion.js";
+import type { Motion } from "./motion";
 
 export interface DriveLoopConfig {
   /** Resend the held motion this often; the robot accepts 50 ms without-response writes. */

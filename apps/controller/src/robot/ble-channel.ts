@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 import { BleManager, State, type Device } from "react-native-ble-plx";
-import { NUS_NOTIFY, NUS_SERVICE, NUS_WRITE } from "../shared";
+import { NUS_NOTIFY, NUS_SERVICE, NUS_WRITE } from "@acemate/core";
 import type { SavedRobot } from "../storage/settings";
 import type { ByteChannel, OpenedRobot } from "./channel";
 import type { SeenRobot } from "./device-list";

@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@acemate/core": "*",
     "@stoprocent/noble": "2.8.0"
   },
   "devDependencies": {

@@ -1,5 +1,4 @@
-import { directionLabel } from "./aim.js";
-import type { Assumptions } from "./assumptions.js";
+import { directionLabel, type Assumptions, SPANS, spinLabel, type FireMessage } from "@acemate/core";
 import { h, segmented, slider } from "./dom.js";
 import {
   DEFAULT_PRESETS,
@@ -10,9 +9,7 @@ import {
   queueRefusal,
   type Preset,
 } from "./presets.js";
-import { SPANS } from "./ranges.js";
-import { spinLabel } from "./spin.js";
-import type { FireMessage, LauncherVariant } from "./variant.js";
+import { type LauncherVariant } from "./variant.js";
 
 const STORAGE_KEY = "acemate.launcher.presets";
 type Mode = "single" | "queue";
