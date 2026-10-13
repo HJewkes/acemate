@@ -72,7 +72,12 @@ function parseBall(spec: string): Ball {
 function buildSetMode(command: string | undefined, values: ArgValues): Request {
   const trainId = values["train-id"];
   if (command === "single") {
-    const ball = { direction: required(values, "dir"), speed: required(values, "speed"), spin: required(values, "spin"), elevation: required(values, "elev") };
+    const ball = {
+      direction: required(values, "dir"),
+      speed: required(values, "speed"),
+      spin: required(values, "spin"),
+      elevation: required(values, "elev"),
+    };
     return singleShot(ball, trainId);
   }
   if (command === "sequence") {
@@ -81,7 +86,13 @@ function buildSetMode(command: string | undefined, values: ArgValues): Request {
     return ballMachine({ balls, totalBalls, interval: Number(values.interval), trainId });
   }
   if (command === "target") {
-    return targetShot({ x: required(values, "x"), z: required(values, "z"), heightLevel: required(values, "height-level"), spin: required(values, "spin"), trainId });
+    return targetShot({
+      x: required(values, "x"),
+      z: required(values, "z"),
+      heightLevel: required(values, "height-level"),
+      spin: required(values, "spin"),
+      trainId,
+    });
   }
   throw new LaunchValidationError(`unknown command "${command ?? ""}"`);
 }

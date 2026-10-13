@@ -41,7 +41,12 @@ export function setModeFor(message: Extract<LaunchMessage, { kind: "machine" | "
   }
   const ball = { direction: message.direction, speed: message.speed, spin: message.spin, elevation: message.elevation };
   if (message.count === 1) return singleShot(ball, message.trainId);
-  return ballMachine({ balls: [ball], totalBalls: message.count, interval: message.interval, trainId: message.trainId });
+  return ballMachine({
+    balls: [ball],
+    totalBalls: message.count,
+    interval: message.interval,
+    trainId: message.trainId,
+  });
 }
 
 export interface LaunchDeps {
@@ -90,7 +95,8 @@ export class LaunchController {
     if (!this.active) return;
     if (running) this.sawRunning = true;
     else if (this.sawRunning) this.finish("Run finished (heartbeat running:false)");
-    else if (now - this.startedAt >= START_TIMEOUT_MS) this.finish("Robot did not start the run (running stayed false); cleared.");
+    else if (now - this.startedAt >= START_TIMEOUT_MS)
+      this.finish("Robot did not start the run (running stayed false); cleared.");
   }
 
   private async fire(message: Extract<LaunchMessage, { kind: "machine" | "machine-queue" | "target" }>): Promise<void> {

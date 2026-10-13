@@ -37,7 +37,13 @@ function parseShot(value: unknown): Shot {
   const shot = value as Partial<Record<keyof Shot, unknown>> | null;
   if (!shot || typeof shot !== "object") return DEFAULT_SHOT;
   const pick = (key: keyof Shot) => (isNumber(shot[key]) ? (shot[key] as number) : DEFAULT_SHOT[key]);
-  return { ...DEFAULT_SHOT, direction: pick("direction"), elevation: pick("elevation"), speed: pick("speed"), spin: pick("spin") };
+  return {
+    ...DEFAULT_SHOT,
+    direction: pick("direction"),
+    elevation: pick("elevation"),
+    speed: pick("speed"),
+    spin: pick("spin"),
+  };
 }
 
 function parseRobot(value: unknown): SavedRobot | null {

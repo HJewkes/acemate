@@ -2,15 +2,15 @@
 
 ## Artifact
 
-| Field | Value |
-| --- | --- |
-| Package | `com.pku.acematetennis` |
-| Version | 2.2.0 (code 158), minSdk 24, targetSdk 36 |
-| Source | APKPure via `apkeep` 1.1.0, 2026-10-11 (Google Play needs credentials) |
-| XAPK sha256 | `796c1714b5551edb860a3fc7cc2bb840b30a129d49dc391089ea996d2634b6a6` |
-| Contents | base APK + `config.arm64_v8a`, `config.en`, `config.mdpi` splits |
+| Field        | Value                                                                           |
+| ------------ | ------------------------------------------------------------------------------- |
+| Package      | `com.pku.acematetennis`                                                         |
+| Version      | 2.2.0 (code 158), minSdk 24, targetSdk 36                                       |
+| Source       | APKPure via `apkeep` 1.1.0, 2026-10-11 (Google Play needs credentials)          |
+| XAPK sha256  | `796c1714b5551edb860a3fc7cc2bb840b30a129d49dc391089ea996d2634b6a6`              |
+| Contents     | base APK + `config.arm64_v8a`, `config.en`, `config.mdpi` splits                |
 | Split signer | `CN=Android, O=Google Inc.`, SHA-256 `06:E7:EA:36:...:ED:D4` (Play App Signing) |
-| Base signer | not read: no v1 signature; check the v2/v3 block with `apksigner` |
+| Base signer  | not read: no v1 signature; check the v2/v3 block with `apksigner`               |
 
 APKPure has served tampered apps before. We only read this artifact statically; never install it.
 Before trusting byte-level details, compare against an APK pulled from the owner's phone with `adb`.

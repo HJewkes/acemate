@@ -14,14 +14,44 @@ export function controlsVariant(): LauncherVariant {
       if (key === "count") interval.el.classList.toggle("muted", value === 1);
       onChange();
     };
-    const interval = slider({ id: "l-interval", label: "Interval", span: SPANS.interval, value: shot.interval, format: (v) => `${v.toFixed(1)} s`, onInput: setter("interval") });
+    const interval = slider({
+      id: "l-interval",
+      label: "Interval",
+      span: SPANS.interval,
+      value: shot.interval,
+      format: (v) => `${v.toFixed(1)} s`,
+      onInput: setter("interval"),
+    });
     interval.el.classList.toggle("muted", shot.count === 1);
     el.replaceChildren(
-      h("div", { class: "controls-grid" },
-        slider({ id: "l-dir", label: "Direction", span: SPANS.direction, value: shot.direction, reversed: assumptions.flipDirection,
-          format: (v) => directionLabel(v, assumptions.flipDirection), onInput: setter("direction") }).el,
-        slider({ id: "l-elev", label: "Elevation", span: SPANS.elevation, value: shot.elevation, format: (v) => `${v}°`, onInput: setter("elevation") }).el,
-        slider({ id: "l-speed", label: "Speed", span: SPANS.speed, value: shot.speed, format: (v) => `${v} / 10`, onInput: setter("speed") }).el,
+      h(
+        "div",
+        { class: "controls-grid" },
+        slider({
+          id: "l-dir",
+          label: "Direction",
+          span: SPANS.direction,
+          value: shot.direction,
+          reversed: assumptions.flipDirection,
+          format: (v) => directionLabel(v, assumptions.flipDirection),
+          onInput: setter("direction"),
+        }).el,
+        slider({
+          id: "l-elev",
+          label: "Elevation",
+          span: SPANS.elevation,
+          value: shot.elevation,
+          format: (v) => `${v}°`,
+          onInput: setter("elevation"),
+        }).el,
+        slider({
+          id: "l-speed",
+          label: "Speed",
+          span: SPANS.speed,
+          value: shot.speed,
+          format: (v) => `${v} / 10`,
+          onInput: setter("speed"),
+        }).el,
         spinControl(shot.spin, setter("spin")),
         slider({ id: "l-count", label: "Balls", span: SPANS.count, value: shot.count, onInput: setter("count") }).el,
         interval.el,

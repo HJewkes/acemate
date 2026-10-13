@@ -4,32 +4,103 @@
     <meta charset="utf-8" />
     <title>Acemate web drive</title>
     <style>
-      body { font-family: system-ui, sans-serif; background: #111; color: #ddd; text-align: center; margin: 2rem; }
-      #motion { font-size: 6rem; font-weight: 700; margin: 2rem 0; }
-      #motion.stopped { color: #e55; }
-      #motion.moving { color: #5e5; }
-      dl { display: inline-grid; grid-template-columns: auto auto; gap: 0.25rem 1rem; text-align: left; }
-      dt { color: #888; }
-      kbd { border: 1px solid #555; border-radius: 4px; padding: 0 0.3rem; }
-      .launch { display: inline-block; text-align: left; border: 1px solid #444; border-radius: 8px; padding: 1rem; margin-top: 1.5rem; }
-      .launch label { display: inline-block; margin: 0.2rem 0.6rem 0.2rem 0; }
-      .launch input[type=number] { width: 4rem; background: #222; color: #ddd; border: 1px solid #555; }
-      .launch button { font-size: 1rem; padding: 0.4rem 1rem; margin: 0.3rem 0.4rem 0.3rem 0; }
-      #l-fire, #t-fire { background: #a33; color: #fff; }
-      #l-status { font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; max-height: 10rem; overflow: auto; color: #aaa; }
-      .power { font-size: 1.4rem; margin-top: 0.5rem; }
-      .power.low { color: #e55; } .power.mid { color: #ec5; } .power.ok { color: #5e5; }
+      body {
+        font-family: system-ui, sans-serif;
+        background: #111;
+        color: #ddd;
+        text-align: center;
+        margin: 2rem;
+      }
+      #motion {
+        font-size: 6rem;
+        font-weight: 700;
+        margin: 2rem 0;
+      }
+      #motion.stopped {
+        color: #e55;
+      }
+      #motion.moving {
+        color: #5e5;
+      }
+      dl {
+        display: inline-grid;
+        grid-template-columns: auto auto;
+        gap: 0.25rem 1rem;
+        text-align: left;
+      }
+      dt {
+        color: #888;
+      }
+      kbd {
+        border: 1px solid #555;
+        border-radius: 4px;
+        padding: 0 0.3rem;
+      }
+      .launch {
+        display: inline-block;
+        text-align: left;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1.5rem;
+      }
+      .launch label {
+        display: inline-block;
+        margin: 0.2rem 0.6rem 0.2rem 0;
+      }
+      .launch input[type="number"] {
+        width: 4rem;
+        background: #222;
+        color: #ddd;
+        border: 1px solid #555;
+      }
+      .launch button {
+        font-size: 1rem;
+        padding: 0.4rem 1rem;
+        margin: 0.3rem 0.4rem 0.3rem 0;
+      }
+      #l-fire,
+      #t-fire {
+        background: #a33;
+        color: #fff;
+      }
+      #l-status {
+        font-family: ui-monospace, monospace;
+        font-size: 0.8rem;
+        white-space: pre-wrap;
+        max-height: 10rem;
+        overflow: auto;
+        color: #aaa;
+      }
+      .power {
+        font-size: 1.4rem;
+        margin-top: 0.5rem;
+      }
+      .power.low {
+        color: #e55;
+      }
+      .power.mid {
+        color: #ec5;
+      }
+      .power.ok {
+        color: #5e5;
+      }
     </style>
   </head>
   <body>
     <div id="power" class="power">battery ? · waiting for heartbeat</div>
     <div id="motion" class="stopped">stop</div>
     <dl>
-      <dt>server</dt><dd id="link">connecting</dd>
-      <dt>robot is sent</dt><dd id="sent">?</dd>
-      <dt>input</dt><dd id="input"></dd>
-      <dt>gamepad</dt><dd id="pad"></dd>
-      <dt>rule</dt><dd id="rule"></dd>
+      <dt>server</dt>
+      <dd id="link">connecting</dd>
+      <dt>robot is sent</dt>
+      <dd id="sent">?</dd>
+      <dt>input</dt>
+      <dd id="input"></dd>
+      <dt>gamepad</dt>
+      <dd id="pad"></dd>
+      <dt>rule</dt>
+      <dd id="rule"></dd>
     </dl>
     <p>
       <kbd>W</kbd>/<kbd>S</kbd> forward/back · <kbd>A</kbd>/<kbd>D</kbd> or <kbd>←</kbd>/<kbd>→</kbd> turn ·

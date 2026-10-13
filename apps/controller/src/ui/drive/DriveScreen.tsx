@@ -29,7 +29,17 @@ interface Props {
 }
 
 /** Drive with the left stick, aim and fire one ball on the right. Only the stick ever reaches the drive loop. */
-export function DriveScreen({ robot, robotName, onOpenMenu, horizontal, onHorizontal, onStick, shot, onShot, hold }: Props) {
+export function DriveScreen({
+  robot,
+  robotName,
+  onOpenMenu,
+  horizontal,
+  onHorizontal,
+  onStick,
+  shot,
+  onShot,
+  hold,
+}: Props) {
   const styles = useThemedStyles(createStyles);
   const layout = useDriveLayout();
   return (

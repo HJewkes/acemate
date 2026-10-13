@@ -7,7 +7,14 @@ import { courtMapVariant } from "./court-map.js";
 import { h, segmented } from "./dom.js";
 import { createHoldFire, type HoldReading } from "./hold-fire.js";
 import { presetBoardVariant } from "./preset-board.js";
-import { VARIANT_IDS, describeShot, initialVariant, type FireMessage, type LauncherVariant, type VariantId } from "./variant.js";
+import {
+  VARIANT_IDS,
+  describeShot,
+  initialVariant,
+  type FireMessage,
+  type LauncherVariant,
+  type VariantId,
+} from "./variant.js";
 
 const VARIANT_KEY = "acemate.launcher.variant";
 const CONTROL_SELECTOR = "input, textarea, select, [data-grab]";
@@ -40,7 +47,12 @@ export function fireLock(status: FireState): string {
 type FireBar = Omit<Launcher, "ownsInput"> & { refresh(): void };
 
 /** Fire (press and hold), Pause and Stop. */
-function fireBar(shot: () => FireMessage | null, describe: (shot: FireMessage | null) => string, send: (message: LaunchMessage) => void, fired: () => void): FireBar {
+function fireBar(
+  shot: () => FireMessage | null,
+  describe: (shot: FireMessage | null) => string,
+  send: (message: LaunchMessage) => void,
+  fired: () => void,
+): FireBar {
   const fire = element<HTMLButtonElement>("l-fire");
   const hold = createHoldFire();
   let status: FireState = { connected: false, running: false, inFlight: false };
@@ -88,7 +100,8 @@ function fireBar(shot: () => FireMessage | null, describe: (shot: FireMessage | 
   return {
     refresh,
     setState(next) {
-      if (next.connected === status.connected && next.running === status.running && next.inFlight === status.inFlight) return;
+      if (next.connected === status.connected && next.running === status.running && next.inFlight === status.inFlight)
+        return;
       status = next;
       refresh();
     },
@@ -118,32 +131,50 @@ export function setupLauncher(send: (message: LaunchMessage) => void): Launcher 
   const root = element("launcher");
   const host = element("launcher-variant");
   const variants = new Map<VariantId, LauncherVariant>(
-    [controlsVariant(), courtMapVariant(), aimPadVariant(), presetBoardVariant()].map((variant) => [variant.id, variant]),
+    [controlsVariant(), courtMapVariant(), aimPadVariant(), presetBoardVariant()].map((variant) => [
+      variant.id,
+      variant,
+    ]),
   );
   let assumptions = loadAssumptions(globalThis.localStorage);
-  let chosen = initialVariant(new URLSearchParams(location.search).get("launcher"), globalThis.localStorage?.getItem(VARIANT_KEY) ?? null);
+  let chosen = initialVariant(
+    new URLSearchParams(location.search).get("launcher"),
+    globalThis.localStorage?.getItem(VARIANT_KEY) ?? null,
+  );
   const variant = () => variants.get(chosen)!;
   const mountVariant = () => {
     host.dataset.variant = chosen;
     variant().mount(host, bar.refresh, assumptions);
     bar.refresh();
   };
-  const bar = fireBar(() => variant().current(), (shot) => describeShot(shot, assumptions.flipDirection), send, () => {
-    variant().fired?.();
-    mountVariant();
-  });
+  const bar = fireBar(
+    () => variant().current(),
+    (shot) => describeShot(shot, assumptions.flipDirection),
+    send,
+    () => {
+      variant().fired?.();
+      mountVariant();
+    },
+  );
 
   const names = VARIANT_IDS.map((id) => ({ value: id, label: `${id.toUpperCase()} · ${variants.get(id)!.name}` }));
-  element("launcher-switch").replaceChildren(segmented("Launcher layout", names, chosen, (id) => {
-    chosen = id;
-    rememberChoice(id);
-    mountVariant();
-  }).el);
-  element("launcher-assumptions").replaceChildren(assumptionsPanel(() => assumptions, (next) => {
-    assumptions = next;
-    saveAssumptions(globalThis.localStorage, next);
-    mountVariant();
-  }));
+  element("launcher-switch").replaceChildren(
+    segmented("Launcher layout", names, chosen, (id) => {
+      chosen = id;
+      rememberChoice(id);
+      mountVariant();
+    }).el,
+  );
+  element("launcher-assumptions").replaceChildren(
+    assumptionsPanel(
+      () => assumptions,
+      (next) => {
+        assumptions = next;
+        saveAssumptions(globalThis.localStorage, next);
+        mountVariant();
+      },
+    ),
+  );
   globalThis.matchMedia?.("(min-aspect-ratio: 5/4)").addEventListener?.("change", mountVariant);
   watchVisibility(root);
   const pointerDown = pointersDownIn(root);
@@ -151,16 +182,20 @@ export function setupLauncher(send: (message: LaunchMessage) => void): Launcher 
   return {
     setState: bar.setState,
     cancelHold: bar.cancelHold,
-    ownsInput: () => pointerDown() || (root.contains(document.activeElement) && isLauncherControl(document.activeElement)),
+    ownsInput: () =>
+      pointerDown() || (root.contains(document.activeElement) && isLauncherControl(document.activeElement)),
   };
 }
 
 // Lets the CSS move STOP out of the aiming area while the launcher fills the screen.
 function watchVisibility(root: HTMLElement): void {
   if (typeof IntersectionObserver === "undefined") return;
-  const observer = new IntersectionObserver(([entry]) => document.body.classList.toggle("launcher-in-view", entry?.isIntersecting ?? false), {
-    rootMargin: "0px 0px -50% 0px", // in view once it reaches the top half of the screen
-  });
+  const observer = new IntersectionObserver(
+    ([entry]) => document.body.classList.toggle("launcher-in-view", entry?.isIntersecting ?? false),
+    {
+      rootMargin: "0px 0px -50% 0px", // in view once it reaches the top half of the screen
+    },
+  );
   observer.observe(root);
 }
 
@@ -171,12 +206,21 @@ function assumptionsPanel(get: () => Assumptions, set: (next: Assumptions) => vo
     return h("label", { class: "check" }, box, text);
   };
   const robotZ = h("input", { type: "number", step: 0.5, min: -3, max: 6, value: get().robotZ, class: "num" });
-  robotZ.addEventListener("change", () => Number.isFinite(robotZ.valueAsNumber) && set({ ...get(), robotZ: robotZ.valueAsNumber }));
-  return h("details", { class: "assumptions" },
+  robotZ.addEventListener(
+    "change",
+    () => Number.isFinite(robotZ.valueAsNumber) && set({ ...get(), robotZ: robotZ.valueAsNumber }),
+  );
+  return h(
+    "details",
+    { class: "assumptions" },
     h("summary", {}, "Assumptions", h("span", { class: "wordy" }, " (unconfirmed on hardware)")),
-    h("div", { class: "row" },
+    h(
+      "div",
+      { class: "row" },
       toggle("flipDirection", "Flip direction: +dir aims left"),
       toggle("flipX", "Flip court x: +x is the robot's left"),
-      h("label", { class: "check" }, "Robot stands at z =", robotZ, "m")),
-    h("ul", {}, ...ASSUMPTION_NOTES.map((note) => h("li", {}, note))));
+      h("label", { class: "check" }, "Robot stands at z =", robotZ, "m"),
+    ),
+    h("ul", {}, ...ASSUMPTION_NOTES.map((note) => h("li", {}, note))),
+  );
 }

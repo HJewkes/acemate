@@ -11,14 +11,19 @@ const down = () => fire().dispatchEvent(new PointerEvent("pointerdown", { pointe
 const up = () => fire().dispatchEvent(new PointerEvent("pointerup", { pointerId: 3, button: 0, bubbles: true }));
 
 function switchTo(label: string): void {
-  const button = [...document.querySelectorAll<HTMLButtonElement>("#launcher-switch button")].find((b) => b.textContent?.includes(label));
+  const button = [...document.querySelectorAll<HTMLButtonElement>("#launcher-switch button")].find((b) =>
+    b.textContent?.includes(label),
+  );
   button?.click();
 }
 
 describe("launcher variants in mock mode", () => {
   beforeAll(async () => {
     history.replaceState(null, "", "/?mock=1&launcher=c");
-    document.body.innerHTML = (/<body>([\s\S]*)<\/body>/.exec(html)?.[1] ?? "").replace(/<script[\s\S]*?<\/script>/g, "");
+    document.body.innerHTML = (/<body>([\s\S]*)<\/body>/.exec(html)?.[1] ?? "").replace(
+      /<script[\s\S]*?<\/script>/g,
+      "",
+    );
     await import("../src/main.js");
   });
 

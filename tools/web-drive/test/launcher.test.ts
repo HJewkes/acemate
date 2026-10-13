@@ -2,7 +2,15 @@ import { describe, expect, it } from "vitest";
 import type { Request } from "../../drive-probe/src/protocol.js";
 import { LaunchController, parseLaunch, setModeFor, type LaunchMessage } from "../src/launcher.js";
 
-const single: LaunchMessage = { kind: "machine", direction: 0, speed: 3, spin: 0, elevation: 20, count: 1, interval: 1 };
+const single: LaunchMessage = {
+  kind: "machine",
+  direction: 0,
+  speed: 3,
+  spin: 0,
+  elevation: 20,
+  count: 1,
+  interval: 1,
+};
 
 function harness(options: { stopped?: boolean; ack?: boolean } = {}) {
   const sent: string[] = [];
@@ -60,7 +68,16 @@ describe("setModeFor", () => {
     ];
 
     expect(setModeFor({ kind: "machine-queue", balls, interval: 3.5 })).toMatchObject({
-      data: { mode: "ball_machine", b: [[-5, 4, 2, 30], [10, 7, -1, 15]], total_balls: 2, interval: 3.5, random_order: false },
+      data: {
+        mode: "ball_machine",
+        b: [
+          [-5, 4, 2, 30],
+          [10, 7, -1, 15],
+        ],
+        total_balls: 2,
+        interval: 3.5,
+        random_order: false,
+      },
     });
   });
 });
@@ -159,7 +176,10 @@ describe("LaunchController while set_mode is in flight", () => {
     await firing;
 
     expect(during).toEqual({ inFlight: true, mayBeRunning: true });
-    expect({ inFlight: controller.inFlight, mayBeRunning: controller.mayBeRunning }).toEqual({ inFlight: false, mayBeRunning: true });
+    expect({ inFlight: controller.inFlight, mayBeRunning: controller.mayBeRunning }).toEqual({
+      inFlight: false,
+      mayBeRunning: true,
+    });
   });
 
   it("never starts the run when stop arrives before rsp_set_mode", async () => {

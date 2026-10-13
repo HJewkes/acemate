@@ -38,10 +38,22 @@ function createStyles(palette: Palette) {
     column: { flex: 1.4, gap: 6 },
     header: { height: 28, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
     heading: { color: palette.label, fontSize: 12, fontWeight: "800", letterSpacing: 1.5 },
-    action: { alignSelf: "stretch", alignItems: "center", paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: palette.ring },
+    action: {
+      alignSelf: "stretch",
+      alignItems: "center",
+      paddingVertical: 8,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: palette.ring,
+    },
     actionText: { color: palette.text, fontSize: 12, fontWeight: "700" },
     log: { flex: 1, borderRadius: 10, backgroundColor: palette.page },
     logContent: { padding: 8 },
-    mono: { color: palette.text, fontSize: 10, lineHeight: 14, fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }) },
+    mono: {
+      color: palette.text,
+      fontSize: 10,
+      lineHeight: 14,
+      fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
+    },
   });
 }

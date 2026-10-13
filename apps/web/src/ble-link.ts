@@ -1,4 +1,11 @@
-import { LineDecoder, NUS_NOTIFY, NUS_SERVICE, NUS_WRITE, lineText, type Request } from "../../../tools/drive-probe/src/protocol.js";
+import {
+  LineDecoder,
+  NUS_NOTIFY,
+  NUS_SERVICE,
+  NUS_WRITE,
+  lineText,
+  type Request,
+} from "../../../tools/drive-probe/src/protocol.js";
 import { writeModeFor, type Link } from "./link.js";
 
 // The slice of Web Bluetooth this uses, so tests can pass a fake navigator.bluetooth.
@@ -42,7 +49,10 @@ export function bluetoothOf(nav: Navigator): BluetoothLike | null {
 
 /** Opens the browser's device chooser, so it must run inside a user gesture (the Connect click). */
 export async function requestBleLink(bluetooth: BluetoothLike): Promise<BrowserBleLink> {
-  const device = await bluetooth.requestDevice({ filters: [{ services: [NUS.service] }], optionalServices: [NUS.service] });
+  const device = await bluetooth.requestDevice({
+    filters: [{ services: [NUS.service] }],
+    optionalServices: [NUS.service],
+  });
   if (!device.gatt) throw new Error("This device has no GATT server");
   const server = await device.gatt.connect();
   try {
@@ -82,7 +92,9 @@ export class BrowserBleLink implements Link {
     const write = this.queue
       .catch(() => undefined)
       .then(() =>
-        mode === "withResponse" ? this.writer.writeValueWithResponse(bytes) : this.writer.writeValueWithoutResponse(bytes),
+        mode === "withResponse"
+          ? this.writer.writeValueWithResponse(bytes)
+          : this.writer.writeValueWithoutResponse(bytes),
       );
     this.queue = write;
     return write;

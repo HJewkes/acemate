@@ -41,7 +41,13 @@ export function AimPad({ aim, width, height, flipDirection, onAim }: Props) {
 
 function createStyles(palette: Palette) {
   return StyleSheet.create({
-    pad: { backgroundColor: palette.panel, borderWidth: 1, borderColor: palette.gridAxis, borderRadius: 10, overflow: "hidden" },
+    pad: {
+      backgroundColor: palette.panel,
+      borderWidth: 1,
+      borderColor: palette.gridAxis,
+      borderRadius: 10,
+      overflow: "hidden",
+    },
     axis: { position: "absolute", backgroundColor: palette.grid },
     lineX: { position: "absolute", left: 0, right: 0, height: 1.5, backgroundColor: palette.label },
     lineY: { position: "absolute", top: 0, bottom: 0, width: 1.5, backgroundColor: palette.label },

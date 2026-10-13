@@ -45,7 +45,15 @@ export interface Slider {
 export function slider(options: SliderOptions): Slider {
   const format = options.format ?? String;
   const { min, max, step } = options.span;
-  const input = h("input", { id: options.id, type: "range", min, max, step, value: options.value, "aria-label": options.label });
+  const input = h("input", {
+    id: options.id,
+    type: "range",
+    min,
+    max,
+    step,
+    value: options.value,
+    "aria-label": options.label,
+  });
   if (options.reversed) input.setAttribute("dir", "rtl");
   const readout = h("output", { class: "readout" }, format(options.value));
   const set = (value: number) => {
@@ -61,8 +69,15 @@ export function slider(options: SliderOptions): Slider {
     return button;
   };
   const orientation = options.vertical ? "slider vertical" : "slider";
-  const el = h("div", { class: orientation }, h("span", { class: "slider-label" }, options.label), readout,
-    stepper(options.vertical ? 1 : -1, options.vertical ? "+" : "−"), input, stepper(options.vertical ? -1 : 1, options.vertical ? "−" : "+"));
+  const el = h(
+    "div",
+    { class: orientation },
+    h("span", { class: "slider-label" }, options.label),
+    readout,
+    stepper(options.vertical ? 1 : -1, options.vertical ? "+" : "−"),
+    input,
+    stepper(options.vertical ? -1 : 1, options.vertical ? "−" : "+"),
+  );
   return { el, set: (value) => void set(value) };
 }
 
@@ -90,13 +105,25 @@ export function segmented<T extends string>(
 /** Slice / flat / topspin buttons plus a fine-tune slider over −3..3, kept in step with each other. */
 export function spinControl(value: number, onInput: (spin: number) => void, withFineTune = true): HTMLElement {
   const styles = SPIN_STYLES.map(({ style, label }) => ({ value: style, label }));
-  const fine = slider({ label: "fine", span: SPANS.spin, value, format: (v) => (v > 0 ? `+${v}` : String(v)), onInput: (v) => {
-    buttons.set(spinStyle(v));
-    onInput(v);
-  } });
+  const fine = slider({
+    label: "fine",
+    span: SPANS.spin,
+    value,
+    format: (v) => (v > 0 ? `+${v}` : String(v)),
+    onInput: (v) => {
+      buttons.set(spinStyle(v));
+      onInput(v);
+    },
+  });
   const buttons = segmented<SpinStyle>("Spin", styles, spinStyle(value), (style) => {
     fine.set(spinValue(style));
     onInput(spinValue(style));
   });
-  return h("div", { class: "spin" }, h("span", { class: "slider-label" }, "Spin"), buttons.el, ...(withFineTune ? [fine.el] : []));
+  return h(
+    "div",
+    { class: "spin" },
+    h("span", { class: "slider-label" }, "Spin"),
+    buttons.el,
+    ...(withFineTune ? [fine.el] : []),
+  );
 }

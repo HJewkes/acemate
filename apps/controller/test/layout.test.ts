@@ -19,7 +19,12 @@ describe("drive layout", () => {
   });
 
   it("keeps the owner-tuned size on the iPhone 17 Pro Max", () => {
-    expect(computeLayout({ width: 956, height: 440 })).toMatchObject({ column: 200, paddingH: 56, nudgeX: 28, nudgeY: 20 });
+    expect(computeLayout({ width: 956, height: 440 })).toMatchObject({
+      column: 200,
+      paddingH: 56,
+      nudgeX: 28,
+      nudgeY: 20,
+    });
   });
 
   it("caps the columns on a tablet so the controls don't sprawl", () => {

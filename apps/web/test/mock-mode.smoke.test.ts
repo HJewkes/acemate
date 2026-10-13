@@ -13,7 +13,10 @@ describe("mock mode (?mock=1)", () => {
   beforeAll(async () => {
     history.replaceState(null, "", "/?mock=1");
     // The page's own <script> is dropped; the test imports main directly.
-    document.body.innerHTML = (/<body>([\s\S]*)<\/body>/.exec(html)?.[1] ?? "").replace(/<script[\s\S]*?<\/script>/g, "");
+    document.body.innerHTML = (/<body>([\s\S]*)<\/body>/.exec(html)?.[1] ?? "").replace(
+      /<script[\s\S]*?<\/script>/g,
+      "",
+    );
     await import("../src/main.js");
   });
 

@@ -60,7 +60,9 @@ describe("dry run", () => {
   });
 
   it("rejects a missing parameter instead of defaulting it", () => {
-    expect(() => parseLaunchArgs(["single", "--dir", "0", "--spin", "0", "--elev", "20"])).toThrow(/--speed is required/);
+    expect(() => parseLaunchArgs(["single", "--dir", "0", "--spin", "0", "--elev", "20"])).toThrow(
+      /--speed is required/,
+    );
   });
 });
 
@@ -89,7 +91,10 @@ describe("fire", () => {
   });
 
   it("refuses to configure a robot whose heartbeat says it is already running", async () => {
-    const { code, sent } = await fire({ ...happy, ask_heartbeat: { type: "rsp_heartbeat", data: { car_state: { running: true } } } });
+    const { code, sent } = await fire({
+      ...happy,
+      ask_heartbeat: { type: "rsp_heartbeat", data: { car_state: { running: true } } },
+    });
 
     expect(code).toBe(1);
     expect(sent).not.toContain("set_mode");

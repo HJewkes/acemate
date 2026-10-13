@@ -23,22 +23,22 @@ not, so a phone needs the HTTPS (GitHub Pages) build.
 
 ## Browser support
 
-| Browser | Works |
-| --- | --- |
-| Chrome or Edge, desktop (macOS, Windows, Linux, ChromeOS) | yes |
-| Chrome on Android | yes |
-| iPhone / iPad | only in the Bluefy browser (App Store); Safari and iOS Chrome have no Web Bluetooth |
-| Firefox, Safari | no |
+| Browser                                                   | Works                                                                               |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Chrome or Edge, desktop (macOS, Windows, Linux, ChromeOS) | yes                                                                                 |
+| Chrome on Android                                         | yes                                                                                 |
+| iPhone / iPad                                             | only in the Bluefy browser (App Store); Safari and iOS Chrome have no Web Bluetooth |
+| Firefox, Safari                                           | no                                                                                  |
 
 Without `navigator.bluetooth` the page says so and disables Connect. Mock mode still works.
 
 ## Controls
 
-| Input | Action |
-| --- | --- |
-| Left touch stick, gamepad left stick, `W` `S` / `↑` `↓`, `Q` `E` | forward/back, strafe |
-| Right touch stick (horizontal), gamepad right stick, `A` `D` / `←` `→` | turn |
-| **STOP** button, `Space`, gamepad B / circle | emergency stop, which also sends `run_stop` |
+| Input                                                                  | Action                                      |
+| ---------------------------------------------------------------------- | ------------------------------------------- |
+| Left touch stick, gamepad left stick, `W` `S` / `↑` `↓`, `Q` `E`       | forward/back, strafe                        |
+| Right touch stick (horizontal), gamepad right stick, `A` `D` / `←` `→` | turn                                        |
+| **STOP** button, `Space`, gamepad B / circle                           | emergency stop, which also sends `run_stop` |
 
 Both touch sticks take a thumb each at the same time. The firmware runs one motion at a time, so the page picks a single
 motion with the same rule as `tools/web-drive` (`MOTION_RULE`: a hard turn wins, otherwise the larger translation).
@@ -65,12 +65,12 @@ The launcher has four interchangeable layouts, for comparing which way of specif
 the switch at the top of the launcher or with `?launcher=a|b|c|d` (for example `/?mock=1&launcher=c`). The choice is
 remembered. All four share the Fire (hold) / Pause / Stop bar and send through the same validated `LaunchController`.
 
-| | Layout | Sends |
-| --- | --- | --- |
-| A | **Controls**: a slider with − / + steppers for each parameter, plus slice / flat / topspin with a fine-tune. | `ball_machine` |
-| B | **Court map**: tap or drag on a top-down singles court; the target snaps to 0.1 m. In **Sequence** mode, up to 5 taps are numbered and each Fire hold sends the next one. | `drill` (robot aims) |
-| C | **Aim pad**: drag a crosshair for direction × elevation, with a speed fader and side and top sketches. | `ball_machine` |
-| D | **Presets**: big buttons for named shots. In **Queue** mode, taps build a list of up to 10 that fires as one `ball_machine` run (`b:[…]` in order, `random_order:false`). Edit presets as JSON in the page or in `src/launcher-ui/presets.ts`. | either |
+|     | Layout                                                                                                                                                                                                                                         | Sends                |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| A   | **Controls**: a slider with − / + steppers for each parameter, plus slice / flat / topspin with a fine-tune.                                                                                                                                   | `ball_machine`       |
+| B   | **Court map**: tap or drag on a top-down singles court; the target snaps to 0.1 m. In **Sequence** mode, up to 5 taps are numbered and each Fire hold sends the next one.                                                                      | `drill` (robot aims) |
+| C   | **Aim pad**: drag a crosshair for direction × elevation, with a speed fader and side and top sketches.                                                                                                                                         | `ball_machine`       |
+| D   | **Presets**: big buttons for named shots. In **Queue** mode, taps build a list of up to 10 that fires as one `ball_machine` run (`b:[…]` in order, `random_order:false`). Edit presets as JSON in the page or in `src/launcher-ui/presets.ts`. | either               |
 
 Signs and origins are not confirmed on hardware yet. **Assumptions** in the launcher can flip the direction sign, flip
 court x, and move the robot along z. All the guesses are listed in `src/launcher-ui/assumptions.ts`.

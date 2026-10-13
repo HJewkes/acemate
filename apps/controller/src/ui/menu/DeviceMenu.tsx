@@ -31,7 +31,13 @@ export function DeviceMenu({ visible, onClose, robot, ...settings }: Props) {
   const idle = robot.status === "connected" || robot.status === "disconnected";
   const nearby = useNearbyRobots(visible && idle);
   return (
-    <Modal visible={visible} transparent animationType="fade" supportedOrientations={["landscape"]} onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      supportedOrientations={["landscape"]}
+      onRequestClose={onClose}
+    >
       <View style={styles.backdrop}>
         <View style={styles.sheet}>
           <View style={styles.titleRow}>
@@ -70,7 +76,9 @@ function SettingsColumn({ theme, onTheme, allowDriveDuringRun, onAllowDriveDurin
           accessibilityLabel="Allow driving during runs"
         />
       </View>
-      <Text style={styles.caption}>Untested: the stock app never drives during a run. Firing still needs the robot stopped.</Text>
+      <Text style={styles.caption}>
+        Untested: the stock app never drives during a run. Firing still needs the robot stopped.
+      </Text>
     </View>
   );
 }
@@ -90,7 +98,14 @@ function createStyles(palette: Palette) {
     titleRow: { height: 48, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
     title: { color: palette.text, fontSize: 15, fontWeight: "800", letterSpacing: 2 },
     // A large, easy close target (owner request): 48 pt circle, well above the 44 pt minimum.
-    close: { width: 48, height: 48, borderRadius: 24, alignItems: "center", justifyContent: "center", backgroundColor: palette.accent },
+    close: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: palette.accent,
+    },
     closeText: { color: palette.onAccent, fontSize: 24, fontWeight: "800", lineHeight: 26 },
     columns: { flex: 1, flexDirection: "row", gap: 14 },
     settings: { flex: 1, gap: 8 },

@@ -4,7 +4,8 @@ import { SET_TIME_EVERY_MS } from "../src/robot/launch-link";
 import { flush, harness, type Responder } from "./harness";
 
 const END = "+==ACE==+";
-const heartbeat = (carState: Record<string, unknown>) => JSON.stringify({ type: "rsp_heartbeat", data: { car_state: carState } }) + END;
+const heartbeat = (carState: Record<string, unknown>) =>
+  JSON.stringify({ type: "rsp_heartbeat", data: { car_state: carState } }) + END;
 const acceptsSetMode: Responder = (request) =>
   request.type === "set_mode" ? JSON.stringify({ type: "rsp_set_mode", data: { result: 0 } }) + END : undefined;
 const oneBall = { kind: "machine", direction: 5, speed: 6, spin: 1, elevation: 20, count: 1, interval: 1 } as const;

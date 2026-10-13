@@ -68,7 +68,8 @@ function servePage(getScript: () => string, reloadClients: Set<ServerResponse>):
       const html = readFileSync(new URL("index.html", PAGE_DIR), "utf8");
       return response.writeHead(200, { "content-type": "text/html" }).end(html);
     }
-    if (request.url === "/app.js") return response.writeHead(200, { "content-type": "text/javascript" }).end(getScript());
+    if (request.url === "/app.js")
+      return response.writeHead(200, { "content-type": "text/javascript" }).end(getScript());
     if (request.url === "/events") return subscribeReload(response, reloadClients);
     response.writeHead(404).end();
   });
@@ -103,7 +104,10 @@ function acceptControl(server: Server, loop: DriveLoop, clients: Set<WebSocket>,
 type Waiter = { type: string; resolve: (message: Request | null) => void };
 
 // Routes robot messages: waiters for a reply type, heartbeat car_state to the launcher.
-export type CarState = { running?: boolean; bat?: number | null; mode?: string; time_is_set?: boolean } & Record<string, unknown>;
+export type CarState = { running?: boolean; bat?: number | null; mode?: string; time_is_set?: boolean } & Record<
+  string,
+  unknown
+>;
 
 // The app sends set_time whenever the heartbeat says the clock is unset (BluetoothService.java:698-703).
 function setTimeRequest(): Request {
@@ -134,7 +138,11 @@ function startInbox(link: Link, onCarState: (carState: CarState) => void) {
     });
 }
 
-function startLauncher(link: Link, loop: DriveLoop, clients: Set<WebSocket>): { launcher: LaunchController; hooks: LaunchHooks } {
+function startLauncher(
+  link: Link,
+  loop: DriveLoop,
+  clients: Set<WebSocket>,
+): { launcher: LaunchController; hooks: LaunchHooks } {
   const report = (text: string) => {
     record("event", { launch: text });
     for (const client of clients) client.send(JSON.stringify({ launch_status: text }));

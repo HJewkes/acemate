@@ -19,6 +19,7 @@ You need a Mac with Xcode, an iPhone and a cable for the first install. This is 
    ```
 
    Pick your iPhone from the list. This builds, installs and starts Metro.
+
 3. Signing: if Xcode reports a signing error, open `ios/AcemateDrive.xcworkspace`, go to the target → Signing & Capabilities, tick "Automatically manage signing" and choose your Personal Team. A free Apple ID works, with limits: apps expire after 7 days (rebuild to renew) and a free account can have only 3 apps installed at once. If the bundle id is taken, change `ios.bundleIdentifier` in `app.json` and prebuild again.
 4. Trust the developer profile on the phone: Settings → General → VPN & Device Management → your Apple ID → Trust.
 5. The first launch asks for Bluetooth permission; allow it.

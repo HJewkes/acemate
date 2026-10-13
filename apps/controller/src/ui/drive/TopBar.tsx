@@ -49,7 +49,9 @@ export function ConnectionChip({ robot, robotName, onOpenMenu }: Props) {
         <Text style={styles.caption}>{LINK_TEXT[status]}</Text>
       </View>
       {battery !== null && (
-        <Text style={[styles.battery, { color: battery <= LOW_BATTERY ? palette.batteryLow : palette.batteryOk }]}>{battery}%</Text>
+        <Text style={[styles.battery, { color: battery <= LOW_BATTERY ? palette.batteryLow : palette.batteryOk }]}>
+          {battery}%
+        </Text>
       )}
     </Pressable>
   );
@@ -88,7 +90,13 @@ function createStyles(palette: Palette) {
     },
     dot: { width: 10, height: 10, borderRadius: 5 },
     name: { color: palette.text, fontSize: 13, fontWeight: "700", maxWidth: 150 },
-    caption: { color: palette.textMuted, fontSize: 11, fontWeight: "600", letterSpacing: 0.5, fontVariant: ["tabular-nums"] },
+    caption: {
+      color: palette.textMuted,
+      fontSize: 11,
+      fontWeight: "600",
+      letterSpacing: 0.5,
+      fontVariant: ["tabular-nums"],
+    },
     battery: { fontSize: 13, fontWeight: "800", fontVariant: ["tabular-nums"] },
     stopSquare: { width: 14, height: 14, borderRadius: 3, backgroundColor: palette.danger },
   });

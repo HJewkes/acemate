@@ -2,7 +2,15 @@
 // Importing it would resolve @stoprocent/noble from drive-probe's node_modules and force a second install.
 // protocol.ts has no dependencies, so it is imported instead of copied.
 import noble, { type Characteristic, type Peripheral } from "@stoprocent/noble";
-import { LineDecoder, NUS_NOTIFY, NUS_SERVICE, NUS_WRITE, chunk, encodeLine, type Request } from "../../drive-probe/src/protocol.js";
+import {
+  LineDecoder,
+  NUS_NOTIFY,
+  NUS_SERVICE,
+  NUS_WRITE,
+  chunk,
+  encodeLine,
+  type Request,
+} from "../../drive-probe/src/protocol.js";
 
 export interface Link {
   name: string;
@@ -55,9 +63,11 @@ function buildLink(peripheral: Peripheral, writer: Characteristic, notifier: Cha
     name: peripheral.advertisement.localName ?? peripheral.id,
     send(request) {
       const parts = chunk(encodeLine(request), chunkSize);
-      queue = queue.catch(() => undefined).then(async () => {
-        for (const part of parts) await writer.writeAsync(part, true);
-      });
+      queue = queue
+        .catch(() => undefined)
+        .then(async () => {
+          for (const part of parts) await writer.writeAsync(part, true);
+        });
       return queue;
     },
     onLine(listener) {

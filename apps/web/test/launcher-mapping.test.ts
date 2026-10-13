@@ -2,8 +2,23 @@ import { describe, expect, it } from "vitest";
 import { setModeFor } from "../../../tools/web-drive/src/launcher.js";
 import { aimToPad, directionLabel, padToAim, pixelToAim } from "../src/launcher-ui/aim.js";
 import { flipped, parseAssumptions } from "../src/launcher-ui/assumptions.js";
-import { courtToSvg, courtViewBox, pixelToSvg, pixelToTarget, snapTarget, svgToCourt } from "../src/launcher-ui/court.js";
-import { DEFAULT_PRESETS, MAX_QUEUE, parsePresets, presetMessage, queueMessage, queueRefusal, type Preset } from "../src/launcher-ui/presets.js";
+import {
+  courtToSvg,
+  courtViewBox,
+  pixelToSvg,
+  pixelToTarget,
+  snapTarget,
+  svgToCourt,
+} from "../src/launcher-ui/court.js";
+import {
+  DEFAULT_PRESETS,
+  MAX_QUEUE,
+  parsePresets,
+  presetMessage,
+  queueMessage,
+  queueRefusal,
+  type Preset,
+} from "../src/launcher-ui/presets.js";
 import { SPANS, snapTo, stepBy } from "../src/launcher-ui/ranges.js";
 import { spinLabel, spinStyle, spinValue } from "../src/launcher-ui/spin.js";
 import { describeShot, initialVariant } from "../src/launcher-ui/variant.js";
@@ -126,7 +141,17 @@ describe("presets", () => {
     const message = queueMessage([deep, wide, deep], 2.5)!;
 
     expect(setModeFor(message)).toMatchObject({
-      data: { mode: "ball_machine", b: [[0, 6, 1, 22], [-10, 6, 1, 20], [0, 6, 1, 22]], total_balls: 3, interval: 2.5, random_order: false },
+      data: {
+        mode: "ball_machine",
+        b: [
+          [0, 6, 1, 22],
+          [-10, 6, 1, 20],
+          [0, 6, 1, 22],
+        ],
+        total_balls: 3,
+        interval: 2.5,
+        random_order: false,
+      },
     });
   });
 
@@ -141,7 +166,9 @@ describe("presets", () => {
   });
 
   it("fires a single machine preset as one ball and a target preset as a drill", () => {
-    expect(setModeFor(presetMessage(wide))).toMatchObject({ data: { mode: "ball_machine", b: [[-10, 6, 1, 20]], total_balls: 1 } });
+    expect(setModeFor(presetMessage(wide))).toMatchObject({
+      data: { mode: "ball_machine", b: [[-10, 6, 1, 20]], total_balls: 1 },
+    });
     expect(setModeFor(presetMessage(target))).toMatchObject({ data: { mode: "drill" } });
   });
 

@@ -1,8 +1,22 @@
 import "./style.css";
 import "./launcher-ui/launcher.css";
-import { STOP_KEY, applyStopLatch, gamepadToInput, isDriveKey, keysToInput, pressKey, releaseKey } from "../../../tools/web-drive/src/input.js";
+import {
+  STOP_KEY,
+  applyStopLatch,
+  gamepadToInput,
+  isDriveKey,
+  keysToInput,
+  pressKey,
+  releaseKey,
+} from "../../../tools/web-drive/src/input.js";
 import type { LaunchMessage } from "../../../tools/web-drive/src/launcher.js";
-import { NEUTRAL, combineInputs, resolveMotion, type DriveInput, type Motion } from "../../../tools/web-drive/src/motion.js";
+import {
+  NEUTRAL,
+  combineInputs,
+  resolveMotion,
+  type DriveInput,
+  type Motion,
+} from "../../../tools/web-drive/src/motion.js";
 import { showLaunchStatus } from "../../../tools/web-drive/src/page/launch-panel.js";
 import { showPower } from "../../../tools/web-drive/src/page/power.js";
 import { bluetoothOf, requestBleLink } from "./ble-link.js";
@@ -101,7 +115,11 @@ function update(): void {
   latched = result.latched;
   active?.session.drive(result.motion);
   const launch = active?.session.launcher;
-  launcher.setState({ connected: active !== null, running: launch?.running ?? false, inFlight: launch?.inFlight ?? false });
+  launcher.setState({
+    connected: active !== null,
+    running: launch?.running ?? false,
+    inFlight: launch?.inFlight ?? false,
+  });
   render(result.motion, input, aiming ? "ignored while the launcher has the controls" : pad.label);
 }
 
@@ -116,7 +134,8 @@ function render(motion: Motion, input: DriveInput, padLabel: string): void {
 function onKey(event: KeyboardEvent, down: boolean): void {
   // Typing or aiming in the launcher must never drive the robot. Space still stops from anywhere except the preset
   // JSON box, where it has to type; the STOP button and gamepad B still work there.
-  if (isLauncherControl(event.target) && (event.code !== STOP_KEY || event.target instanceof HTMLTextAreaElement)) return;
+  if (isLauncherControl(event.target) && (event.code !== STOP_KEY || event.target instanceof HTMLTextAreaElement))
+    return;
   if (event.code === STOP_KEY) {
     if (down) emergencyStop();
   } else if (event.repeat) {

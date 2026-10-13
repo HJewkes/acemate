@@ -18,8 +18,17 @@ export function Segmented<T extends string>({ options, selected, onSelect }: Seg
       {options.map((option) => {
         const on = option.value === selected;
         return (
-          <Pressable key={option.value} style={[styles.segment, on && styles.segmentOn]} onPress={() => onSelect(option.value)}>
-            <Text style={[styles.segmentText, on && styles.segmentTextOn]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+          <Pressable
+            key={option.value}
+            style={[styles.segment, on && styles.segmentOn]}
+            onPress={() => onSelect(option.value)}
+          >
+            <Text
+              style={[styles.segmentText, on && styles.segmentTextOn]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+            >
               {option.label}
             </Text>
           </Pressable>
@@ -35,7 +44,13 @@ const SPIN_OPTIONS = SPIN_STYLES.map(({ style }) => ({ value: style, label: SHOR
 
 /** Slice / flat / topspin at each style's coarse value. */
 export function SpinSegmented({ spin, onChange }: { spin: number; onChange(spin: number): void }) {
-  return <Segmented<SpinStyle> options={SPIN_OPTIONS} selected={spinStyle(spin)} onSelect={(style) => onChange(spinValue(style))} />;
+  return (
+    <Segmented<SpinStyle>
+      options={SPIN_OPTIONS}
+      selected={spinStyle(spin)}
+      onSelect={(style) => onChange(spinValue(style))}
+    />
+  );
 }
 
 function valueAt(fraction: number, span: Span): number {
@@ -84,12 +99,26 @@ export function HorizontalSlider({ label, value, span, onChange }: SliderProps) 
 
 function createStyles(palette: Palette) {
   return StyleSheet.create({
-    segmented: { flexDirection: "row", alignSelf: "stretch", padding: 3, gap: 3, borderRadius: 10, backgroundColor: palette.track },
+    segmented: {
+      flexDirection: "row",
+      alignSelf: "stretch",
+      padding: 3,
+      gap: 3,
+      borderRadius: 10,
+      backgroundColor: palette.track,
+    },
     segment: { flex: 1, paddingHorizontal: 8, paddingVertical: 7, borderRadius: 8, alignItems: "center" },
     segmentOn: { backgroundColor: palette.accent },
     segmentText: { color: palette.text, fontSize: 13, fontWeight: "600" },
     segmentTextOn: { color: palette.onAccent, fontWeight: "800" },
-    track: { alignSelf: "stretch", height: 32, borderRadius: 10, backgroundColor: palette.track, overflow: "hidden", justifyContent: "center" },
+    track: {
+      alignSelf: "stretch",
+      height: 32,
+      borderRadius: 10,
+      backgroundColor: palette.track,
+      overflow: "hidden",
+      justifyContent: "center",
+    },
     fill: { position: "absolute", right: 0, top: 0, bottom: 0, backgroundColor: palette.accent },
     label: { position: "absolute", right: 10, color: palette.onAccent, fontSize: 13, fontWeight: "800" },
   });

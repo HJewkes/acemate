@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_SHOT } from "../src/launcher/shot";
-import { DEFAULT_SETTINGS, SETTINGS_KEY, loadSettings, parseSettings, saveSettings, type KeyValueStore } from "../src/storage/settings";
+import {
+  DEFAULT_SETTINGS,
+  SETTINGS_KEY,
+  loadSettings,
+  parseSettings,
+  saveSettings,
+  type KeyValueStore,
+} from "../src/storage/settings";
 
 function memoryStore(initial: Record<string, string> = {}): KeyValueStore & { data: Record<string, string> } {
   const data = { ...initial };
@@ -33,7 +40,9 @@ describe("settings", () => {
   });
 
   it("keeps valid fields and defaults the malformed ones", () => {
-    const parsed = parseSettings(JSON.stringify({ horizontal: "sideways", shot: { speed: 9, spin: "lots" }, lastRobot: { id: "" } }));
+    const parsed = parseSettings(
+      JSON.stringify({ horizontal: "sideways", shot: { speed: 9, spin: "lots" }, lastRobot: { id: "" } }),
+    );
 
     expect(parsed.horizontal).toBe("strafe");
     expect(parsed.shot.speed).toBe(9);
@@ -62,7 +71,10 @@ describe("settings", () => {
   });
 
   it("treats an unreadable store as empty rather than failing", async () => {
-    const broken: KeyValueStore = { getItem: () => Promise.reject(new Error("io")), setItem: () => Promise.reject(new Error("io")) };
+    const broken: KeyValueStore = {
+      getItem: () => Promise.reject(new Error("io")),
+      setItem: () => Promise.reject(new Error("io")),
+    };
 
     expect(await loadSettings(broken)).toEqual(DEFAULT_SETTINGS);
     await expect(saveSettings(broken, DEFAULT_SETTINGS)).resolves.toBeUndefined();

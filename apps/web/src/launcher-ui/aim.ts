@@ -26,7 +26,12 @@ export function aimToPad(aim: Aim, flipDirection: boolean): PadPoint {
   return { fx: (right - DIR.min) / (DIR.max - DIR.min), fy: (ELEV.max - aim.elevation) / (ELEV.max - ELEV.min) };
 }
 
-export function pixelToAim(px: number, py: number, size: { width: number; height: number }, flipDirection: boolean): Aim {
+export function pixelToAim(
+  px: number,
+  py: number,
+  size: { width: number; height: number },
+  flipDirection: boolean,
+): Aim {
   return padToAim({ fx: px / size.width, fy: py / size.height }, flipDirection);
 }
 
