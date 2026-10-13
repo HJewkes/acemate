@@ -110,7 +110,6 @@ tools/
   web-drive/      browser page plus local BLE bridge server
 docs/
   protocol.md     BLE protocol reference
-  apk-teardown.md notes from analysing the stock app
 ```
 
 ## Contributing
