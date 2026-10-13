@@ -1,0 +1,72 @@
+// Static-analysis findings from app 2.2.0; see docs/protocol.md.
+export const NUS_SERVICE = "6e400001b5a3f393e0a9e50e24dcca9e";
+export const NUS_WRITE = "6e400002b5a3f393e0a9e50e24dcca9e";
+export const NUS_NOTIFY = "6e400003b5a3f393e0a9e50e24dcca9e";
+
+export const MOTIONS = [
+  "go_front",
+  "go_back",
+  "go_left",
+  "go_right",
+  "turn_left",
+  "turn_right",
+  "stop",
+] as const;
+export type Motion = (typeof MOTIONS)[number];
+
+export type Request = Record<string, unknown> & { type: string };
+
+export const requests = {
+  askInit: (): Request => ({ type: "ask_init_data" }),
+  heartbeat: (): Request => ({ type: "ask_heartbeat" }),
+  remoteMode: (): Request => ({ type: "set_mode", data: { mode: "motion_control" } }),
+  motion: (motion: Motion): Request => ({
+    type: "motion_control",
+    data: { motion, shot_switch: "off" },
+  }),
+};
+
+/** The wire text of one request; browsers encode it with TextEncoder, Node with encodeLine. */
+export function lineText(request: Request): string {
+  return `${JSON.stringify(request)}\r\n`;
+}
+
+export function encodeLine(request: Request): Buffer {
+  return Buffer.from(lineText(request), "utf8");
+}
+
+export function chunk(buffer: Buffer, size: number): Buffer[] {
+  const parts: Buffer[] = [];
+  for (let offset = 0; offset < buffer.length; offset += size) {
+    parts.push(buffer.subarray(offset, offset + size));
+  }
+  return parts;
+}
+
+// Robot-to-app messages end with this marker (BluetoothService.java:101), not CRLF.
+export const MESSAGE_END = "+==ACE==+";
+const MESSAGE_BOUNDARY = /\+==ACE==\+|\r?\n/;
+
+// Notifications may split or merge messages, so reassemble on the end marker; newlines are accepted defensively.
+// Takes any Uint8Array (a Node Buffer or a browser DataView's bytes); streaming decode keeps split UTF-8 characters whole.
+export class LineDecoder {
+  private pending = "";
+  private readonly utf8 = new TextDecoder();
+
+  push(data: Uint8Array): string[] {
+    this.pending += this.utf8.decode(data, { stream: true });
+    const lines = this.pending.split(MESSAGE_BOUNDARY);
+    this.pending = lines.pop() ?? "";
+    return lines.map((line) => line.trim()).filter((line) => line.length > 0);
+  }
+}
+
+export function parseMessage(line: string): Request | { type: "raw"; line: string } {
+  try {
+    const value: unknown = JSON.parse(line);
+    if (value && typeof value === "object" && "type" in value) return value as Request;
+  } catch {
+    // Not JSON; fall through to raw.
+  }
+  return { type: "raw", line };
+}

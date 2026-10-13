@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.jsonl
+*.apk
+*.xapk
+jadx/
+# Expo prebuild output
+ios/
+android/
+.worktrees/

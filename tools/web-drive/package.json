@@ -1,0 +1,24 @@
+{
+  "name": "acemate-web-drive",
+  "private": true,
+  "description": "Throwaway browser drive controller for the Acemate S10: real key-up events and gamepad sticks.",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "dev": "tsx watch --clear-screen=false src/server.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@stoprocent/noble": "2.8.0",
+    "esbuild": "^0.28.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/ws": "^8.18.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0"
+  }
+}
