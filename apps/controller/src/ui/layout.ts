@@ -29,8 +29,12 @@ export interface RowLayout extends SharedLayout {
 /** Portrait: the header on top, then the launcher, then the stick at the bottom where the thumb rests. */
 export interface ColumnLayout extends SharedLayout {
   arrangement: "column";
-  /** Height left over above the launcher; the controls sit low, toward the thumb. */
-  spacer: number;
+  /** Whether the spare height shows the ACEMATE wordmark above the launcher. */
+  wordmark: boolean;
+  /** Spare height above the launcher, holding the wordmark with a little room around it. */
+  spacerTop: number;
+  /** Spare height under the stick: most of the slack, so the launcher and stick sit higher (owner, 2026-10-14). */
+  spacerBottom: number;
 }
 
 export type DriveLayout = RowLayout | ColumnLayout;

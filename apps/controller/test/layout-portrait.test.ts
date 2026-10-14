@@ -31,14 +31,14 @@ const STICK_SWITCH = 50;
 
 function stackHeight(layout: ColumnLayout): number {
   const used = HEADER + HEADER_GAP + portraitLauncherHeight(layout) + FIRE_GUARD + STICK_SWITCH + layout.column;
-  return layout.paddingTop + used + layout.paddingBottom;
+  return layout.paddingTop + used + layout.spacerTop + layout.spacerBottom + layout.paddingBottom;
 }
 
 describe("portrait layout", () => {
   it.each([...PHONES, ...BROWSERS])("fits the header, launcher and stick in the height at %o", (screen) => {
     const layout = computePortraitLayout(screen);
 
-    expect(stackHeight(layout)).toBeLessThanOrEqual(screen.height);
+    expect(stackHeight(layout)).toBe(screen.height);
     expect(layout.panel).toBeLessThanOrEqual(screen.width - 2 * layout.paddingH);
     expect(layout.stickWidth).toBeGreaterThanOrEqual(180);
   });
@@ -55,6 +55,15 @@ describe("portrait layout", () => {
     const layout = computePortraitLayout({ width: 440, height: 956, insets: portrait(62, 34) });
 
     expect(layout).toMatchObject({ paddingTop: 62, paddingBottom: 34, column: 220, pad: 260 });
+  });
+
+  it("keeps 30% of the slack around the wordmark and puts the rest under the stick", () => {
+    const layout = computePortraitLayout({ width: 440, height: 956, insets: portrait(62, 34) });
+    const slack = layout.spacerTop - 24 + layout.spacerBottom;
+
+    expect(layout.wordmark).toBe(true);
+    expect(layout.spacerTop - 24).toBe(Math.floor(slack * 0.3));
+    expect(layout.spacerBottom).toBeGreaterThan(layout.spacerTop - 24);
   });
 
   it("moves the pad beside the controls in a short browser window", () => {

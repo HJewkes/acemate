@@ -35,6 +35,10 @@ const STICK_MIN = 110;
 const PAD_MIN = 110;
 // The stick never takes more than this share of the width, leaving the thumb room around it.
 const STICK_WIDTH_SHARE = 0.6;
+/** The wordmark's line height; it shows only when the spare height can hold it. */
+export const WORDMARK_HEIGHT = 24;
+// The share of the slack kept around the wordmark; the rest goes under the stick (owner: 70% less around the logo).
+const AROUND_WORDMARK = 0.3;
 // Everything that is not the stick or the pad: header, gaps, the launcher's chrome and the switch.
 const FIXED = HEADER + HEADER_GAP + FIRE_GUARD + STICK_SWITCH;
 
@@ -99,8 +103,16 @@ export function computePortraitLayout(input: LayoutInput): ColumnLayout {
     paddingH: frame.paddingH,
     paddingTop: frame.paddingTop,
     paddingBottom: frame.paddingBottom,
-    spacer: Math.max(0, frame.room - used),
+    ...splitSpare(Math.max(0, frame.room - used)),
   };
+}
+
+/** The wordmark keeps 30% of the slack around it, top and bottom; the other 70% sits under the stick. */
+function splitSpare(spare: number): Pick<ColumnLayout, "wordmark" | "spacerTop" | "spacerBottom"> {
+  const wordmark = spare >= WORDMARK_HEIGHT;
+  const slack = wordmark ? spare - WORDMARK_HEIGHT : spare;
+  const around = Math.floor(slack * AROUND_WORDMARK);
+  return { wordmark, spacerTop: around + (wordmark ? WORDMARK_HEIGHT : 0), spacerBottom: slack - around };
 }
 
 /** The landscape row or the portrait column, whichever the window's shape calls for. */
