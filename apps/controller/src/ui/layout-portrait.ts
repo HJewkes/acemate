@@ -2,6 +2,7 @@ import {
   LABEL_MIN,
   NO_INSETS,
   PANEL_INSET,
+  STICK_SWITCH,
   WIDE_GAP,
   WIDE_SIDE,
   WIDE_SIDE_HEIGHT,
@@ -24,8 +25,6 @@ export const HEADER_GAP = 12;
 const STACKED_CHROME = 192;
 /** Space between Fire and the Strafe / Turn switch, so a thumb on the switch is well clear of Fire. */
 export const FIRE_GUARD = 16;
-/** The Strafe / Turn switch and its gap above the stick. */
-const STICK_SWITCH = 50;
 // The stick and pad stay near the owner-tuned landscape stick (200), and the pad no larger than is useful.
 const STICK_MAX = 220;
 const PAD_MAX = 260;
@@ -35,6 +34,11 @@ const STICK_MIN = 110;
 const PAD_MIN = 110;
 // The stick never takes more than this share of the width, leaving the thumb room around it.
 const STICK_WIDTH_SHARE = 0.6;
+/**
+ * The shortest portrait window, in points, whose stack still fits for widths 360-440. Below it the stick is held at
+ * STICK_MIN and the stack overflows. The wide launcher grows with width, so 360 and 375 fit down to 426 and 393 to 443.
+ */
+export const PORTRAIT_MIN_HEIGHT = 490;
 /** The wordmark's line height; it shows only when the spare height can hold it. */
 export const WORDMARK_HEIGHT = 24;
 // The share of the slack kept around the wordmark; the rest goes under the stick (owner: 70% less around the logo).

@@ -29,7 +29,7 @@ export function PortraitDrive({ layout, ...props }: DriveProps & { layout: Colum
       </View>
       <LauncherPanel robot={robot} shot={props.shot} onShot={props.onShot} hold={props.hold} layout={layout} />
       <StickGroup {...props} size={layout.column} knob={layout.knob} width={layout.stickWidth} style={styles.stick} />
-      <View style={styles.bottom} />
+      <View style={[styles.bottom, { height: layout.spacerBottom }]} />
     </>
   );
 }
@@ -47,8 +47,8 @@ function createStyles(palette: Palette) {
       fontWeight: "800",
       letterSpacing: 6,
     },
-    // Takes the spare height under the stick (layout.spacerBottom), absorbing any rounding.
-    bottom: { flex: 1 },
+    // The spare height under the stick (layout.spacerBottom); it may shrink so rounding can never push content off screen.
+    bottom: { flexShrink: 1 },
     stick: { alignSelf: "center", marginTop: FIRE_GUARD },
   });
 }

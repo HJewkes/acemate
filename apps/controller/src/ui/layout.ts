@@ -84,7 +84,7 @@ const ROW_MIN_WIDTH = 600;
 // Below this stacked size the pad and labels get cramped, so a short, wide screen moves the pad beside the controls.
 const WIDE_BELOW = 170;
 // The Strafe / Turn switch and its gap above the stick.
-const STICK_SWITCH = 50;
+export const STICK_SWITCH = 50;
 
 export const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
