@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        workspace: [packages/core, tools/cli, apps/web, apps/controller]
+        workspace: [packages/core, tools/cli, apps/controller]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,14 +40,11 @@ jobs:
         working-directory: ${{ matrix.workspace }}
       - run: npm test
         working-directory: ${{ matrix.workspace }}
-      - if: matrix.workspace == 'apps/web'
-        run: npm run build
-        working-directory: apps/web
 
   apps-controller-web:
     runs-on: ubuntu-latest
     env:
-      EXPO_BASE_URL: /acemate/next
+      EXPO_BASE_URL: /acemate
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

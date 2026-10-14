@@ -2,7 +2,7 @@ import { NUS_NOTIFY, NUS_SERVICE, NUS_WRITE } from "@acemate/core";
 import type { ByteChannel } from "./channel";
 import { dashedUuid } from "./uuid";
 
-// The slice of Web Bluetooth this uses, so tests can pass a fake navigator.bluetooth (as apps/web/src/ble-link.ts).
+// The slice of Web Bluetooth this uses, so tests can pass a fake navigator.bluetooth.
 export interface BleCharacteristic extends EventTarget {
   readonly value?: DataView | null;
   writeValueWithResponse(value: Uint8Array): Promise<void>;

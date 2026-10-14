@@ -18,7 +18,7 @@ const targetShot = { kind: "target", x: 3.2, z: 21, heightLevel: 4, spin: 1 } as
 
 type Write = { mode: "with" | "without"; text: string };
 
-// Adapted from apps/web/test/ble-link.test.ts: a GATT characteristic whose writes the test can hold open.
+// A GATT characteristic whose writes the test can hold open.
 class FakeCharacteristic extends EventTarget implements BleCharacteristic {
   value: DataView | null = null;
   writes: Write[] = [];
