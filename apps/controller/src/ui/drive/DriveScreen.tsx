@@ -50,7 +50,7 @@ export function DriveScreen({
         <View
           style={[
             styles.stickColumn,
-            { width: layout.column, transform: [{ translateX: layout.nudgeX }, { translateY: layout.nudgeY }] },
+            { width: layout.stickWidth, transform: [{ translateX: layout.nudgeX }, { translateY: layout.nudgeY }] },
           ]}
         >
           <Segmented options={HORIZONTAL_OPTIONS} selected={horizontal} onSelect={onHorizontal} />
@@ -62,7 +62,7 @@ export function DriveScreen({
           <KeysHelp />
         </View>
         <View style={{ transform: [{ translateX: -layout.nudgeX }] }}>
-          <LauncherPanel robot={robot} shot={shot} onShot={onShot} hold={hold} width={layout.column} />
+          <LauncherPanel robot={robot} shot={shot} onShot={onShot} hold={hold} layout={layout} />
         </View>
       </View>
     </View>
@@ -80,7 +80,7 @@ function createStyles(palette: Palette) {
     },
     body: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
     // Width and the owner's inward/downward nudges come from computeLayout, so they scale with the screen.
-    stickColumn: { gap: 10 },
+    stickColumn: { gap: 10, alignItems: "center" },
     // Wordmark and device chip as one group, centred vertically on the whole screen (not the body under the top bar).
     centre: { alignItems: "center", gap: 10, transform: [{ translateY: -22 }] },
     wordmark: { color: palette.wordmark, fontSize: 20, fontWeight: "800", letterSpacing: 6 },

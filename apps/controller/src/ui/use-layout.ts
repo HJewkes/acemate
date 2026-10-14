@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useWindowDimensions } from "react-native";
+import { Platform, useWindowDimensions } from "react-native";
 import { computeLayout, type DriveLayout } from "./layout";
 import type { Size } from "./web-shell";
 
@@ -13,5 +13,6 @@ export function useFrame(): Size | null {
 /** The drive layout for the frame, or else the window; recomputes on rotation or resize. */
 export function useDriveLayout(): DriveLayout {
   const window = useWindowDimensions();
-  return computeLayout(useFrame() ?? window);
+  const frame = useFrame();
+  return computeLayout({ ...(frame ?? window), inset: Platform.OS !== "web" || frame !== null });
 }

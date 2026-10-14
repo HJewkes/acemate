@@ -8,11 +8,12 @@ import type { RobotView } from "../../robot/use-robot";
 import { DEFAULT_ASSUMPTIONS, SPANS, describeShot, type Aim } from "@acemate/core";
 import { AimPad } from "../launcher/AimPad";
 import { SpinSegmented, HorizontalSlider } from "../launcher/inputs";
+import { PANEL_INSET, WIDE_GAP, WIDE_SIDE, type DriveLayout } from "../layout";
 import { useThemedStyles, type Palette } from "../theme";
 import { useFlash } from "../use-clock";
 
-// The whole panel matches the thumbstick column (owner, 2026-10-12), so both sides mirror and the centre group sits mid-screen.
-const PANEL_PADDING = 10;
+// The stacked panel matches the thumbstick column (owner, 2026-10-12), so both sides mirror and the centre group sits mid-screen.
+const PANEL_PADDING = PANEL_INSET - 2;
 const NOTICE_MS = 4000;
 // Hardware has not yet confirmed which way +direction aims.
 const { flipDirection } = DEFAULT_ASSUMPTIONS;
@@ -22,31 +23,74 @@ interface Props {
   shot: Shot;
   onShot: Dispatch<SetStateAction<Shot>>;
   hold: HoldFireView;
-  /** Matches the thumbstick column, so both sides mirror and the centre group stays centred. */
-  width: number;
+  /** Panel width, pad size and shape, from computeLayout. */
+  layout: Pick<DriveLayout, "launcher" | "panel" | "pad">;
 }
 
 /** Spin, speed, the square aim pad, a one-line readout, and the hold-to-fire bar. Nothing here drives. */
-export function LauncherPanel({ robot, shot, onShot, hold, width }: Props) {
-  // Speed sits under spin, so the aim pad gets the full inner width as a square.
-  const aimPad = width - 2 * PANEL_PADDING;
+export function LauncherPanel({ robot, shot, onShot, hold, layout }: Props) {
+  const { launcher, panel, pad } = layout;
   const styles = useThemedStyles(createStyles);
   const setAim = useCallback((aim: Aim) => onShot((current) => ({ ...current, ...aim })), [onShot]);
-  const setSpeed = useCallback((speed: number) => onShot((current) => ({ ...current, speed })), [onShot]);
-  const setSpin = useCallback((spin: number) => onShot((current) => ({ ...current, spin })), [onShot]);
-  const notice = useFlash(launchNotice(robot.launch.log[0]), robot.launch.reportedAt, NOTICE_MS);
+  const aimPad = <AimPad aim={shot} width={pad} height={pad} flipDirection={flipDirection} onAim={setAim} />;
+  if (launcher === "wide") {
+    // The pad on the left, nearest the centre; spin, speed, readout and Fire beside it, Fire at the thumb.
+    return (
+      <View style={[styles.panel, shapes.widePanel, { width: panel }]}>
+        {aimPad}
+        <View style={[shapes.wideSide, { width: WIDE_SIDE, height: pad }]}>
+          <View style={shapes.wideGroup}>
+            <ShotControls shot={shot} onShot={onShot} />
+          </View>
+          <Readout robot={robot} shot={shot} lines={3} />
+          <FireBar robot={robot} hold={hold} />
+        </View>
+      </View>
+    );
+  }
   return (
-    <View style={[styles.panel, { width }]}>
-      <SpinSegmented spin={shot.spin} onChange={setSpin} />
-      <HorizontalSlider label="Speed" value={shot.speed} span={SPANS.speed} onChange={setSpeed} />
-      <AimPad aim={shot} width={aimPad} height={aimPad} flipDirection={flipDirection} onAim={setAim} />
-      <Text style={[styles.readout, notice !== null && styles.notice]} numberOfLines={1} adjustsFontSizeToFit>
-        {notice ?? describeShot(singleBall(shot), flipDirection)}
-      </Text>
+    <View style={[styles.panel, { width: panel }]}>
+      <ShotControls shot={shot} onShot={onShot} />
+      <View style={shapes.padSlot}>{aimPad}</View>
+      <Readout robot={robot} shot={shot} lines={1} />
       <FireBar robot={robot} hold={hold} />
     </View>
   );
 }
+
+function ShotControls({ shot, onShot }: Pick<Props, "shot" | "onShot">) {
+  const setSpeed = useCallback((speed: number) => onShot((current) => ({ ...current, speed })), [onShot]);
+  const setSpin = useCallback((spin: number) => onShot((current) => ({ ...current, spin })), [onShot]);
+  return (
+    <>
+      <SpinSegmented spin={shot.spin} onChange={setSpin} />
+      <HorizontalSlider label="Speed" value={shot.speed} span={SPANS.speed} onChange={setSpeed} />
+    </>
+  );
+}
+
+/** The shot in words, or a launch notice for a few seconds. Web has no shrink-to-fit text, so wide gets more lines. */
+function Readout({ robot, shot, lines }: Pick<Props, "robot" | "shot"> & { lines: number }) {
+  const styles = useThemedStyles(createStyles);
+  const notice = useFlash(launchNotice(robot.launch.log[0]), robot.launch.reportedAt, NOTICE_MS);
+  return (
+    <Text
+      style={[styles.readout, notice !== null && styles.notice]}
+      numberOfLines={lines}
+      adjustsFontSizeToFit={lines === 1}
+    >
+      {notice ?? describeShot(singleBall(shot), flipDirection)}
+    </Text>
+  );
+}
+
+// Theme-free arrangement of the two launcher shapes.
+const shapes = StyleSheet.create({
+  widePanel: { flexDirection: "row", gap: WIDE_GAP },
+  wideSide: { justifyContent: "space-between", gap: 6 },
+  wideGroup: { gap: 6 },
+  padSlot: { alignItems: "center" },
+});
 
 function FireBar({ robot, hold }: Pick<Props, "robot" | "hold">) {
   const styles = useThemedStyles(createStyles);

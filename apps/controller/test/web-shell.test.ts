@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeLayout } from "../src/ui/layout";
+import { computeLayout, launcherHeight } from "../src/ui/layout";
 import { BEZEL, SHELL_MARGIN, computeWebShell } from "../src/ui/web-shell";
 
 const TALL = 900;
@@ -53,7 +53,7 @@ describe("web shell", () => {
 
     expect(layout.column).toBeGreaterThanOrEqual(130);
     expect(layout.column).toBeLessThanOrEqual(260);
-    expect(layout.column + 164).toBeLessThanOrEqual(frame.height - 76);
+    expect(launcherHeight(layout)).toBeLessThanOrEqual(frame.height - 76);
     expect(frame.width / frame.height).toBeCloseTo(956 / 440, 1);
   });
 });
