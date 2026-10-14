@@ -12,17 +12,20 @@ const laptop = (name, width, height) => ({ name, width, height, insets: NONE, to
 const portrait = (name, width, height, insets = NONE) => ({ ...touch(name, width, height, insets), strict: false });
 
 export const VIEWPORTS = [
+  // The owner's phone first, so it leads the contact sheet. The letterboxed Bluefy size is measured from a
+  // screenshot of the app in Bluefy on it: the page spans 833×360 between Bluefy's side bars and toolbar.
+  touch("iPhone 17 Pro Max", 956, 440, island(62, 20)),
+  touch("Bluefy 17 Pro Max letterboxed", 833, 360),
+  touch("Bluefy 17 Pro Max edge-to-edge", 956, 360, island(62, 0)),
+  portrait("Portrait iPhone 17 Pro Max", 440, 956, islandPortrait(62)),
   touch("iPhone SE", 667, 375),
   touch("iPhone 13 mini", 812, 375, island(50, 21)),
   touch("iPhone 15", 852, 393, island(59, 21)),
   touch("iPhone 16 Pro", 874, 402, island(62, 20)),
   touch("iPhone 15 Plus", 932, 430, island(59, 21)),
-  touch("iPhone 17 Pro Max", 956, 440, island(62, 20)),
   // Bluefy's toolbar takes height; it may letterbox the page or, honouring viewport-fit=cover, run edge to edge.
   touch("Bluefy SE", 667, 320),
   touch("Bluefy 15 letterboxed", 734, 340),
-  touch("Bluefy 17 Pro Max letterboxed", 833, 360),
-  touch("Bluefy 17 Pro Max edge-to-edge", 956, 360, island(62, 0)),
   touch("Android Chrome small", 732, 320),
   touch("Android Chrome", 860, 360),
   touch("iPad mini", 1133, 744, { ...NONE, bottom: 20 }),
@@ -32,7 +35,6 @@ export const VIEWPORTS = [
   laptop("Laptop 1440", 1440, 900),
   portrait("Portrait iPhone SE", 375, 667),
   portrait("Portrait iPhone 15", 393, 852, islandPortrait(59)),
-  portrait("Portrait iPhone 17 Pro Max", 440, 956, islandPortrait(62)),
   portrait("Portrait Android", 360, 780),
   portrait("Portrait iPad mini", 744, 1133, { ...NONE, bottom: 20 }),
 ];
