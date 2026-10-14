@@ -41,6 +41,7 @@ export function Thumbstick({ size, knob, onChange }: Props) {
       <View
         style={[styles.pad, { width: size, height: size, borderRadius: size / 2 }]}
         accessibilityLabel="Drive stick"
+        testID="drive-stick"
       >
         <View style={[styles.travel, { width: radius * 2, height: radius * 2, borderRadius: radius }]} />
         <View

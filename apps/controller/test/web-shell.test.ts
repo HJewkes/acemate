@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { computeLayout, launcherHeight } from "../src/ui/layout";
-import { BEZEL, SHELL_MARGIN, computeWebShell } from "../src/ui/web-shell";
+import { BEZEL, PHONE_INSETS, SHELL_MARGIN, computeWebShell } from "../src/ui/web-shell";
 
 const TALL = 900;
 
@@ -49,11 +49,11 @@ describe("web shell", () => {
     { width: 1920, height: 1080 },
   ])("sizes a frame the drive layout fits at %o", (window) => {
     const { frame } = framed(window);
-    const layout = computeLayout(frame);
+    const layout = computeLayout({ ...frame, insets: PHONE_INSETS });
 
     expect(layout.column).toBeGreaterThanOrEqual(130);
     expect(layout.column).toBeLessThanOrEqual(260);
-    expect(launcherHeight(layout)).toBeLessThanOrEqual(frame.height - 76);
+    expect(launcherHeight(layout)).toBeLessThanOrEqual(frame.height - 44 - layout.paddingTop - layout.paddingBottom);
     expect(frame.width / frame.height).toBeCloseTo(956 / 440, 1);
   });
 });

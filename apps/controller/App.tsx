@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState, type SetStateAction } from "react";
 import { AppState, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Controller } from "./src/control/controller";
 import { useKeysAndPad } from "./src/control/use-keys-and-pad";
 import { requestedProbe } from "./src/debug/probe-env";
@@ -60,35 +61,37 @@ export default function App() {
   const robotName = robot.status === "connected" ? robot.detail : (lastRobot?.name ?? "No robot");
   return (
     <ThemeContext.Provider value={PALETTES[theme]}>
-      <GestureHandlerRootView style={[styles.root, { backgroundColor: PALETTES[theme].page }]}>
-        <StatusBar hidden />
-        <WebShell robot={robot} shot={aimShot}>
-          <DriveScreen
+      <SafeAreaProvider>
+        <GestureHandlerRootView style={[styles.root, { backgroundColor: PALETTES[theme].page }]}>
+          <StatusBar hidden />
+          <WebShell robot={robot} shot={aimShot}>
+            <DriveScreen
+              robot={robot}
+              robotName={robotName}
+              onOpenMenu={menu.show}
+              horizontal={horizontal}
+              onHorizontal={setHorizontal}
+              onStick={setStick}
+              shot={aimShot}
+              onShot={setAimShot}
+              hold={hold}
+            />
+          </WebShell>
+          <DeviceMenu
+            visible={menu.open}
+            onClose={menu.hide}
             robot={robot}
-            robotName={robotName}
-            onOpenMenu={menu.show}
-            horizontal={horizontal}
-            onHorizontal={setHorizontal}
-            onStick={setStick}
-            shot={aimShot}
-            onShot={setAimShot}
-            hold={hold}
+            lastRobot={lastRobot}
+            theme={theme}
+            onTheme={setTheme}
+            allowDriveDuringRun={allowDriveDuringRun}
+            onAllowDriveDuringRun={setAllowDrive}
+            maxUnackedWrite={maxUnackedWrite}
+            onMaxUnackedWrite={setWriteLimit}
           />
-        </WebShell>
-        <DeviceMenu
-          visible={menu.open}
-          onClose={menu.hide}
-          robot={robot}
-          lastRobot={lastRobot}
-          theme={theme}
-          onTheme={setTheme}
-          allowDriveDuringRun={allowDriveDuringRun}
-          onAllowDriveDuringRun={setAllowDrive}
-          maxUnackedWrite={maxUnackedWrite}
-          onMaxUnackedWrite={setWriteLimit}
-        />
-        {probe && <ProbePanel env={probe} onClose={() => setProbe(null)} />}
-      </GestureHandlerRootView>
+          {probe && <ProbePanel env={probe} onClose={() => setProbe(null)} />}
+        </GestureHandlerRootView>
+      </SafeAreaProvider>
     </ThemeContext.Provider>
   );
 }

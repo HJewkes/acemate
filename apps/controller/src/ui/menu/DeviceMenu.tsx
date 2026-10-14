@@ -2,15 +2,18 @@ import { Modal, Platform, Pressable, StyleSheet, Switch, Text, View } from "reac
 import { useNearbyRobots } from "../../robot/use-nearby-robots";
 import type { RobotView } from "../../robot/use-robot";
 import type { SavedRobot, UnackedLimit } from "../../storage/settings";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Segmented } from "../launcher/inputs";
 import { useTheme, useThemedStyles, type Palette, type ThemeName } from "../theme";
 import { DebugLog } from "./DebugLog";
 import { DeviceList } from "./DeviceList";
 import { WriteLimit } from "./WriteLimit";
 
-const THEME_OPTIONS: { value: ThemeName; label: string }[] = [
-  { value: "dark", label: "☾ Dark" },
-  { value: "light", label: "☀ Light" },
+const SHEET_MARGIN_H = 20;
+const SHEET_MARGIN_V = 14;
+const THEME_OPTIONS: { value: ThemeName; label: string; short: string }[] = [
+  { value: "dark", label: "☾ Dark", short: "☾" },
+  { value: "light", label: "☀ Light", short: "☀" },
 ];
 
 export interface MenuSettings {
@@ -35,6 +38,7 @@ export function DeviceMenu({ visible, onClose, robot, lastRobot, ...settings }: 
   // A scan replaces ble-plx's single scan slot, so it must not run while connect is scanning for its robot.
   const idle = robot.status === "connected" || robot.status === "disconnected";
   const nearby = useNearbyRobots(visible && idle);
+  const clearance = useSheetClearance();
   return (
     <Modal
       visible={visible}
@@ -43,7 +47,7 @@ export function DeviceMenu({ visible, onClose, robot, lastRobot, ...settings }: 
       supportedOrientations={["landscape"]}
       onRequestClose={onClose}
     >
-      <View style={styles.backdrop}>
+      <View style={[styles.backdrop, clearance]}>
         <View style={styles.sheet}>
           <View style={styles.titleRow}>
             <Text style={styles.title}>DEVICE MENU</Text>
@@ -64,6 +68,18 @@ export function DeviceMenu({ visible, onClose, robot, lastRobot, ...settings }: 
       </View>
     </Modal>
   );
+}
+
+/** Keeps the sheet clear of the Dynamic Island and home indicator, with a margin where there are none. */
+function useSheetClearance() {
+  const insets = useSafeAreaInsets();
+  const side = Math.max(SHEET_MARGIN_H, insets.left, insets.right);
+  return {
+    paddingLeft: side,
+    paddingRight: side,
+    paddingTop: Math.max(SHEET_MARGIN_V, insets.top),
+    paddingBottom: Math.max(SHEET_MARGIN_V, insets.bottom),
+  };
 }
 
 function SettingsColumn({ theme, onTheme, allowDriveDuringRun, onAllowDriveDuringRun }: MenuSettings) {
@@ -94,7 +110,7 @@ function SettingsColumn({ theme, onTheme, allowDriveDuringRun, onAllowDriveDurin
 
 function createStyles(palette: Palette) {
   return StyleSheet.create({
-    backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", paddingHorizontal: 56, paddingVertical: 14 },
+    backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)" },
     sheet: {
       flex: 1,
       padding: 12,

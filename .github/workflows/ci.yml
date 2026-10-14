@@ -58,6 +58,18 @@ jobs:
         working-directory: apps/controller
       - run: npm run check:web
         working-directory: apps/controller
+      - run: npx playwright install --with-deps chromium
+        working-directory: apps/controller
+      # Renders the export at every phone, tablet and laptop size with safe-area insets emulated; fails on text
+      # that is ellipsized or cut off, and on controls off screen, under an inset or overlapping.
+      - run: npm run check:viewports
+        working-directory: apps/controller
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: viewport-report
+          path: apps/controller/viewport-report
+          if-no-files-found: ignore
 
   check:
     if: always()

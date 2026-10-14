@@ -3,6 +3,7 @@ import { deviceRows, rssiBars, type DeviceRow } from "../../robot/device-list";
 import type { RobotView } from "../../robot/use-robot";
 import type { NearbyRobots } from "../../robot/use-nearby-robots";
 import type { SavedRobot } from "../../storage/settings";
+import { FitText } from "../text/FitText";
 import { useThemedStyles, type Palette } from "../theme";
 
 export interface DeviceListProps {
@@ -51,9 +52,7 @@ function DeviceRowView({ row, busy, robot }: { row: DeviceRow; busy: boolean; ro
         accessibilityLabel={`Connect to ${row.name}`}
       >
         <SignalBars bars={rssiBars(row.rssi)} />
-        <Text style={styles.name} numberOfLines={1}>
-          {row.name}
-        </Text>
+        <FitText text={row.name} style={styles.name} />
         {row.connected && <Text style={styles.badge}>connected</Text>}
       </Pressable>
       {row.connected && (

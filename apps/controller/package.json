@@ -16,6 +16,7 @@
     "react-native": "0.83.10",
     "react-native-ble-plx": "^3.5.1",
     "react-native-gesture-handler": "~2.30.0",
+    "react-native-safe-area-context": "~5.6.2",
     "react-native-web": "^0.21.0"
   },
   "devDependencies": {
@@ -34,7 +35,8 @@
     "web": "expo start --web",
     "export:web": "expo export -p web",
     "check:web": "node scripts/check-web-export.mjs dist \"$EXPO_BASE_URL\"",
-    "screenshots": "node scripts/capture-screenshots.mjs dist ../../assets"
+    "screenshots": "node scripts/capture-screenshots.mjs dist ../../assets",
+    "check:viewports": "node scripts/check-viewports.mjs dist viewport-report"
   },
   "private": true
 }
