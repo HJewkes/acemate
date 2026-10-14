@@ -1,7 +1,6 @@
 // The screens the drive screen and device menu must fit, in CSS pixels, with each one's safe-area insets.
 // Insets are Apple's published values: the Dynamic Island or notch on the sides in landscape and on top in portrait,
 // the home indicator at the bottom. A browser that letterboxes the page (Bluefy without viewport-fit) reports none.
-// `strict: false` reports problems without failing the check: portrait stays report-only until it has its own layout.
 
 const NONE = { top: 0, right: 0, bottom: 0, left: 0 };
 const island = (side, bottom) => ({ top: 0, right: side, bottom, left: side });
@@ -9,7 +8,7 @@ const islandPortrait = (top) => ({ top, right: 0, bottom: 34, left: 0 });
 
 const touch = (name, width, height, insets = NONE) => ({ name, width, height, insets, touch: true, strict: true });
 const laptop = (name, width, height) => ({ name, width, height, insets: NONE, touch: false, strict: true });
-const portrait = (name, width, height, insets = NONE) => ({ ...touch(name, width, height, insets), strict: false });
+const portrait = touch;
 
 export const VIEWPORTS = [
   // The owner's phone first, so it leads the contact sheet. The letterboxed Bluefy size is measured from a
@@ -35,6 +34,14 @@ export const VIEWPORTS = [
   laptop("Laptop 1440", 1440, 900),
   portrait("Portrait iPhone SE", 375, 667),
   portrait("Portrait iPhone 15", 393, 852, islandPortrait(59)),
-  portrait("Portrait Android", 360, 780),
+  portrait("Portrait Android", 360, 780, { top: 32, right: 0, bottom: 24, left: 0 }),
+  portrait("Portrait Pixel", 412, 915, { top: 32, right: 0, bottom: 24, left: 0 }),
+  // Browser toolbars take height in portrait too; these use the compact launcher or a smaller stacked one.
+  portrait("Portrait Bluefy 17 Pro Max", 440, 790),
+  portrait("Portrait Safari iPhone 15", 393, 659),
+  portrait("Portrait Safari SE", 375, 548),
+  portrait("Portrait Android Chrome", 360, 640),
+  // Portrait iPads keep the landscape row; Split View narrows a window to a phone-like column.
   portrait("Portrait iPad mini", 744, 1133, { ...NONE, bottom: 20 }),
+  portrait("iPad Split View", 375, 1133, { ...NONE, bottom: 20 }),
 ];

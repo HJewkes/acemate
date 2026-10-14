@@ -65,11 +65,13 @@ Safari and Chrome on iOS have no Web Bluetooth. Install the free Bluefy browser 
 
 ![Hold to fire, part-way through the hold](assets/hold-to-fire.png)
 
+<img src="assets/drive-portrait.png" alt="Drive screen in portrait" width="220"> <img src="assets/device-menu-portrait.png" alt="Device menu in portrait" width="220">
+
 _Captured from the web build in mock mode: `npm run export:web && npm run screenshots` in `apps/controller`._
 
 ## Screen tour
 
-The drive screen is landscape, with three parts:
+The drive screen works in landscape and portrait. In landscape it has three parts:
 
 - **Left: the stick.** Push up or down to drive forward or back. Sideways either strafes or turns, chosen by the **Strafe / Turn** switch under the stick. The robot runs one motion at a time, so the strongest push wins.
 - **Centre: the wordmark and device chip.** The chip shows the link status. Tap it to open the device menu, which has:
@@ -83,6 +85,11 @@ The drive screen is landscape, with three parts:
   - The aim pad: across sets direction, and up sets elevation.
   - The fire bar. Hold it until it fills to fire one ball.
 - **Top right: the run chip.** It appears while a run is active, showing the mode and the elapsed time. Tap it to stop the run.
+- The aim readout under the pad shows direction and elevation; speed and spin are on the controls above it. Labels never end in "…": a label that doesn't fit shrinks, then shows its icon (Strafe / Turn become ↔ / ↻).
+
+In portrait the same controls stack, top to bottom: the device chip (with Keys and the run chip beside it), the launcher at full width, then the Strafe / Turn switch and the stick at the bottom, where your thumb rests. The switch keeps Fire well clear of the stick. In a short browser window the aim pad moves beside spin, speed and Fire. Portrait iPads keep the landscape layout. In portrait the device menu is one scrolling sheet with a **Done** button at the bottom.
+
+Turning the phone mid-drive stops the robot: the stick is rebuilt under your thumb, so lift it and press again to drive.
 
 ## Controls
 
@@ -161,7 +168,7 @@ In a browser, the app never connects by itself, because the browser's chooser ne
 - `tools/cli` (`@acemate/cli`) is a laptop CLI over Node BLE. Run `npx acemate --help` from the root for `scan`, `listen [--watch S]`, `drive`, `pulse`, `launch` (a dry run unless given `--fire`) and `send '<json>' [--watch S]`, which writes one raw request and prints every reply. `send` refuses OTA (any type with `ota` in it, `mcu_ota`, `ap` with purpose `ota`), the `upload` and `trigger_update` paths, `start_calib_extrinsic` and `set_court_profile`. Every frame is logged to `acemate.jsonl`.
 - Tests per package: `npm test` and `npm run typecheck` inside it, or both across every workspace from the root.
 - From the root: `npm run lint` and `npm run format:check`.
-- Layout check for `apps/controller`: `npm run export:web && npm run check:viewports` renders the web build in mock mode at every size in `scripts/viewports.mjs` (iPhones with their Dynamic Island or notch insets emulated, Bluefy and Android browser windows, iPads, laptops), with the drive screen disconnected, the device menu open, and connected. It fails on text that ends in "…" or is cut off, a box or control off screen, under a safe-area inset or spilling out of its panel, and overlapping controls. It writes `viewport-report/index.html`, a contact sheet with each problem outlined in red and the insets shaded; CI uploads it as the `viewport-report` artifact. Set `CHROMIUM_PATH` if Playwright's own Chromium is not installed. Portrait sizes are report-only until portrait has its own layout.
+- Layout check for `apps/controller`: `npm run export:web && npm run check:viewports` renders the web build in mock mode at every size in `scripts/viewports.mjs` (iPhones with their Dynamic Island or notch insets emulated, Bluefy and Android browser windows, iPads, laptops), with the drive screen disconnected, the device menu open, and connected. It fails on text that ends in "…" or is cut off, a box or control off screen, under a safe-area inset or spilling out of its panel, and overlapping controls. It writes `viewport-report/index.html`, a contact sheet with each problem outlined in red and the insets shaded; CI uploads it as the `viewport-report` artifact. Set `CHROMIUM_PATH` if Playwright's own Chromium is not installed. Portrait sizes are checked as strictly as landscape.
 - Labels never end in "…": use `FitText` (`src/ui/text`), which shrinks a label to fit, then swaps in its `short` form (usually its icon), then wraps. `Segmented` switches all its labels to their icons together.
 - CI must be green before merge. Work on a feature branch and open a pull request; do not push to `main`.
 

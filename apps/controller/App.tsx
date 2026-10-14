@@ -51,6 +51,7 @@ export default function App() {
     robot.fire(message);
   });
   useLatchOnBackground(controller, hold.cancel);
+  const latchOnTurn = useLatch(controller, hold.cancel);
   const menu = useDeviceMenu(controller, hold.cancel);
   useKeysAndPad(controller, { robot, hold, setShot: setAimShot }, menu.open);
 
@@ -75,6 +76,7 @@ export default function App() {
               shot={aimShot}
               onShot={setAimShot}
               hold={hold}
+              onArrangementChange={latchOnTurn}
             />
           </WebShell>
           <DeviceMenu
@@ -106,6 +108,15 @@ function useLatchOnBackground(controller: Controller, cancelHold: () => void) {
       cancelHold();
     });
     return () => subscription.remove();
+  }, [controller, cancelHold]);
+}
+
+// Turning the phone rebuilds the stick, which may never see the finger lift. Latch, as on leaving the app, so a thumb
+// still down cannot drive until it is released and pressed again.
+function useLatch(controller: Controller, cancelHold: () => void) {
+  return useCallback(() => {
+    controller.emergencyStop();
+    cancelHold();
   }, [controller, cancelHold]);
 }
 

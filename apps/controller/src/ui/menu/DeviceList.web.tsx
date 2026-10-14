@@ -16,13 +16,13 @@ function statusLine(robot: RobotView): string | null {
  * The web has no background scan: the browser's chooser lists nearby robots. Each button opens it straight from the
  * tap, since requestDevice needs the user gesture. Reconnect narrows the chooser to the saved robot.
  */
-export function DeviceList({ robot, lastRobot }: DeviceListProps) {
+export function DeviceList({ robot, lastRobot, style }: DeviceListProps) {
   const styles = useThemedStyles(createStyles);
   const busy = robot.status === "scanning" || robot.status === "connecting";
   const status = statusLine(robot);
   const reconnect = robot.current === null ? lastRobot : null;
   return (
-    <View style={styles.column}>
+    <View style={[styles.column, style]}>
       <View style={styles.header}>
         <Text style={styles.heading}>DEVICES</Text>
       </View>

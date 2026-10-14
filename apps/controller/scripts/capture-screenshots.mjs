@@ -6,10 +6,12 @@ import { SETTINGS_KEY, closeMenu, connectMock, launchBrowser, serve, settle } fr
 
 // The iPhone 17 Pro Max in landscape; too small for the laptop frame, so the drive screen fills it.
 const VIEWPORT = { width: 956, height: 440 };
+// The same phone in portrait.
+const PORTRAIT = { width: 440, height: 956 };
 const HOLD_SNAPSHOT_MS = 350;
 
-async function openApp(browser, url, theme) {
-  const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
+async function openApp(browser, url, theme, viewport = VIEWPORT) {
+  const context = await browser.newContext({ viewport, deviceScaleFactor: 2 });
   await context.addInitScript(
     ([key, value]) => localStorage.setItem(key, value),
     [SETTINGS_KEY, JSON.stringify({ theme })],
@@ -34,6 +36,11 @@ async function capture(browser, url, out) {
     if (theme === "dark") await captureHold(page, shot);
     await page.context().close();
   }
+  const page = await openApp(browser, url, "dark", PORTRAIT);
+  await shot(page, "device-menu-portrait");
+  await closeMenu(page);
+  await shot(page, "drive-portrait");
+  await page.context().close();
 }
 
 async function captureHold(page, shot) {

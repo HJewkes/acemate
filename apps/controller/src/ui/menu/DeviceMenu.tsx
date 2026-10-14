@@ -1,20 +1,14 @@
-import { Modal, Platform, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useNearbyRobots } from "../../robot/use-nearby-robots";
 import type { RobotView } from "../../robot/use-robot";
 import type { SavedRobot, UnackedLimit } from "../../storage/settings";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Segmented } from "../launcher/inputs";
-import { useTheme, useThemedStyles, type Palette, type ThemeName } from "../theme";
-import { DebugLog } from "./DebugLog";
-import { DeviceList } from "./DeviceList";
-import { WriteLimit } from "./WriteLimit";
+import { useScreenArrangement } from "../use-layout";
+import { useThemedStyles, type Palette, type ThemeName } from "../theme";
+import { MenuColumns, MenuStack } from "./MenuBody";
 
 const SHEET_MARGIN_H = 20;
 const SHEET_MARGIN_V = 14;
-const THEME_OPTIONS: { value: ThemeName; label: string; short: string }[] = [
-  { value: "dark", label: "☾ Dark", short: "☾" },
-  { value: "light", label: "☀ Light", short: "☀" },
-];
 
 export interface MenuSettings {
   theme: ThemeName;
@@ -32,19 +26,24 @@ interface Props extends MenuSettings {
   lastRobot: SavedRobot | null;
 }
 
-/** Devices, settings and the debug log. The caller centres the stick and blocks firing while it is open. */
+/**
+ * Devices, settings and the debug log: three columns in landscape, one scrolling stack in portrait with a Done button
+ * at the bottom, in reach of the thumb. The caller centres the stick and blocks firing while it is open.
+ */
 export function DeviceMenu({ visible, onClose, robot, lastRobot, ...settings }: Props) {
   const styles = useThemedStyles(createStyles);
   // A scan replaces ble-plx's single scan slot, so it must not run while connect is scanning for its robot.
   const idle = robot.status === "connected" || robot.status === "disconnected";
   const nearby = useNearbyRobots(visible && idle);
   const clearance = useSheetClearance();
+  const portrait = useScreenArrangement() === "column";
+  const body = { robot, nearby, lastRobot, settings };
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
-      supportedOrientations={["landscape"]}
+      animationType={portrait ? "slide" : "fade"}
+      supportedOrientations={["portrait", "landscape"]}
       onRequestClose={onClose}
     >
       <View style={[styles.backdrop, clearance]}>
@@ -55,15 +54,12 @@ export function DeviceMenu({ visible, onClose, robot, lastRobot, ...settings }: 
               <Text style={styles.closeText}>✕</Text>
             </Pressable>
           </View>
-          <View style={styles.columns}>
-            <DeviceList robot={robot} nearby={nearby} lastRobot={lastRobot} />
-            <SettingsColumn {...settings} />
-            <DebugLog>
-              {Platform.OS === "web" && (
-                <WriteLimit value={settings.maxUnackedWrite} onChange={settings.onMaxUnackedWrite} />
-              )}
-            </DebugLog>
-          </View>
+          {portrait ? <MenuStack {...body} /> : <MenuColumns {...body} />}
+          {portrait && (
+            <Pressable style={styles.done} onPress={onClose} accessibilityLabel="Done">
+              <Text style={styles.doneText}>Done</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </Modal>
@@ -80,32 +76,6 @@ function useSheetClearance() {
     paddingTop: Math.max(SHEET_MARGIN_V, insets.top),
     paddingBottom: Math.max(SHEET_MARGIN_V, insets.bottom),
   };
-}
-
-function SettingsColumn({ theme, onTheme, allowDriveDuringRun, onAllowDriveDuringRun }: MenuSettings) {
-  const palette = useTheme();
-  const styles = useThemedStyles(createStyles);
-  return (
-    <View style={styles.settings}>
-      <View style={styles.header}>
-        <Text style={styles.heading}>SETTINGS</Text>
-      </View>
-      <Text style={styles.label}>Theme</Text>
-      <Segmented options={THEME_OPTIONS} selected={theme} onSelect={onTheme} />
-      <View style={styles.switchRow}>
-        <Text style={styles.label}>Allow driving during runs</Text>
-        <Switch
-          value={allowDriveDuringRun}
-          onValueChange={onAllowDriveDuringRun}
-          trackColor={{ true: palette.accent, false: palette.track }}
-          accessibilityLabel="Allow driving during runs"
-        />
-      </View>
-      <Text style={styles.caption}>
-        Untested: the stock app never drives during a run. Firing still needs the robot stopped.
-      </Text>
-    </View>
-  );
 }
 
 function createStyles(palette: Palette) {
@@ -132,12 +102,13 @@ function createStyles(palette: Palette) {
       backgroundColor: palette.accent,
     },
     closeText: { color: palette.onAccent, fontSize: 24, fontWeight: "800", lineHeight: 26 },
-    columns: { flex: 1, flexDirection: "row", gap: 14 },
-    settings: { flex: 1, gap: 8 },
-    header: { height: 28, justifyContent: "center" },
-    heading: { color: palette.label, fontSize: 12, fontWeight: "800", letterSpacing: 1.5 },
-    label: { color: palette.text, fontSize: 13, fontWeight: "600", flexShrink: 1 },
-    switchRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, marginTop: 6 },
-    caption: { color: palette.textMuted, fontSize: 11, lineHeight: 15 },
+    done: {
+      height: 48,
+      borderRadius: 12,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: palette.accent,
+    },
+    doneText: { color: palette.onAccent, fontSize: 15, fontWeight: "800" },
   });
 }

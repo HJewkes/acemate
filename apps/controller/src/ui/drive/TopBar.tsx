@@ -56,7 +56,7 @@ export function ConnectionChip({ robot, robotName, onOpenMenu }: Props) {
   );
 }
 
-function RunChip({ launch, onStop }: { launch: LaunchView; onStop(): void }) {
+export function RunChip({ launch, onStop }: { launch: LaunchView; onStop(): void }) {
   const styles = useThemedStyles(createStyles);
   const visible = launch.runActive || launch.inFlight;
   const now = useNow(visible);

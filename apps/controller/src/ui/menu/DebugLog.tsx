@@ -6,20 +6,26 @@ import { useThemedStyles, type Palette } from "../theme";
 const subscribe = (listener: () => void) => devLog.subscribe(listener);
 const snapshot = () => devLog.lines;
 
-/** The recent rx/tx and launch reports, newest at the bottom; follows new lines as they arrive. Children go above. */
-export function DebugLog({ children }: { children?: ReactNode }) {
+// In the portrait stack the page scrolls, so the log gets a fixed box with its own scroll.
+const STACKED_LOG_HEIGHT = 240;
+
+/**
+ * The recent rx/tx and launch reports, newest at the bottom; follows new lines as they arrive. Children go above.
+ * `stacked` sizes it to its content for the portrait menu, rather than filling a column.
+ */
+export function DebugLog({ children, stacked = false }: { children?: ReactNode; stacked?: boolean }) {
   const styles = useThemedStyles(createStyles);
   const lines = useSyncExternalStore(subscribe, snapshot);
   const scroll = useRef<ScrollView>(null);
   return (
-    <View style={styles.column}>
+    <View style={[styles.column, stacked && styles.stacked]}>
       <View style={styles.header}>
         <Text style={styles.heading}>DEBUG LOG</Text>
       </View>
       {children}
       <ScrollView
         ref={scroll}
-        style={styles.log}
+        style={[styles.log, stacked && { flexGrow: 0, flexShrink: 0, flexBasis: "auto", height: STACKED_LOG_HEIGHT }]}
         contentContainerStyle={styles.logContent}
         onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: false })}
       >
@@ -37,6 +43,7 @@ export function DebugLog({ children }: { children?: ReactNode }) {
 function createStyles(palette: Palette) {
   return StyleSheet.create({
     column: { flex: 1.4, gap: 6 },
+    stacked: { flexGrow: 0, flexShrink: 0, flexBasis: "auto" },
     header: { height: 28, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
     heading: { color: palette.label, fontSize: 12, fontWeight: "800", letterSpacing: 1.5 },
     action: {

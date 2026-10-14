@@ -1,7 +1,7 @@
 /** "stacked" puts the aim pad between speed and Fire; "wide" puts it beside them, for screens short on height. */
 export type LauncherShape = "stacked" | "wide";
 
-export interface DriveLayout {
+interface SharedLayout {
   /** The thumbstick diameter. */
   column: number;
   knob: number;
@@ -16,10 +16,25 @@ export interface DriveLayout {
   paddingH: number;
   paddingTop: number;
   paddingBottom: number;
+}
+
+/** Landscape: the stick on the left, the device chip in the middle, the launcher on the right. */
+export interface RowLayout extends SharedLayout {
+  arrangement: "row";
   /** Inward and downward nudges the owner asked for, scaled down on small screens. */
   nudgeX: number;
   nudgeY: number;
 }
+
+/** Portrait: the header on top, then the launcher, then the stick at the bottom where the thumb rests. */
+export interface ColumnLayout extends SharedLayout {
+  arrangement: "column";
+  /** Height left over above the launcher; the controls sit low, toward the thumb. */
+  spacer: number;
+}
+
+export type DriveLayout = RowLayout | ColumnLayout;
+export type Arrangement = DriveLayout["arrangement"];
 
 export interface Insets {
   top: number;
@@ -51,8 +66,8 @@ const COLUMN_MIN = 130;
 // The wide shape's floor, for the shortest browser windows, where the stacked shape cannot fit at all.
 const WIDE_MIN = 110;
 const COLUMN_MAX = 260;
-// Narrower than this, "↔ Strafe" and the spin labels truncate (web has no shrink-to-fit text).
-const LABEL_MIN = 180;
+/** Narrower than this, "↔ Strafe" and the spin labels drop to icons. */
+export const LABEL_MIN = 180;
 /** Inner padding plus border of the launcher panel, on each side. */
 export const PANEL_INSET = 12;
 /** In the wide launcher, the column of spin, speed, readout and Fire beside the pad, and its gap to the pad. */
@@ -60,14 +75,16 @@ export const WIDE_SIDE = 160;
 export const WIDE_GAP = 10;
 /** The height spin, speed, a readout line and Fire need in that column, however small the pad beside it. */
 export const WIDE_SIDE_HEIGHT = 150;
+// Narrower than this, a portrait window cannot fit the landscape row, so it gets the column.
+const ROW_MIN_WIDTH = 600;
 // Below this stacked size the pad and labels get cramped, so a short, wide screen moves the pad beside the controls.
 const WIDE_BELOW = 170;
 // The Strafe / Turn switch and its gap above the stick.
 const STICK_SWITCH = 50;
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+export const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-type Sizing = Pick<DriveLayout, "launcher" | "column" | "stickWidth" | "panel" | "pad">;
+type Sizing = Pick<SharedLayout, "launcher" | "column" | "stickWidth" | "panel" | "pad">;
 
 /** Stick beside a stacked launcher: bound by height. Null when even the smallest stick's launcher is too tall. */
 function stackedSizing(room: number, sides: number): Sizing | null {
@@ -102,13 +119,13 @@ function chooseSizing(room: number, sides: number): Sizing {
 }
 
 /** The launcher panel's height for a layout, from its pad and chrome. */
-export function launcherHeight(layout: Pick<DriveLayout, "launcher" | "column" | "pad">): number {
+export function launcherHeight(layout: Pick<SharedLayout, "launcher" | "column" | "pad">): number {
   if (layout.launcher === "stacked") return layout.column + PANEL_CHROME;
   return Math.max(layout.pad, WIDE_SIDE_HEIGHT) + 2 * PANEL_INSET;
 }
 
 /** Sizes the stick and launcher from the window so the screen fits any landscape phone, tablet or browser. */
-export function computeLayout({ width, height, insets = NO_INSETS }: LayoutInput): DriveLayout {
+export function computeLayout({ width, height, insets = NO_INSETS }: LayoutInput): RowLayout {
   // Both sides take the larger inset, so the stick and launcher mirror whichever way the phone is turned.
   const paddingH = Math.max(MARGIN_H, insets.left, insets.right);
   const paddingTop = Math.max(MARGIN_TOP, insets.top);
@@ -119,6 +136,7 @@ export function computeLayout({ width, height, insets = NO_INSETS }: LayoutInput
   const { column } = sizing;
   const slack = sides - sizing.stickWidth - sizing.panel;
   return {
+    arrangement: "row",
     ...sizing,
     knob: Math.round(column * 0.37),
     paddingH,
@@ -127,4 +145,9 @@ export function computeLayout({ width, height, insets = NO_INSETS }: LayoutInput
     nudgeX: Math.round(clamp(slack / 6, 0, 28)),
     nudgeY: column >= 180 ? 20 : 8,
   };
+}
+
+/** Portrait phones and narrow Split View windows get the column; tablets in portrait keep the row. */
+export function chooseArrangement({ width, height }: LayoutInput): Arrangement {
+  return height > width && width < ROW_MIN_WIDTH ? "column" : "row";
 }

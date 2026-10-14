@@ -30,7 +30,7 @@ async function openViewport(browser, url, viewport) {
   const cdp = await context.newCDPSession(page);
   await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: viewport.insets });
   await page.goto(`${url}?mock=1`);
-  await page.getByText("ACEMATE").first().waitFor();
+  await page.getByLabel("Open device menu").waitFor();
   await page.addScriptTag({ path: AUDIT, type: "module" });
   await page.waitForFunction(() => typeof window.auditViewport === "function");
   return page;

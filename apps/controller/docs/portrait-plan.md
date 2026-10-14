@@ -1,6 +1,6 @@
 # Portrait plan: drive screen and device menu
 
-Status: proposed. Safe-area insets, "no …" labels and the viewport check are done; the portrait layouts are not.
+Status: built. The decisions below took the recommended answers; change any of them in `src/ui/layout-portrait.ts` and the drive and menu components.
 
 ## Recommendation
 
