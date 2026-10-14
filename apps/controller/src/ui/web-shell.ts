@@ -15,6 +15,8 @@ export const SHELL_MARGIN = 24;
 export const BEZEL = 10;
 // The iPhone 17 Pro Max in landscape, where the owner tuned the drive screen.
 const PHONE: Size = { width: 956, height: 440 };
+/** That phone's safe-area insets in landscape: the Dynamic Island on one side, the home indicator below. */
+export const PHONE_INSETS = { top: 0, right: 62, bottom: 20, left: 62 };
 // Below this the launcher no longer fits under computeLayout's column minimum, so the full-window layout wins.
 export const MIN_FRAME_HEIGHT = 374;
 

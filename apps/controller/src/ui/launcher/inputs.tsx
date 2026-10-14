@@ -1,40 +1,75 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { SPIN_STYLES, clamp, snapTo, spinStyle, spinValue, type Span, type SpinStyle } from "@acemate/core";
+import { FitText } from "../text/FitText";
 import { useThemedStyles, type Palette } from "../theme";
 
 interface SegmentedProps<T extends string> {
-  options: { value: T; label: string }[];
+  /** `short`, usually the label's icon alone, is drawn when the label will not fit even shrunk. */
+  options: { value: T; label: string; short?: string }[];
   selected: T;
   onSelect(value: T): void;
 }
 
-/** The one switch style on the drive screen: Strafe/Turn and spin both use it. */
+/**
+ * The one switch style on the drive screen: Strafe/Turn and spin both use it. If any label needs its short form,
+ * every label switches to its short form, so the switch reads as all icons or all words.
+ */
 export function Segmented<T extends string>({ options, selected, onSelect }: SegmentedProps<T>) {
   const styles = useThemedStyles(createStyles);
+  const [cramped, setCramped] = useState<ReadonlySet<T>>(() => new Set());
+  const report = useCallback((value: T, needsShort: boolean) => {
+    setCramped((current) => {
+      if (current.has(value) === needsShort) return current;
+      const next = new Set(current);
+      if (needsShort) next.add(value);
+      else next.delete(value);
+      return next;
+    });
+  }, []);
   return (
     <View style={styles.segmented}>
-      {options.map((option) => {
-        const on = option.value === selected;
-        return (
-          <Pressable
-            key={option.value}
-            style={[styles.segment, on && styles.segmentOn]}
-            onPress={() => onSelect(option.value)}
-          >
-            <Text
-              style={[styles.segmentText, on && styles.segmentTextOn]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}
-            >
-              {option.label}
-            </Text>
-          </Pressable>
-        );
-      })}
+      {options.map((option) => (
+        <Segment
+          key={option.value}
+          option={option}
+          on={option.value === selected}
+          compact={cramped.size > 0}
+          onSelect={onSelect}
+          onNeedsShort={report}
+        />
+      ))}
     </View>
+  );
+}
+
+interface SegmentProps<T extends string> {
+  option: SegmentedProps<T>["options"][number];
+  on: boolean;
+  compact: boolean;
+  onSelect(value: T): void;
+  onNeedsShort(value: T, needsShort: boolean): void;
+}
+
+function Segment<T extends string>({ option, on, compact, onSelect, onNeedsShort }: SegmentProps<T>) {
+  const styles = useThemedStyles(createStyles);
+  const { value } = option;
+  const report = useCallback((needsShort: boolean) => onNeedsShort(value, needsShort), [onNeedsShort, value]);
+  return (
+    <Pressable
+      style={[styles.segment, on && styles.segmentOn]}
+      onPress={() => onSelect(value)}
+      accessibilityLabel={option.label}
+    >
+      <FitText
+        text={option.label}
+        short={option.short}
+        forceShort={compact}
+        onNeedsShort={report}
+        style={[styles.segmentText, on && styles.segmentTextOn]}
+      />
+    </Pressable>
   );
 }
 
@@ -85,6 +120,7 @@ export function HorizontalSlider({ label, value, span, onChange }: SliderProps) 
     <GestureDetector gesture={gesture}>
       <View
         style={styles.track}
+        testID={`${label.toLowerCase()}-slider`}
         accessibilityLabel={`${label} ${value}`}
         onLayout={(event) => setTrackWidth(Math.max(1, event.nativeEvent.layout.width))}
       >

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { CENTERED, offsetToStick, type Stick } from "../control/sticks";
@@ -15,6 +15,7 @@ export function Thumbstick({ size, knob, onChange }: Props) {
   const styles = useThemedStyles(createStyles);
   const [stick, setStick] = useState<Stick>(CENTERED);
   const radius = (size - knob) / 2;
+  useCentreOnUnmount(onChange);
 
   const gesture = useMemo(() => {
     const move = (x: number, y: number) => {
@@ -41,6 +42,7 @@ export function Thumbstick({ size, knob, onChange }: Props) {
       <View
         style={[styles.pad, { width: size, height: size, borderRadius: size / 2 }]}
         accessibilityLabel="Drive stick"
+        testID="drive-stick"
       >
         <View style={[styles.travel, { width: radius * 2, height: radius * 2, borderRadius: radius }]} />
         <View
@@ -53,6 +55,18 @@ export function Thumbstick({ size, knob, onChange }: Props) {
       </View>
     </GestureDetector>
   );
+}
+
+/** A stick removed mid-drag (the phone turned) never sees the release, so it centres itself on the way out. */
+function useCentreOnUnmount(onChange: (stick: Stick) => void) {
+  const latest = useRef(onChange);
+  useEffect(() => {
+    latest.current = onChange;
+  }, [onChange]);
+  useEffect(() => {
+    const send = latest;
+    return () => send.current(CENTERED);
+  }, []);
 }
 
 function createStyles(palette: Palette) {

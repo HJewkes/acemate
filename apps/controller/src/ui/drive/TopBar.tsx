@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { runChip } from "../../launcher/run-chip";
 import type { LaunchView, LinkStatus, RobotView } from "../../robot/use-robot";
+import { FitText } from "../text/FitText";
 import { useTheme, useThemedStyles, type Palette } from "../theme";
 import { useNow } from "../use-clock";
 
@@ -43,9 +44,7 @@ export function ConnectionChip({ robot, robotName, onOpenMenu }: Props) {
     <Pressable style={styles.chip} onPress={onOpenMenu} accessibilityLabel="Open device menu">
       <View style={[styles.dot, { backgroundColor: linkColour(status, palette) }]} />
       <View>
-        <Text style={styles.name} numberOfLines={1}>
-          {robotName}
-        </Text>
+        <FitText text={robotName} style={styles.name} />
         <Text style={styles.caption}>{LINK_TEXT[status]}</Text>
       </View>
       {battery !== null && (
@@ -57,7 +56,7 @@ export function ConnectionChip({ robot, robotName, onOpenMenu }: Props) {
   );
 }
 
-function RunChip({ launch, onStop }: { launch: LaunchView; onStop(): void }) {
+export function RunChip({ launch, onStop }: { launch: LaunchView; onStop(): void }) {
   const styles = useThemedStyles(createStyles);
   const visible = launch.runActive || launch.inFlight;
   const now = useNow(visible);

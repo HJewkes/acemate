@@ -69,11 +69,6 @@
       "count": 1
     }
   },
-  "apps/controller/src/ui/drive/DriveScreen.tsx": {
-    "titan/max-function-lines": {
-      "count": 1
-    }
-  },
   "apps/controller/src/ui/menu/DeviceList.tsx": {
     "titan/max-function-lines": {
       "count": 1

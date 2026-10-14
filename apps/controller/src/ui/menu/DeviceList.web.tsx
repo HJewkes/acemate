@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { MOCK_MODE } from "../../robot/ble-channel.web";
 import type { RobotView } from "../../robot/use-robot";
 import { NO_WEB_BLUETOOTH, bluetoothOf } from "../../robot/web-bluetooth";
+import { FitText } from "../text/FitText";
 import { useThemedStyles, type Palette } from "../theme";
 import type { DeviceListProps } from "./DeviceList";
 
@@ -15,13 +16,13 @@ function statusLine(robot: RobotView): string | null {
  * The web has no background scan: the browser's chooser lists nearby robots. Each button opens it straight from the
  * tap, since requestDevice needs the user gesture. Reconnect narrows the chooser to the saved robot.
  */
-export function DeviceList({ robot, lastRobot }: DeviceListProps) {
+export function DeviceList({ robot, lastRobot, style }: DeviceListProps) {
   const styles = useThemedStyles(createStyles);
   const busy = robot.status === "scanning" || robot.status === "connecting";
   const status = statusLine(robot);
   const reconnect = robot.current === null ? lastRobot : null;
   return (
-    <View style={styles.column}>
+    <View style={[styles.column, style]}>
       <View style={styles.header}>
         <Text style={styles.heading}>DEVICES</Text>
       </View>
@@ -43,9 +44,7 @@ function ConnectedRow({ name, onDisconnect }: { name: string; onDisconnect(): vo
   const styles = useThemedStyles(createRowStyles);
   return (
     <View style={styles.row}>
-      <Text style={styles.name} numberOfLines={1}>
-        {name}
-      </Text>
+      <FitText text={name} style={styles.name} />
       <Pressable style={styles.disconnect} onPress={onDisconnect} hitSlop={6}>
         <Text style={styles.text}>Disconnect</Text>
       </Pressable>
@@ -73,10 +72,13 @@ function createStyles(palette: Palette) {
 
 function createRowStyles(palette: Palette) {
   return StyleSheet.create({
+    // A long name pushes Disconnect onto its own line rather than squeezing either.
     row: {
       minHeight: 44,
       flexDirection: "row",
+      flexWrap: "wrap",
       alignItems: "center",
+      paddingVertical: 6,
       gap: 8,
       paddingHorizontal: 10,
       borderRadius: 10,
@@ -84,7 +86,7 @@ function createRowStyles(palette: Palette) {
       borderWidth: 2,
       borderColor: palette.ring,
     },
-    name: { flex: 1, color: palette.text, fontSize: 13, fontWeight: "700" },
+    name: { flexGrow: 1, color: palette.text, fontSize: 13, fontWeight: "700" },
     disconnect: {
       paddingHorizontal: 8,
       paddingVertical: 4,

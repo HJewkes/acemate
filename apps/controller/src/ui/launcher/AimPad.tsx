@@ -28,7 +28,7 @@ export function AimPad({ aim, width, height, flipDirection, onAim }: Props) {
 
   return (
     <GestureDetector gesture={gesture}>
-      <View style={[styles.pad, { width, height }]}>
+      <View style={[styles.pad, { width, height }]} accessibilityLabel="Aim pad" testID="aim-pad">
         <View style={[styles.axis, { left: width / 2, top: 0, bottom: 0, width: 1 }]} />
         <View style={[styles.axis, { top: height / 2, left: 0, right: 0, height: 1 }]} />
         <View style={[styles.lineX, { top: point.fy * height }]} />

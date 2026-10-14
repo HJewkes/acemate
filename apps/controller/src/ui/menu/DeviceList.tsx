@@ -1,8 +1,9 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from "react-native";
 import { deviceRows, rssiBars, type DeviceRow } from "../../robot/device-list";
 import type { RobotView } from "../../robot/use-robot";
 import type { NearbyRobots } from "../../robot/use-nearby-robots";
 import type { SavedRobot } from "../../storage/settings";
+import { FitText } from "../text/FitText";
 import { useThemedStyles, type Palette } from "../theme";
 
 export interface DeviceListProps {
@@ -10,6 +11,7 @@ export interface DeviceListProps {
   nearby: NearbyRobots;
   /** Only the web list uses it, for its one-tap reconnect. */
   lastRobot: SavedRobot | null;
+  style?: StyleProp<ViewStyle>;
 }
 
 function statusLine(robot: RobotView, nearby: NearbyRobots, empty: boolean): string | null {
@@ -20,13 +22,13 @@ function statusLine(robot: RobotView, nearby: NearbyRobots, empty: boolean): str
 }
 
 /** Nearby robots, strongest first; tap one to connect (switching from the current one). */
-export function DeviceList({ robot, nearby }: DeviceListProps) {
+export function DeviceList({ robot, nearby, style }: DeviceListProps) {
   const styles = useThemedStyles(createStyles);
   const rows = deviceRows(nearby.robots, robot.current);
   const busy = robot.status === "scanning" || robot.status === "connecting";
   const status = statusLine(robot, nearby, rows.length === 0);
   return (
-    <View style={styles.column}>
+    <View style={[styles.column, style]}>
       <View style={styles.header}>
         <Text style={styles.heading}>DEVICES</Text>
       </View>
@@ -51,9 +53,7 @@ function DeviceRowView({ row, busy, robot }: { row: DeviceRow; busy: boolean; ro
         accessibilityLabel={`Connect to ${row.name}`}
       >
         <SignalBars bars={rssiBars(row.rssi)} />
-        <Text style={styles.name} numberOfLines={1}>
-          {row.name}
-        </Text>
+        <FitText text={row.name} style={styles.name} />
         {row.connected && <Text style={styles.badge}>connected</Text>}
       </Pressable>
       {row.connected && (
