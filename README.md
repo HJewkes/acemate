@@ -38,8 +38,6 @@ The native app is built from source with Expo. You need a Mac with Xcode, Node 2
 4. Trust the developer profile on the phone: Settings → General → VPN & Device Management → your Apple ID → Trust.
 5. Open Acemate Drive and allow Bluetooth when asked.
 
-The app turns between landscape and portrait. A build made before portrait support stays landscape-only, so run the prebuild and install steps again to get it.
-
 ### Android (Chrome)
 
 Open https://hjewkes.github.io/acemate/ in Chrome. Tap the device chip. With no robot linked, that one tap opens the browser's chooser as well as the device menu; pick the `ACEMATE-XXXXX` device. Later connects go through **Choose robot…** or **Reconnect** in the menu. Allow Bluetooth and Nearby devices if Android asks.
@@ -83,7 +81,7 @@ The drive screen works in landscape and portrait. In landscape it has three part
   - Speed from 1 to 10. The bar fills from right to left.
   - The aim pad: across sets direction, and up sets elevation.
   - The fire bar. Hold it until it fills to fire one ball.
-- **Top right: the run chip.** It appears while a run is active, showing the mode and the elapsed time. Tap it to stop the run.
+- **Top right: the run chip.** It appears while a run is active, showing the mode and the elapsed time, and clears as soon as the robot reports the run finished. Tap it to stop the run.
 - The aim readout under the pad shows direction and elevation; speed and spin are on the controls above it. Labels never end in "…": a label that doesn't fit shrinks, then shows its icon (Strafe / Turn become ↔ / ↻).
 
 In portrait the same controls stack, top to bottom: the device chip (with Keys and the run chip beside it), the launcher at full width, then the Strafe / Turn switch and the stick at the bottom, where your thumb rests. The switch keeps Fire well clear of the stick. In a short browser window the aim pad moves beside spin, speed and Fire. Portrait iPads keep the landscape layout. In portrait the device menu is one scrolling sheet with a **Done** button at the bottom.
@@ -167,7 +165,7 @@ In a browser, the app never connects by itself, because the browser's chooser ne
 - `tools/cli` (`@acemate/cli`) is a laptop CLI over Node BLE. Run `npx acemate --help` from the root for `scan`, `listen [--watch S]`, `drive`, `pulse`, `launch` (a dry run unless given `--fire`) and `send '<json>' [--watch S]`, which writes one raw request and prints every reply. `send` refuses OTA (any type with `ota` in it, `mcu_ota`, `ap` with purpose `ota`), the `upload` and `trigger_update` paths, `start_calib_extrinsic` and `set_court_profile`. Every frame is logged to `acemate.jsonl`. Add `--mock` to `listen`, `drive`, `pulse`, `send` or `launch` to run against the shared mock robot (`ACEMATE-MOCK0`) instead of Bluetooth, for example `npx acemate send '{"type":"ask_init_data"}' --mock`; frames are still logged and `send` still refuses the same requests. The mock ignores `run_start` until `set_time` has been sent, as the robot does, and `launch` does not send `set_time`, so a mock `launch --fire` sends `run_start` but sees no run.
 - Tests per package: `npm test` and `npm run typecheck` inside it, or both across every workspace from the root.
 - From the root: `npm run lint` and `npm run format:check`.
-- Layout check for `apps/controller`: `npm run export:web && npm run check:viewports` renders the web build in mock mode at every size in `scripts/viewports.mjs` (iPhones with their Dynamic Island or notch insets emulated, Bluefy and Android browser windows, iPads, laptops), with the drive screen disconnected, the device menu open, and connected. It fails on text that ends in "…" or is cut off, a box or control off screen, under a safe-area inset or spilling out of its panel, and overlapping controls. It writes `viewport-report/index.html`, a contact sheet with each problem outlined in red and the insets shaded; CI uploads it as the `viewport-report` artifact. Set `CHROMIUM_PATH` if Playwright's own Chromium is not installed. Portrait sizes are checked as strictly as landscape. In portrait it also fails when the stick sits less than 60 px below Fire. The portrait layout fits windows down to 490 pt tall (`PORTRAIT_MIN_HEIGHT` in `src/ui/layout-portrait.ts`).
+- Layout check for `apps/controller`: `npm run export:web && npm run check:viewports` renders the web build in mock mode at every size in `scripts/viewports.mjs` (iPhones with their Dynamic Island or notch insets emulated, Bluefy and Android browser windows, iPads, laptops), with the drive screen disconnected, the device menu open, and connected. It fails on text that ends in "…" or is cut off, a box or control off screen, under a safe-area inset or spilling out of its panel, and overlapping controls. It writes `viewport-report/index.html`, a contact sheet with each problem outlined in red and the insets shaded; CI uploads it as the `viewport-report` artifact. Set `CHROMIUM_PATH` if Playwright's own Chromium is not installed. Portrait sizes are checked as strictly as landscape.
 - Labels never end in "…": use `FitText` (`src/ui/text`), which shrinks a label to fit, then swaps in its `short` form (usually its icon), then wraps. `Segmented` switches all its labels to their icons together.
 - CI must be green before merge. Work on a feature branch and open a pull request; do not push to `main`.
 

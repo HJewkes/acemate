@@ -48,7 +48,7 @@ export class LaunchLink {
     });
   }
 
-  /** True from rsp_set_mode until the heartbeat shows the run ended, or it is stopped. */
+  /** True from rsp_set_mode until a run_stop push or the heartbeat shows the run ended, or it is stopped. */
   get running(): boolean {
     return this.controller.running;
   }
@@ -85,6 +85,7 @@ export class LaunchLink {
   onMessage(message: { type: string; data?: unknown }): void {
     for (const waiter of this.waiters) if (waiter.type === message.type) waiter.resolve(message as Request);
     if (message.type === "run_start") this.onRunStart(pushFields(message));
+    if (message.type === "run_stop") this.onRunStop(pushFields(message));
     const carState = (message.data as { car_state?: CarState } | undefined)?.car_state;
     if (message.type === "rsp_heartbeat" && carState) this.onCarState(carState);
   }
@@ -107,9 +108,14 @@ export class LaunchLink {
 
   // The robot's own start time beats our send time; its mode confirms the set_mode one.
   private onRunStart(fields: Record<string, unknown>): void {
+    this.controller.onRunStart(fields.start_time);
     const sentAt = this.runInfo.startedAt ?? this.deps.now();
     const mode = typeof fields.mode === "string" ? fields.mode : this.runInfo.mode;
     this.runInfo = { mode, startedAt: runStartMs(fields.start_time, sentAt) };
+  }
+
+  private onRunStop(fields: Record<string, unknown>): void {
+    this.controller.onRunStop(fields.reason, fields.end_time);
   }
 
   private report(text: string): void {
