@@ -33,8 +33,8 @@ const AIM_KEYS: Record<string, AimStep> = {
   ArrowDown: { right: 0, up: -1 },
 };
 
-export const FIRE_KEY = "Space";
-export const STOP_KEY = "Escape";
+const FIRE_KEY = "Space";
+const STOP_KEY = "Escape";
 
 /** Every KeyboardEvent.code this module acts on. */
 export const BOUND_KEYS: readonly string[] = [...Object.keys(DRIVE_KEYS), ...Object.keys(AIM_KEYS), FIRE_KEY, STOP_KEY];
@@ -48,7 +48,7 @@ const KEY_NAMES: Record<string, string> = {
 };
 
 /** The printed name of a KeyboardEvent.code: KeyW is "W", ArrowLeft is "←". */
-export function keyName(code: string): string {
+function keyName(code: string): string {
   return KEY_NAMES[code] ?? code.replace(/^Key/, "");
 }
 
@@ -77,7 +77,7 @@ export const KEY_HELP: readonly HelpRow[] = KEY_ACTIONS.map(({ codes, action }) 
 }));
 
 /** Opposing keys (W+S) cancel to zero on that axis. */
-export function keysToAxes(held: ReadonlySet<string>): DriveAxes {
+function keysToAxes(held: ReadonlySet<string>): DriveAxes {
   const sum = { ...IDLE };
   for (const code of held) {
     const axes = DRIVE_KEYS[code] ?? {};

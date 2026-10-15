@@ -32,7 +32,7 @@ export function padDrive(pad: PadSnapshot): DriveAxes {
 }
 
 /** The right stick moves the aim, in steps per second. */
-export function padAimRate(pad: PadSnapshot): AimStep {
+function padAimRate(pad: PadSnapshot): AimStep {
   const { x, y } = applyDeadzone(pad.axes[2] ?? 0, pad.axes[3] ?? 0);
   return { right: x * AIM_STEPS_PER_SECOND, up: (0 - y) * AIM_STEPS_PER_SECOND };
 }

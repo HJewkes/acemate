@@ -19,7 +19,7 @@ export interface CliOptions {
   watchSeconds: number | null;
 }
 
-export type ParsedCli =
+type ParsedCli =
   | { kind: "help" }
   | { kind: "launch"; argv: string[] }
   | { kind: "run"; command: Command; args: string[]; options: CliOptions };

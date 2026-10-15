@@ -2,7 +2,7 @@
   "name": "@acemate/core",
   "version": "0.0.0",
   "private": true,
-  "description": "Platform-free S10 logic shared by every controller: wire protocol, launch builders, drive loop and launcher controls.",
+  "description": "Platform-free S10 logic shared by every controller: wire protocol, launch builders, drive loop, launcher controls and a mock robot.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"

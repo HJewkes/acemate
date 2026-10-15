@@ -27,4 +27,7 @@ export async function openLink(options: Pick<CliOptions, "name" | "chunk" | "noR
   return link;
 }
 
+// The app spaces plain commands at least 200 ms apart (BleCommandSender.java:39).
+export const COMMAND_SPACING_MS = 200;
+
 export const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));

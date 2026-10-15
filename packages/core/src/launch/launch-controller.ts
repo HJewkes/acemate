@@ -18,23 +18,15 @@ export type LaunchMessage =
   | { kind: "stop" }
   | { kind: "pause" };
 
-const KINDS = new Set(["machine", "machine-queue", "target", "stop", "pause"]);
+/** The launch messages that send a set_mode, as opposed to stop and pause. */
+export type FireMessage = Extract<LaunchMessage, { kind: "machine" | "machine-queue" | "target" }>;
+
 const SET_MODE_TIMEOUT_MS = 3000;
 // The robot can accept set_mode and then silently refuse run_start (seen 2026-10-11 at bat 0).
-export const START_TIMEOUT_MS = 8000;
-
-/** Page messages are {"launch": {...}}; anything else is not a launch message. */
-export function parseLaunch(data: unknown): LaunchMessage | null {
-  try {
-    const launch = (JSON.parse(String(data)) as { launch?: { kind?: unknown } } | null)?.launch;
-    return launch && KINDS.has(String(launch.kind)) ? (launch as LaunchMessage) : null;
-  } catch {
-    return null;
-  }
-}
+const START_TIMEOUT_MS = 8000;
 
 /** Throws LaunchValidationError for anything outside the S10 limits. */
-export function setModeFor(message: Extract<LaunchMessage, { kind: "machine" | "machine-queue" | "target" }>): Request {
+export function setModeFor(message: FireMessage): Request {
   if (message.kind === "target") return targetShot(message);
   if (message.kind === "machine-queue") {
     return ballMachine({ balls: message.balls, interval: message.interval, trainId: message.trainId });
@@ -125,7 +117,7 @@ export class LaunchController {
     else this.finish("Robot did not start the run (running stayed false); cleared.");
   }
 
-  private async fire(message: Extract<LaunchMessage, { kind: "machine" | "machine-queue" | "target" }>): Promise<void> {
+  private async fire(message: FireMessage): Promise<void> {
     // active is only set once rsp_set_mode arrives (up to 3 s); firing covers the wait before it.
     if (this.firing) return this.deps.report("Still waiting for the last launch; try again.");
     if (this.active) return this.deps.report("A run is already active; stop it first.");

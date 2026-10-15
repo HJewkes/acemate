@@ -22,3 +22,8 @@ export function setTimeRequest(now: number, countryCode: string = DEFAULT_COUNTR
     },
   };
 }
+
+/** set_time with this device's clock, time zone and locale region, as every controller sends it. */
+export function localSetTimeRequest(now: number): Request {
+  return setTimeRequest(now, countryCodeFromLocale(Intl.DateTimeFormat().resolvedOptions().locale));
+}

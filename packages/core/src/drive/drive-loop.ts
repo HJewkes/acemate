@@ -3,7 +3,7 @@ import type { Motion } from "./motion";
 export interface DriveLoopConfig {
   /** Resend the held motion this often; the robot accepts 50 ms without-response writes. */
   resendMs: number;
-  /** Stop if the page goes quiet this long; it heartbeats every 50 ms while open. */
+  /** Stop if update() goes quiet this long; a live controller calls it on every tick. */
   inputTimeoutMs: number;
   /** Extra stops after the first, one per resend slot, in case a without-response write is dropped. */
   stopRepeats: number;
@@ -12,8 +12,8 @@ export interface DriveLoopConfig {
 export const DEFAULT_LOOP: DriveLoopConfig = { resendMs: 50, inputTimeoutMs: 300, stopRepeats: 2 };
 
 /**
- * Owns what goes to the robot. Call update() for every page message, release() when the page goes away,
- * and tick() often (every ~10 ms); time comes only from now(), so tests drive it with a fake clock.
+ * Owns what goes to the robot. Call update() with the wanted motion on every input tick, release() when input goes
+ * away, and tick() often (every ~10 ms); time comes only from now(), so tests drive it with a fake clock.
  */
 export class DriveLoop {
   private current: Motion = "stop";

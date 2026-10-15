@@ -1,5 +1,5 @@
 /** "stacked" puts the aim pad between speed and Fire; "wide" puts it beside them, for screens short on height. */
-export type LauncherShape = "stacked" | "wide";
+type LauncherShape = "stacked" | "wide";
 
 interface SharedLayout {
   /** The thumbstick diameter. */

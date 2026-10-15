@@ -6,9 +6,9 @@ export interface Size {
 export type Pointer = "fine" | "coarse";
 
 /** "phone" fills the window with the drive screen; "framed" shows it in a phone-sized frame beside a side panel. */
-export type WebShell = { mode: "phone" } | { mode: "framed"; frame: Size; panel: number };
+type WebShell = { mode: "phone" } | { mode: "framed"; frame: Size; panel: number };
 
-export const SIDE_PANEL = 320;
+const SIDE_PANEL = 320;
 /** Page margin, and the gap between the frame and the panel. */
 export const SHELL_MARGIN = 24;
 /** The frame's bezel, outside the drive screen's own size. */
@@ -18,7 +18,7 @@ const PHONE: Size = { width: 956, height: 440 };
 /** That phone's safe-area insets in landscape: the Dynamic Island on one side, the home indicator below. */
 export const PHONE_INSETS = { top: 0, right: 62, bottom: 20, left: 62 };
 // Below this the launcher no longer fits under computeLayout's column minimum, so the full-window layout wins.
-export const MIN_FRAME_HEIGHT = 374;
+const MIN_FRAME_HEIGHT = 374;
 
 const PHONE_SHELL: WebShell = { mode: "phone" };
 

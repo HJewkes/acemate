@@ -1,11 +1,5 @@
 import { NO_RUN, runStartMs, type RunInfo } from "../launcher/run-chip";
-import {
-  LaunchController,
-  countryCodeFromLocale,
-  setTimeRequest,
-  type LaunchMessage,
-  type Request,
-} from "@acemate/core";
+import { LaunchController, localSetTimeRequest, type LaunchMessage, type Request } from "@acemate/core";
 
 export type CarState = { running?: boolean; bat?: number | null; time_is_set?: boolean } & Record<string, unknown>;
 
@@ -14,7 +8,7 @@ export interface LaunchListener {
   carState(state: CarState): void;
 }
 
-export interface LaunchLinkDeps {
+interface LaunchLinkDeps {
   send(request: Request): Promise<void>;
   driveStopped(): boolean;
   now(): number;
@@ -89,9 +83,7 @@ export class LaunchLink {
     const now = this.deps.now();
     if (carState.time_is_set === false && (this.timeSentAt === null || now - this.timeSentAt >= SET_TIME_EVERY_MS)) {
       this.timeSentAt = now;
-      this.deps
-        .send(setTimeRequest(now, countryCodeFromLocale(Intl.DateTimeFormat().resolvedOptions().locale)))
-        .catch(() => undefined);
+      this.deps.send(localSetTimeRequest(now)).catch(() => undefined);
     }
     this.controller.onCarState(carState.running === true, now);
     this.listeners.forEach((listener) => listener.carState(carState));

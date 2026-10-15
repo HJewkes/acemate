@@ -1,8 +1,7 @@
 import { parseArgs } from "node:util";
 import {
   LaunchValidationError,
-  countryCodeFromLocale,
-  setTimeRequest,
+  localSetTimeRequest,
   ballMachine,
   runRequests,
   singleShot,
@@ -13,6 +12,7 @@ import {
   type Request,
 } from "@acemate/core";
 import type { Link } from "./link.js";
+import { COMMAND_SPACING_MS, type Recorder } from "./session.js";
 
 export interface LaunchOptions {
   fire: boolean;
@@ -26,7 +26,7 @@ export interface LaunchOptions {
 export interface LaunchDeps {
   open(options: LaunchOptions): Promise<Link>;
   print(line: string): void;
-  record(direction: "tx" | "rx" | "event", payload: unknown): void;
+  record: Recorder;
   sleep(ms: number): Promise<void>;
   onInterrupt(handler: () => Promise<void>): void;
 }
@@ -41,8 +41,6 @@ export const USAGE = [
   "--mock fires at a built-in mock robot (ACEMATE-MOCK0) instead of Bluetooth.",
 ].join("\n");
 
-// The app spaces plain commands at least 200 ms apart (BleCommandSender.java:39).
-const COMMAND_SPACING_MS = 200;
 const HEARTBEAT_POLL_MS = 1000;
 
 const ARG_OPTIONS = {
@@ -204,8 +202,8 @@ async function startRoutine(channel: Channel, setMode: Request, deps: LaunchDeps
   if (!(await channel.ask(requests.askInit(), "rsp_init_data"))) throw new Error("no rsp_init_data; not launching");
   const running = isRunning(await channel.ask(requests.heartbeat(), "rsp_heartbeat"));
   if (running !== false) throw new Error(`heartbeat running=${String(running)}; need running:false before launching`);
-  const clock = setTimeRequest(Date.now(), countryCodeFromLocale(Intl.DateTimeFormat().resolvedOptions().locale));
-  if (!(await channel.ask(clock, "rsp_set_time"))) throw new Error("rsp_set_time never arrived; not launching");
+  if (!(await channel.ask(localSetTimeRequest(Date.now()), "rsp_set_time")))
+    throw new Error("rsp_set_time never arrived; not launching");
   const reply = await channel.ask(setMode, "rsp_set_mode");
   if (!reply) throw new Error("rsp_set_mode never arrived; not sending run_start");
   deps.record("event", { rsp_set_mode: reply });

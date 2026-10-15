@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Request } from "../src/protocol/protocol";
-import { LaunchController, parseLaunch, setModeFor, type LaunchMessage } from "../src/launch/launch-controller";
+import { LaunchController, setModeFor, type LaunchMessage } from "../src/launch/launch-controller";
 
 const single: LaunchMessage = {
   kind: "machine",
@@ -44,14 +44,6 @@ function pendingHarness() {
   };
   return { controller, sent, reports, ack };
 }
-
-describe("parseLaunch", () => {
-  it("accepts launch messages and ignores drive messages", () => {
-    expect(parseLaunch('{"launch":{"kind":"stop"}}')).toEqual({ kind: "stop" });
-    expect(parseLaunch('{"motion":"go_front"}')).toBeNull();
-    expect(parseLaunch("not json")).toBeNull();
-  });
-});
 
 describe("setModeFor", () => {
   it("builds the single-shot ball_machine payload the launch CLI uses", () => {

@@ -11,7 +11,7 @@ export const MIN_SCALE = 0.75;
 // Rounding down a little leaves room for sub-pixel differences between measurement and paint.
 const STEP = 0.02;
 
-export interface FitInput {
+interface FitInput {
   /** The text's natural width at full size. */
   natural: number;
   /** The width it may take. */

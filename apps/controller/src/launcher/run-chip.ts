@@ -32,14 +32,14 @@ export function modeLabel(mode: string | null): string {
   return MODE_LABELS[mode] ?? mode.replace(/_/g, " ");
 }
 
-export interface RunChipState {
+interface RunChipState {
   runActive: boolean;
   inFlight: boolean;
   run: RunInfo;
   now: number;
 }
 
-export interface RunChipView {
+interface RunChipView {
   mode: string;
   /** "--:--" until run_start has gone out. */
   elapsed: string;

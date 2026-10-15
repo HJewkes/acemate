@@ -9,8 +9,6 @@ export interface DriveInput {
   turn: number;
 }
 
-export const NEUTRAL: DriveInput = { x: 0, y: 0, turn: 0 };
-
 /**
  * The firmware does not blend motions, so exactly one wins. With priority "rotate":
  *   1. |turn| > rotateThreshold          -> turn_left / turn_right
@@ -45,7 +43,7 @@ function translateMotion({ x, y }: DriveInput, deadzone: number): Motion | null 
   return x > 0 ? "go_right" : "go_left";
 }
 
-/** Merges keyboard and gamepad per axis: the stronger push wins, so neither cancels the other. */
+/** Merges input sources (touch, keys, gamepad) per axis: the stronger push wins, so none cancels another. */
 export function combineInputs(...inputs: DriveInput[]): DriveInput {
   const strongest = (axis: keyof DriveInput) =>
     inputs.reduce((best, input) => (Math.abs(input[axis]) > Math.abs(best) ? input[axis] : best), 0);

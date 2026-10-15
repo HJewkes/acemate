@@ -65,7 +65,7 @@ describe("drive loop", () => {
     ]);
   });
 
-  it("stops when the page goes quiet for 300 ms", () => {
+  it("stops when input goes quiet for 300 ms", () => {
     const { loop, sent, advance } = harness();
     loop.update("go_right");
 

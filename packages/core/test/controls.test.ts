@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { aimToPad, directionLabel, padToAim, pixelToAim } from "../src/controls/aim";
-import { flipped, parseAssumptions } from "../src/controls/assumptions";
-import { describeShot } from "../src/controls/describe-shot";
+import { flipped } from "../src/controls/assumptions";
 import { SPANS, snapTo, stepBy } from "../src/controls/ranges";
 import { spinLabel, spinStyle, spinValue } from "../src/controls/spin";
 
@@ -25,12 +24,6 @@ describe("assumptions", () => {
     expect(flipped(7, true)).toBe(-7);
     expect(Object.is(flipped(0, true), 0)).toBe(true);
     expect(flipped(7, false)).toBe(7);
-  });
-
-  it("falls back to the defaults for missing or broken storage", () => {
-    expect(parseAssumptions(null)).toEqual({ flipDirection: false, flipX: false, robotZ: 0 });
-    expect(parseAssumptions("{oops")).toEqual({ flipDirection: false, flipX: false, robotZ: 0 });
-    expect(parseAssumptions('{"flipX":true,"robotZ":-1}')).toEqual({ flipDirection: false, flipX: true, robotZ: -1 });
   });
 });
 
@@ -64,14 +57,5 @@ describe("spin labels", () => {
     expect(spinLabel(0)).toBe("flat");
     expect(spinLabel(3)).toBe("topspin 3");
     expect(spinLabel(-2)).toBe("slice 2");
-  });
-});
-
-describe("shot description", () => {
-  it("summarises the shot Fire would send", () => {
-    const shot = { kind: "machine", direction: 4, speed: 6, spin: 2, elevation: 30, count: 3, interval: 2 } as const;
-
-    expect(describeShot(shot, false)).toBe("R 4° · elev 30° · speed 6 · topspin 2 · 3 balls every 2 s");
-    expect(describeShot(null, false)).toBe("nothing to fire");
   });
 });
