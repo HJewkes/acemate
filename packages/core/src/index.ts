@@ -1,5 +1,6 @@
 export * from "./protocol/protocol";
 export * from "./protocol/launch";
+export * from "./protocol/clock";
 export * from "./drive/motion";
 export * from "./drive/drive-loop";
 export * from "./drive/input";

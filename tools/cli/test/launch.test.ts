@@ -69,16 +69,26 @@ describe("fire", () => {
   const happy = {
     ask_init_data: { type: "rsp_init_data", data: {} },
     ask_heartbeat: IDLE,
+    set_time: { type: "rsp_set_time", data: { result: "ok" } },
     set_mode: { type: "rsp_set_mode", data: { mode: "ball_machine" } },
   };
 
-  it("sends init, heartbeat, set_mode, run_start in order and run_stop before closing", async () => {
+  it("sends init, heartbeat, set_time, set_mode, run_start in order and run_stop before closing", async () => {
     const { code, sent, link } = await fire(happy);
 
     expect(code).toBe(0);
-    expect(sent.slice(0, 4)).toEqual(["ask_init_data", "ask_heartbeat", "set_mode", "run_start"]);
+    expect(sent.slice(0, 5)).toEqual(["ask_init_data", "ask_heartbeat", "set_time", "set_mode", "run_start"]);
     expect(sent.at(-1)).toBe("run_stop");
     expect(link.close).toHaveBeenCalled();
+  });
+
+  it("sends neither set_mode nor run_start when rsp_set_time does not arrive", async () => {
+    const { code, sent } = await fire({ ...happy, set_time: undefined });
+
+    expect(code).toBe(1);
+    expect(sent).not.toContain("set_mode");
+    expect(sent).not.toContain("run_start");
+    expect(sent.at(-1)).toBe("run_stop");
   });
 
   it("never sends run_start when rsp_set_mode does not arrive, and still sends run_stop", async () => {
