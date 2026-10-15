@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createHoldFire } from "@acemate/core";
+import { createHoldFire, HOLD_MS } from "@acemate/core";
 import { Controller } from "../src/control/controller";
 import {
   BOUND_KEYS,
@@ -11,7 +11,6 @@ import {
 } from "../src/control/keyboard";
 import type { Horizontal } from "../src/control/sticks";
 import { createInputActions, nudgeAim } from "../src/control/web-input";
-import { APP_HOLD_MS } from "../src/launcher/use-hold-fire";
 
 // Routes keys into a real Controller, so the tests read the motion the robot would get.
 function drivenBy(horizontal: Horizontal) {
@@ -154,7 +153,7 @@ describe("space holds to fire", () => {
     let now = 0;
     let fired = 0;
     let presses = 0;
-    const machine = createHoldFire(APP_HOLD_MS);
+    const machine = createHoldFire(HOLD_MS);
     const fire = (reading: { fire: boolean }) => {
       if (reading.fire) fired++;
     };
@@ -187,8 +186,8 @@ describe("space holds to fire", () => {
     const { keys, wait, fired } = spaceFire();
     keys.down("Space", false);
 
-    wait(APP_HOLD_MS);
-    wait(APP_HOLD_MS);
+    wait(HOLD_MS);
+    wait(HOLD_MS);
 
     expect(fired()).toBe(1);
   });
@@ -196,10 +195,10 @@ describe("space holds to fire", () => {
   it("cancels when Space comes up before the hold completes", () => {
     const { keys, wait, fired } = spaceFire();
     keys.down("Space", false);
-    wait(APP_HOLD_MS - 100);
+    wait(HOLD_MS - 100);
 
     keys.up("Space");
-    wait(APP_HOLD_MS);
+    wait(HOLD_MS);
 
     expect(fired()).toBe(0);
   });
@@ -207,13 +206,13 @@ describe("space holds to fire", () => {
   it("ignores auto-repeat, so the hold is pressed once and fires on time, once", () => {
     const { keys, wait, fired, presses } = spaceFire();
     keys.down("Space", false);
-    wait(APP_HOLD_MS - 100);
+    wait(HOLD_MS - 100);
 
     keys.down("Space", true);
     wait(100);
     const firedOnTime = fired();
     keys.down("Space", true);
-    wait(APP_HOLD_MS);
+    wait(HOLD_MS);
 
     expect([presses(), firedOnTime, fired()]).toEqual([1, 1, 1]);
   });
@@ -221,11 +220,11 @@ describe("space holds to fire", () => {
   it("needs a fresh press to fire again", () => {
     const { keys, wait, fired } = spaceFire();
     keys.down("Space", false);
-    wait(APP_HOLD_MS);
+    wait(HOLD_MS);
     keys.up("Space");
 
     keys.down("Space", false);
-    wait(APP_HOLD_MS);
+    wait(HOLD_MS);
 
     expect(fired()).toBe(2);
   });
@@ -234,7 +233,7 @@ describe("space holds to fire", () => {
     const { keys, wait, fired } = spaceFire(true);
 
     keys.down("Space", false);
-    wait(APP_HOLD_MS);
+    wait(HOLD_MS);
 
     expect(fired()).toBe(0);
   });
