@@ -10,7 +10,9 @@ import { requestedProbe } from "./src/debug/probe-env";
 import type { Horizontal, Stick } from "./src/control/sticks";
 import { singleBall, type Shot } from "./src/launcher/shot";
 import { useHoldFire } from "./src/launcher/use-hold-fire";
-import { useRobot } from "./src/robot/use-robot";
+import { AUTO_CONNECT } from "./src/robot/ble-channel";
+import { connectsOnMenuOpen } from "./src/robot/menu-connect";
+import { useRobot, type RobotView } from "./src/robot/use-robot";
 import type { SavedRobot, UnackedLimit } from "./src/storage/settings";
 import { useSettings } from "./src/storage/use-settings";
 import { DriveScreen } from "./src/ui/drive/DriveScreen";
@@ -53,6 +55,7 @@ export default function App() {
   useLatchOnBackground(controller, hold.cancel);
   const latchOnTurn = useLatch(controller, hold.cancel);
   const menu = useDeviceMenu(controller, hold.cancel);
+  const openMenu = useOpenMenu(menu.show, robot);
   useKeysAndPad(controller, { robot, hold, setShot: setAimShot }, menu.open);
 
   useEffect(() => {
@@ -69,7 +72,7 @@ export default function App() {
             <DriveScreen
               robot={robot}
               robotName={robotName}
-              onOpenMenu={menu.show}
+              onOpenMenu={openMenu}
               horizontal={horizontal}
               onHorizontal={setHorizontal}
               onStick={setStick}
@@ -118,6 +121,15 @@ function useLatch(controller: Controller, cancelHold: () => void) {
     controller.emergencyStop();
     cancelHold();
   }, [controller, cancelHold]);
+}
+
+// The chooser needs this tap's user gesture, so it opens here rather than from an effect once the menu shows.
+function useOpenMenu(show: () => void, robot: RobotView) {
+  const { status, connectTo } = robot;
+  return useCallback(() => {
+    show();
+    if (connectsOnMenuOpen(status, AUTO_CONNECT)) connectTo(null);
+  }, [show, status, connectTo]);
 }
 
 // The menu covers the stick and the fire bar, so neither may act while it is open.

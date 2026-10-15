@@ -34,11 +34,10 @@ export function launchBrowser() {
   return chromium.launch(executablePath ? { executablePath } : {});
 }
 
-/** Connects the mock robot through the device menu and leaves the menu open. */
+/** Opens the device menu, whose tap connects the mock robot when none is linked, and leaves the menu open. */
 export async function connectMock(page) {
   await page.getByLabel("Open device menu").click({ timeout: 5_000 });
-  await page.getByText("Choose robot…").click({ timeout: 5_000 });
-  await page.getByText("Disconnect").waitFor();
+  await page.getByText("Disconnect").waitFor({ timeout: 10_000 });
 }
 
 export async function closeMenu(page) {
