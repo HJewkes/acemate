@@ -1,5 +1,6 @@
 import { parseMessage, requests, type Request } from "@acemate/core";
 import type { Link } from "./link.js";
+import { COMMAND_SPACING_MS, type Recorder } from "./session.js";
 
 interface Rule {
   reason: string;
@@ -58,13 +59,11 @@ function parseRawRequest(text: string): Request {
 export interface SendDeps {
   open(): Promise<Link>;
   print(line: string): void;
-  record(direction: "tx" | "rx" | "event", payload: unknown): void;
+  record: Recorder;
   sleep(ms: number): Promise<void>;
 }
 
 const DEFAULT_WATCH_SECONDS = 5;
-// The app spaces plain commands at least 200 ms apart (BleCommandSender.java:39).
-const COMMAND_SPACING_MS = 200;
 
 export async function runSend(text: string, watchSeconds: number | null, deps: SendDeps): Promise<number> {
   let request: Request;
