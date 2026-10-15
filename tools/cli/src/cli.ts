@@ -14,7 +14,7 @@ function launch(argv: string[]): Promise<number> {
   }
   const { setMode, options, log } = parseLaunchArgs(argv);
   return runLaunch(setMode, options, {
-    open: (o) => openLink({ name: o.name, chunk: o.chunk, noResponse: false }),
+    open: (o) => openLink({ name: o.name, chunk: o.chunk, noResponse: false, mock: o.mock }),
     print,
     record: recorder(log),
     sleep,

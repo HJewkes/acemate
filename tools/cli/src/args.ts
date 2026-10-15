@@ -13,6 +13,7 @@ export interface CliOptions {
   chunk: number;
   remoteMode: boolean;
   noResponse: boolean;
+  mock: boolean;
   coast: number;
   log: string;
   watchSeconds: number | null;
@@ -36,6 +37,7 @@ export const USAGE = [
   "Options: [--name ACEMATE] [--interval 200] [--initial-hold 300] [--repeat-hold 90] [--tick 20]",
   "         [--heartbeat 3000] [--max-seconds 120] [--chunk 512] [--remote-mode] [--no-response]",
   "         [--coast 0] [--log acemate.jsonl]",
+  "         [--mock]   use a built-in mock robot (ACEMATE-MOCK0) instead of Bluetooth",
 ].join("\n");
 
 const OPTIONS = {
@@ -49,6 +51,7 @@ const OPTIONS = {
   chunk: { type: "string", default: "512" },
   "remote-mode": { type: "boolean", default: false },
   "no-response": { type: "boolean", default: false },
+  mock: { type: "boolean", default: false },
   coast: { type: "string", default: "0" },
   log: { type: "string", default: "acemate.jsonl" },
   watch: { type: "string" },
@@ -95,6 +98,7 @@ function toOptions(values: ReturnType<typeof parseOrThrow>["values"]): CliOption
     chunk: number("chunk", values.chunk),
     remoteMode: values["remote-mode"],
     noResponse: values["no-response"],
+    mock: values.mock,
     coast: number("coast", values.coast),
     log: values.log,
     watchSeconds: values.watch === undefined ? null : number("watch", values.watch),
