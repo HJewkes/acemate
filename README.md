@@ -82,14 +82,16 @@ The drive screen works in landscape and portrait. In landscape it has three part
   - the debug log, with a **Clear log** button;
   - on the web, **Max write without response** (180, 100 or 20 B), a debug setting for Android phones that keep a small Bluetooth packet size. Try 20 B if driving fails on Android.
 - **Right: the launcher.**
-  - Spin: slice, flat or topspin.
+  - Two chips across the top, each showing its setting. Tap one to open its options just below; tap outside to close them.
+    - **Spin**, e.g. "Top 2": slice, flat or topspin, and a slider for the strength from −3 to 3.
+    - **Balls**, "1 ball" or e.g. "3 × 4 s": how many balls one hold fires (1 to 10), and **Every**, the seconds between them (1 to 15, in half seconds). Every is greyed out at one ball. The count goes back to 1 each time the app starts.
   - Speed from 1 to 10. The bar fills from right to left.
   - The aim pad: across sets direction, and up sets elevation.
-  - The fire bar. Hold it until it fills to fire one ball.
+  - The fire bar. Hold it until it fills to fire. Above one ball it reads **HOLD · 3 BALLS** (or **FIRE ×3** when narrow), so you can see the count under your thumb.
 - **Top right: the run chip.** It appears as soon as you fire, while the robot confirms the shot, and stays through the run, showing the mode and the elapsed time. It clears as soon as the robot reports the run finished. Tap it to stop the run.
-- The aim readout under the pad shows direction and elevation; speed and spin are on the controls above it. Labels never end in "…": a label that doesn't fit shrinks, then shows its icon (Strafe / Turn become ↔ / ↻).
+- The aim readout under the pad shows direction and elevation, plus the ball count and interval above one ball; speed and spin are on the controls above it. Labels never end in "…": a label that doesn't fit shrinks, then shows its icon (Strafe / Turn become ↔ / ↻).
 
-In portrait the same controls stack, top to bottom: the device chip (with Keys and the run chip beside it), the launcher at full width, then the Strafe / Turn switch and the stick at the bottom, where your thumb rests. The switch keeps Fire well clear of the stick. In a short browser window the aim pad moves beside spin, speed and Fire. Portrait iPads keep the landscape layout. In portrait the device menu is one scrolling sheet with a **Done** button at the bottom.
+In portrait the same controls stack, top to bottom: the device chip (with Keys and the run chip beside it), the launcher at full width, then the Strafe / Turn switch and the stick at the bottom, where your thumb rests. The switch keeps Fire well clear of the stick. In a short browser window the aim pad moves beside the chips, speed and Fire. Portrait iPads keep the landscape layout. In portrait the device menu is one scrolling sheet with a **Done** button at the bottom.
 
 Turning the phone mid-drive stops the robot: the stick is rebuilt under your thumb, so lift it and press again to drive.
 
@@ -97,15 +99,16 @@ Turning the phone mid-drive stops the robot: the stick is rebuilt under your thu
 
 ### Touch
 
-| Control         | Action                                 |
-| --------------- | -------------------------------------- |
-| Stick           | drive; release to stop                 |
-| Strafe / Turn   | choose what sideways on the stick does |
-| Spin, speed     | set up the shot                        |
-| Aim pad         | set direction and elevation            |
-| Fire bar (hold) | fire one ball when the bar fills       |
-| Run chip        | stop the run                           |
-| Device chip     | open the device menu                   |
+| Control          | Action                                 |
+| ---------------- | -------------------------------------- |
+| Stick            | drive; release to stop                 |
+| Strafe / Turn    | choose what sideways on the stick does |
+| Spin chip, speed | set up the shot                        |
+| Balls chip       | balls per hold, and seconds between    |
+| Aim pad          | set direction and elevation            |
+| Fire bar (hold)  | fire the Balls chip's count when full  |
+| Run chip         | stop the run                           |
+| Device chip      | open the device menu                   |
 
 ### Keyboard
 
@@ -136,7 +139,7 @@ Leaving the page (switching tab or window) lets go of every key, stick and fire 
 
 ## Launching
 
-A launch fires one ball. The app tells the robot to switch to ball-machine mode with your shot (direction, elevation, speed and spin), waits for it to confirm, then starts a one-ball run. The robot fires from wherever it stands, and the run chip shows the run until it ends.
+A launch fires the Balls chip's count of the same ball, one ball unless you raise it. The app tells the robot to switch to ball-machine mode with your shot (direction, elevation, speed and spin, and with more than one ball the count and the seconds between them), waits for it to confirm, then starts the run. More than one ball per run is not yet confirmed on the robot itself. The robot fires from wherever it stands, and the run chip shows the run until it ends.
 
 Fire is locked, with the reason shown on the bar, while:
 
