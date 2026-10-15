@@ -1,9 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { createHoldFire } from "../src/controls/hold-fire";
+import { createHoldFire, HOLD_MS } from "../src/controls/hold-fire";
 
 const MS = 1000;
 
 describe("hold-to-fire", () => {
+  it("fires at exactly the 600 ms default and not a millisecond sooner", () => {
+    const hold = createHoldFire();
+    hold.press(0);
+
+    expect(HOLD_MS).toBe(600);
+    expect(hold.tick(599).fire).toBe(false);
+    expect(hold.tick(600).fire).toBe(true);
+  });
+
   it("does not fire when released early", () => {
     const hold = createHoldFire(MS);
     hold.press(0);

@@ -1,5 +1,5 @@
 /** How long Fire must be held before it sends. */
-export const HOLD_MS = 1200;
+export const HOLD_MS = 600;
 
 export interface HoldReading {
   fire: boolean;

@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { createHoldFire, type HoldReading } from "@acemate/core";
+import { createHoldFire, HOLD_MS, type HoldReading } from "@acemate/core";
 
 const TICK_MS = 16;
-// Half the shared 1200 ms default: the owner found 1.2 s too slow on the phone (2026-10-12).
-export const APP_HOLD_MS = 600;
 
 export interface HoldFireView {
   /** 0..1 across the hold; 1 once fired until the finger lifts. */
@@ -13,9 +11,9 @@ export interface HoldFireView {
   cancel(): void;
 }
 
-/** Drives the shared hold-to-fire machine from a press: fires once per hold, after holdMs. */
-export function useHoldFire(onFire: () => void, holdMs: number = APP_HOLD_MS): HoldFireView {
-  const hold = useRef(createHoldFire(holdMs));
+/** Drives the shared hold-to-fire machine from a press: fires once per hold, after HOLD_MS. */
+export function useHoldFire(onFire: () => void): HoldFireView {
+  const hold = useRef(createHoldFire(HOLD_MS));
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const fireRef = useRef(onFire);
   useLayoutEffect(() => {
