@@ -8,6 +8,8 @@ export * from "./launch/launch-controller";
 export * from "./mock/mock-robot";
 export * from "./controls/aim";
 export * from "./controls/assumptions";
+export * from "./controls/court";
 export * from "./controls/hold-fire";
+export * from "./controls/presets";
 export * from "./controls/ranges";
 export * from "./controls/spin";
