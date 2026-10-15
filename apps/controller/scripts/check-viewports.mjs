@@ -6,16 +6,26 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { closeMenu, connectMock, launchBrowser, serve, settle } from "./web-harness.mjs";
+import { closeMenu, closePopover, connectMock, launchBrowser, openChip, serve, settle } from "./web-harness.mjs";
 import { VIEWPORTS } from "./viewports.mjs";
 
 const AUDIT = fileURLToPath(new URL("./viewport-audit.mjs", import.meta.url));
-// Each state changes what the screen shows: Fire's lock text, the device chip, and the device menu.
+// Each state changes what the screen shows: Fire's lock text, the device chip, the device menu, and the launcher
+// chips' popovers. A popover is a dialog, so the audit checks it alone, not the pad it covers.
 const STATES = [
   { name: "drive", enter: async () => {} },
   { name: "menu", enter: connectMock },
   { name: "connected", enter: closeMenu },
+  { name: "spin-open", enter: (page) => openChip(page, "Spin") },
+  { name: "balls-open", enter: openBallsAtThree },
 ];
+
+/** Opens Balls at 3, so the Every slider is live and Fire behind it reads "HOLD · 3 BALLS". */
+async function openBallsAtThree(page) {
+  await closePopover(page);
+  await openChip(page, "Balls");
+  for (let i = 0; i < 2; i += 1) await page.getByLabel("More balls").click({ timeout: 5_000 });
+}
 
 const slug = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 

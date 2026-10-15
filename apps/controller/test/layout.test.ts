@@ -83,8 +83,11 @@ describe("drive layout", () => {
       insets: { top: 59, right: 0, bottom: 34, left: 0 },
     });
 
+    // The panel fills the height either way; a taller chip row would show up as a smaller pad and stick.
     expect(CHIP_ROW).toBeLessThanOrEqual(37);
     expect(launcherHeight(landscape)).toBe(364);
+    expect(landscape).toMatchObject({ column: 200, pad: 180 });
     expect(portraitLauncherHeight(portrait)).toBe(421);
+    expect(portrait).toMatchObject({ column: 216, pad: 229 });
   });
 });

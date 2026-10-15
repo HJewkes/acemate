@@ -45,6 +45,18 @@ export async function closeMenu(page) {
   await page.getByText("DEVICE MENU").waitFor({ state: "hidden" });
 }
 
+/** Taps a launcher chip by its name ("Spin", "Balls") and waits for its popover. */
+export async function openChip(page, name) {
+  await page.getByRole("button", { name: new RegExp(`^${name}:`) }).click({ timeout: 5_000 });
+  await page.getByRole("dialog", { name: `${name} options` }).waitFor({ timeout: 5_000 });
+}
+
+/** Taps outside the open popover, on its backdrop, which closes it. */
+export async function closePopover(page) {
+  await page.getByLabel("Close", { exact: true }).click({ position: { x: 2, y: 2 }, timeout: 5_000 });
+  await page.getByRole("dialog", { name: /options$/ }).waitFor({ state: "hidden" });
+}
+
 /** Waits for fades and springs to finish so a screenshot or measurement sees the settled layout. */
 export function settle(page) {
   return page.waitForFunction(() => document.getAnimations().length === 0);
