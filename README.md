@@ -16,10 +16,7 @@ An unofficial controller for the Acemate S10 tennis robot. It drives the robot w
 
 Before connecting from any system, power on the robot and force-quit the stock Acemate app on every phone nearby. The robot accepts only one Bluetooth connection.
 
-There are two web versions:
-
-- https://hjewkes.github.io/acemate/next/ is the new app, the same one that runs natively on iPhone. This guide describes it.
-- https://hjewkes.github.io/acemate/ is the classic web app, which stays up while the new one settles. It has its own **Connect** button and a `?mock=1` pretend robot for trying it at a desk.
+The web app at https://hjewkes.github.io/acemate/ is the same one that runs natively on iPhone. Old links to `/acemate/next/` redirect there.
 
 Web Bluetooth needs HTTPS (or `localhost`). Safari and Firefox do not support it.
 
@@ -43,17 +40,17 @@ The native app is built from source with Expo. You need a Mac with Xcode, Node 2
 
 ### Android (Chrome)
 
-Open https://hjewkes.github.io/acemate/next/ in Chrome. Tap the device chip, then **Choose robot…**, and pick the `ACEMATE-XXXXX` device in the browser's chooser. Allow Bluetooth and Nearby devices if Android asks.
+Open https://hjewkes.github.io/acemate/ in Chrome. Tap the device chip, then **Choose robot…**, and pick the `ACEMATE-XXXXX` device in the browser's chooser. Allow Bluetooth and Nearby devices if Android asks.
 
 ### Desktop (Chrome or Edge)
 
-Open https://hjewkes.github.io/acemate/next/ in Chrome or Edge on macOS, Windows, Linux or ChromeOS, and connect the same way.
+Open https://hjewkes.github.io/acemate/ in Chrome or Edge on macOS, Windows, Linux or ChromeOS, and connect the same way.
 
-To try the controller without a robot, open https://hjewkes.github.io/acemate/next/?mock=1 in any browser. **Choose robot…** then connects to a pretend robot, `ACEMATE-MOCK0`, which answers like an S10 and runs launches without firing anything.
+To try the controller without a robot, open https://hjewkes.github.io/acemate/?mock=1 in any browser. **Choose robot…** then connects to a pretend robot, `ACEMATE-MOCK0`, which answers like an S10 and runs launches without firing anything.
 
 ### iPhone (Bluefy browser)
 
-Safari and Chrome on iOS have no Web Bluetooth. Install the free Bluefy browser from the App Store, open https://hjewkes.github.io/acemate/next/ in it, and connect as above.
+Safari and Chrome on iOS have no Web Bluetooth. Install the free Bluefy browser from the App Store, open https://hjewkes.github.io/acemate/ in it, and connect as above.
 
 ## Screenshots
 
@@ -164,7 +161,7 @@ In a browser, the app never connects by itself, because the browser's chooser ne
 ## For developers
 
 - Use Node 24. Node 25 breaks the happy-dom tests.
-- The root is an npm workspace with one lockfile: run `npm ci` once at the root. `packages/core` (`@acemate/core`) holds the shared protocol, drive and launcher logic, consumed as TypeScript source by `apps/controller`, `apps/web` and `tools/cli`.
+- The root is an npm workspace with one lockfile: run `npm ci` once at the root. `packages/core` (`@acemate/core`) holds the shared protocol, drive and launcher logic, consumed as TypeScript source by `apps/controller` and `tools/cli`.
 - `tools/cli` (`@acemate/cli`) is a laptop CLI over Node BLE. Run `npx acemate --help` from the root for `scan`, `listen [--watch S]`, `drive`, `pulse`, `launch` (a dry run unless given `--fire`) and `send '<json>' [--watch S]`, which writes one raw request and prints every reply. `send` refuses OTA (any type with `ota` in it, `mcu_ota`, `ap` with purpose `ota`), the `upload` and `trigger_update` paths, `start_calib_extrinsic` and `set_court_profile`. Every frame is logged to `acemate.jsonl`.
 - Tests per package: `npm test` and `npm run typecheck` inside it, or both across every workspace from the root.
 - From the root: `npm run lint` and `npm run format:check`.
