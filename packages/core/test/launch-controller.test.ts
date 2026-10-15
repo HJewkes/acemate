@@ -153,6 +153,92 @@ describe("LaunchController", () => {
   });
 });
 
+describe("LaunchController with run_start and run_stop pushes", () => {
+  it("ends the run as soon as the robot pushes run_stop", async () => {
+    const { controller, reports } = harness();
+    await controller.handle(single);
+
+    controller.onRunStart(1_700_000_000);
+    controller.onRunStop("ball_machine_finished", 1_700_000_001);
+
+    expect(controller.running).toBe(false);
+    expect(reports.at(-1)).toBe("Run finished (run_stop ball_machine_finished)");
+  });
+
+  it("keeps the run after its run_start push when a heartbeat still says running:false", async () => {
+    const { controller } = harness();
+    await controller.handle(single);
+
+    controller.onRunStart(1_700_000_000);
+    controller.onCarState(false, 2000);
+
+    expect(controller.running).toBe(true);
+  });
+
+  it("clears a pushed-start run whose run_stop never arrives once running stays false past the timeout", async () => {
+    const { controller, reports } = harness();
+    await controller.handle(single);
+    controller.onRunStart(1_700_000_000);
+
+    controller.onCarState(false, 1000 + 8000);
+
+    expect(controller.running).toBe(false);
+    expect(reports.at(-1)).toMatch(/without a run_stop push/);
+  });
+
+  it("ignores a run_stop that arrives before this run's run_start push, as it belongs to an older run", async () => {
+    const { controller } = harness();
+    await controller.handle(single);
+
+    controller.onRunStop("ball_machine_finished", undefined);
+
+    expect(controller.running).toBe(true);
+  });
+
+  it("ignores a run_stop whose end_time is before this run's start_time", async () => {
+    const { controller } = harness();
+    await controller.handle(single);
+    controller.onRunStart(1_700_000_100);
+
+    controller.onRunStop("ball_machine_finished", 1_700_000_050);
+
+    expect(controller.running).toBe(true);
+  });
+
+  it("ignores a run_stop that arrives while the next set_mode awaits its reply", async () => {
+    const { controller, ack } = pendingHarness();
+
+    const firing = controller.handle(single);
+    controller.onRunStop("ball_machine_finished", undefined);
+    await ack();
+    await firing;
+
+    expect(controller.running).toBe(true);
+  });
+
+  it("accepts a run_stop without a run_start push once a heartbeat showed the run going", async () => {
+    const { controller } = harness();
+    await controller.handle(single);
+
+    controller.onCarState(true, 2000);
+    controller.onRunStop("ball_machine_finished", undefined);
+
+    expect(controller.running).toBe(false);
+  });
+
+  it("still reports a run the robot never starts when no push arrives", async () => {
+    const { controller, reports } = harness();
+    await controller.handle(single);
+
+    controller.onRunStart(1_700_000_000);
+    await controller.handle({ kind: "stop" });
+    await controller.handle(single);
+    controller.onCarState(false, 1000 + 8000);
+
+    expect(reports.at(-1)).toMatch(/did not start/);
+  });
+});
+
 describe("LaunchController while set_mode is in flight", () => {
   it("sends one set_mode when a second fire arrives before rsp_set_mode, and refuses the second", async () => {
     const { controller, sent, reports, ack } = pendingHarness();

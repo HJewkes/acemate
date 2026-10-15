@@ -83,7 +83,7 @@ The drive screen works in landscape and portrait. In landscape it has three part
   - Speed from 1 to 10. The bar fills from right to left.
   - The aim pad: across sets direction, and up sets elevation.
   - The fire bar. Hold it until it fills to fire one ball.
-- **Top right: the run chip.** It appears while a run is active, showing the mode and the elapsed time. Tap it to stop the run.
+- **Top right: the run chip.** It appears while a run is active, showing the mode and the elapsed time, and clears as soon as the robot reports the run finished. Tap it to stop the run.
 - The aim readout under the pad shows direction and elevation; speed and spin are on the controls above it. Labels never end in "…": a label that doesn't fit shrinks, then shows its icon (Strafe / Turn become ↔ / ↻).
 
 In portrait the same controls stack, top to bottom: the device chip (with Keys and the run chip beside it), the launcher at full width, then the Strafe / Turn switch and the stick at the bottom, where your thumb rests. The switch keeps Fire well clear of the stick. In a short browser window the aim pad moves beside spin, speed and Fire. Portrait iPads keep the landscape layout. In portrait the device menu is one scrolling sheet with a **Done** button at the bottom.

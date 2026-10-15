@@ -66,6 +66,8 @@ export class LaunchController {
   private firing = false;
   private stoppedWhileFiring = false;
   private sawRunning = false;
+  private pushedStart = false;
+  private robotStartTime: number | null = null;
   private startedAt = 0;
 
   constructor(private readonly deps: LaunchDeps) {}
@@ -90,13 +92,37 @@ export class LaunchController {
     return this.fire(message);
   }
 
+  /**
+   * The robot pushed run_start: the active run has started. start_time (robot clock) is kept to spot a stale run_stop.
+   * A push while no run is active (a gesture start, or after we stopped) is not ours to track.
+   */
+  onRunStart(startTime: unknown): void {
+    if (!this.active) return;
+    this.pushedStart = true;
+    this.robotStartTime = finiteNumber(startTime);
+  }
+
+  /**
+   * The robot pushed run_stop. Pushes carry no run id, so it ends the active run only once this run is known to have
+   * started (BLE keeps order, so a run_stop after that is about this run) and its end_time is not before start_time.
+   */
+  onRunStop(reason: unknown, endTime: unknown): void {
+    if (!this.active || !(this.pushedStart || this.sawRunning)) return;
+    const end = finiteNumber(endTime);
+    if (end !== null && this.robotStartTime !== null && end < this.robotStartTime) return;
+    this.finish(`Run finished (run_stop${typeof reason === "string" ? ` ${reason}` : ""})`);
+  }
+
   /** Clears the active run once a heartbeat shows it finished, or that it never started. */
   onCarState(running: boolean, now: number): void {
     if (!this.active) return;
     if (running) this.sawRunning = true;
+    // A heartbeat can be sampled before the robot raises running, even after its run_start push, so only a
+    // heartbeat that has itself shown running:true may end the run by going false; the push alone may not.
     else if (this.sawRunning) this.finish("Run finished (heartbeat running:false)");
-    else if (now - this.startedAt >= START_TIMEOUT_MS)
-      this.finish("Robot did not start the run (running stayed false); cleared.");
+    else if (now - this.startedAt < START_TIMEOUT_MS) return;
+    else if (this.pushedStart) this.finish("Run ended without a run_stop push (running stayed false); cleared.");
+    else this.finish("Robot did not start the run (running stayed false); cleared.");
   }
 
   private async fire(message: Extract<LaunchMessage, { kind: "machine" | "machine-queue" | "target" }>): Promise<void> {
@@ -124,6 +150,8 @@ export class LaunchController {
     this.deps.report(`rsp_set_mode ${JSON.stringify(reply.data ?? {})}`);
     this.active = true;
     this.sawRunning = false;
+    this.pushedStart = false;
+    this.robotStartTime = null;
     this.startedAt = this.deps.now();
     await this.command(runRequests.start(), "run_start sent");
   }
@@ -144,4 +172,8 @@ export class LaunchController {
     this.sawRunning = false;
     if (text) this.deps.report(text);
   }
+}
+
+function finiteNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
