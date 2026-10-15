@@ -15,6 +15,7 @@ import type { Link } from "./link.js";
 export interface LaunchOptions {
   fire: boolean;
   name?: string;
+  mock: boolean;
   chunk: number;
   timeoutMs: number;
   watchSeconds: number;
@@ -29,12 +30,13 @@ export interface LaunchDeps {
 }
 
 export const USAGE = [
-  "Usage: acemate launch <single|sequence|target> [--fire]",
+  "Usage: acemate launch <single|sequence|target> [--fire] [--mock]",
   "  single   --dir D --speed S --spin P --elev E",
   "  sequence --ball D,S,P,E [--ball …] [--interval 5] [--total N]",
   "  target   --x X --z Z --height-level H --spin P",
   "  common   [--name ACEMATE] [--train-id ID] [--timeout 5000] [--watch 20] [--log launch.jsonl]",
   "Dry run by default: prints the JSON and connects to nothing.",
+  "--mock fires at a built-in mock robot (ACEMATE-MOCK0) instead of Bluetooth.",
 ].join("\n");
 
 // The app spaces plain commands at least 200 ms apart (BleCommandSender.java:39).
@@ -54,6 +56,7 @@ const ARG_OPTIONS = {
   "height-level": { type: "string" },
   "train-id": { type: "string" },
   fire: { type: "boolean", default: false },
+  mock: { type: "boolean", default: false },
   name: { type: "string" },
   chunk: { type: "string", default: "512" },
   timeout: { type: "string", default: "5000" },
@@ -111,6 +114,7 @@ export function parseLaunchArgs(argv: string[]): { setMode: Request; options: La
   const options: LaunchOptions = {
     fire: values.fire,
     name: values.name,
+    mock: values.mock,
     chunk: Number(values.chunk),
     timeoutMs: Number(values.timeout),
     watchSeconds: Number(values.watch),

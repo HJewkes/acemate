@@ -3,6 +3,7 @@ import type { CliOptions } from "./args.js";
 import { DEFAULT_HOLD, initialHold, press, tick, type HoldConfig, type HoldState } from "./hold.js";
 import { KEY_HELP, keyAction } from "./keys.js";
 import type { Link } from "./link.js";
+import { MOCK_ROBOT_NAME } from "./mock-link.js";
 import { openLink, sleep, type Recorder } from "./session.js";
 
 export interface Probe {
@@ -13,7 +14,11 @@ export interface Probe {
 
 const forever = () => new Promise<never>(() => undefined);
 
-export async function runScan({ record }: Probe): Promise<number> {
+export async function runScan({ options, record }: Probe): Promise<number> {
+  if (options.mock) {
+    console.log(`mock  name=${MOCK_ROBOT_NAME}  (no Bluetooth scan)`);
+    return 0;
+  }
   const { scan } = await import("./link.js");
   console.log("Scanning 10s for devices advertising the Nordic UART service…");
   await scan(10, (p) => {

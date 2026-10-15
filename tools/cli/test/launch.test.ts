@@ -13,7 +13,6 @@ function fakeLink(replies: Replies): { link: Link; sent: string[] } {
   const sent: string[] = [];
   let listener: (line: string) => void = () => undefined;
   const link = {
-    peripheral: {} as Link["peripheral"],
     send: async (request: Request) => {
       sent.push(request.type);
       const reply = replies[request.type];

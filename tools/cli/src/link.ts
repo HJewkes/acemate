@@ -2,7 +2,6 @@ import noble, { type Characteristic, type Peripheral } from "@stoprocent/noble";
 import { LineDecoder, NUS_NOTIFY, NUS_SERVICE, NUS_WRITE, chunk, encodeLine, type Request } from "@acemate/core";
 
 export interface Link {
-  peripheral: Peripheral;
   send(request: Request): Promise<void>;
   onLine(listener: (line: string) => void): void;
   close(): Promise<void>;
@@ -66,7 +65,6 @@ function buildLink(
   const decoder = new LineDecoder();
   let queue = Promise.resolve();
   return {
-    peripheral,
     send(request) {
       const parts = chunk(encodeLine(request), options.chunkSize);
       queue = queue.then(async () => {
