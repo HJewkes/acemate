@@ -10,14 +10,16 @@ import { closeMenu, closePopover, connectMock, launchBrowser, openChip, serve, s
 import { VIEWPORTS } from "./viewports.mjs";
 
 const AUDIT = fileURLToPath(new URL("./viewport-audit.mjs", import.meta.url));
-// Each state changes what the screen shows: Fire's lock text, the device chip, the device menu, and the launcher
-// chips' popovers. A popover is a dialog, so the audit checks it alone, not the pad it covers.
+// Each state changes what the screen shows: Fire's lock text, the device chip, the device menu, the launcher chips'
+// popovers, and Fire's "HOLD · 3 BALLS" label once Balls is closed again at 3. A popover is a dialog, so the audit
+// checks it alone, not the pad it covers.
 const STATES = [
   { name: "drive", enter: async () => {} },
   { name: "menu", enter: connectMock },
   { name: "connected", enter: closeMenu },
   { name: "spin-open", enter: (page) => openChip(page, "Spin") },
   { name: "balls-open", enter: openBallsAtThree },
+  { name: "balls-3", enter: closePopover },
 ];
 
 /** Opens Balls at 3, so the Every slider is live and Fire behind it reads "HOLD · 3 BALLS". */
