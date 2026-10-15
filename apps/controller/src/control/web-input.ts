@@ -10,7 +10,7 @@ export interface InputActions extends InputTarget {
   leave(reason: LeaveReason): void;
 }
 
-export interface InputDeps {
+interface InputDeps {
   controller: Controller;
   hold: { press(): void; release(): void; cancel(): void };
   /** The same lock the fire bar shows; a locked press never starts a hold. */

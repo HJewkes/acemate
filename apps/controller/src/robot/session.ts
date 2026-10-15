@@ -15,7 +15,7 @@ import { LaunchLink } from "./launch-link";
 
 export type RobotMessage = ReturnType<typeof parseMessage>;
 
-export interface SessionConfig {
+interface SessionConfig {
   loop: DriveLoopConfig;
   /** The app polls the heartbeat every few seconds, and only while the robot is stopped. */
   heartbeatMs: number;
@@ -29,9 +29,9 @@ export const DEFAULT_SESSION: SessionConfig = { loop: DEFAULT_LOOP, heartbeatMs:
  */
 // On iOS, with-response writes at connect stalled the queue (2026-10-12); unacked writes up to one packet worked.
 // Only lines too big for one packet (iOS allows ~182 bytes unacked) go with response, as a long write.
-export const MAX_UNACKED_WRITE = 180;
+const MAX_UNACKED_WRITE = 180;
 // A hung write must never block the queue: motion and stop have to keep flowing.
-export const WRITE_TIMEOUT_MS = 1000;
+const WRITE_TIMEOUT_MS = 1000;
 
 // Motion is logged only when it changes, not every 50 ms resend.
 function debugLog(direction: "rx" | "tx", payload: unknown): void {

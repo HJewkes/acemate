@@ -10,7 +10,7 @@ const OTA_WORD = /(^|[^a-z])ota([^a-z]|$)/i;
 const anyText = (pattern: RegExp) => (_type: string, texts: readonly string[]) => texts.some((t) => pattern.test(t));
 
 // Never sent from here, whatever the experiment: each one can brick the robot or wreck its localisation.
-export const DENYLIST: readonly Rule[] = [
+const DENYLIST: readonly Rule[] = [
   {
     reason: "OTA (mcu_ota, ap purpose ota, any type containing 'ota') can flash firmware and brick the robot",
     matches: (type, texts) => type.toLowerCase().includes("ota") || texts.some((t) => OTA_WORD.test(t)),
@@ -43,7 +43,7 @@ export function refusal(request: Request): string | null {
   return DENYLIST.find((rule) => rule.matches(request.type, all))?.reason ?? null;
 }
 
-export function parseRawRequest(text: string): Request {
+function parseRawRequest(text: string): Request {
   let value: unknown;
   try {
     value = JSON.parse(text);

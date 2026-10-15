@@ -8,7 +8,7 @@ import { DeviceList } from "./DeviceList";
 import { SettingsColumn } from "./SettingsColumn";
 import { WriteLimit } from "./WriteLimit";
 
-export interface MenuBodyProps {
+interface MenuBodyProps {
   robot: RobotView;
   nearby: NearbyRobots;
   lastRobot: SavedRobot | null;

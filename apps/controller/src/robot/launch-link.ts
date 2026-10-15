@@ -14,7 +14,7 @@ export interface LaunchListener {
   carState(state: CarState): void;
 }
 
-export interface LaunchLinkDeps {
+interface LaunchLinkDeps {
   send(request: Request): Promise<void>;
   driveStopped(): boolean;
   now(): number;

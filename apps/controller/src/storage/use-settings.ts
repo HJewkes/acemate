@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DEFAULT_SETTINGS, loadSettings, saveSettings, type KeyValueStore, type Settings } from "./settings";
 
-export interface SettingsView {
+interface SettingsView {
   /** Defaults until the stored copy has loaded; `loaded` says which. */
   settings: Settings;
   loaded: boolean;

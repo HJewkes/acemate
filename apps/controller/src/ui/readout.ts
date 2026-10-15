@@ -3,7 +3,7 @@ import { runChip } from "../launcher/run-chip";
 import type { Shot } from "../launcher/shot";
 import type { RobotView } from "../robot/use-robot";
 
-export interface ReadoutRow {
+interface ReadoutRow {
   label: string;
   value: string;
 }

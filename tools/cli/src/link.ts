@@ -33,7 +33,7 @@ export async function findFirst(timeoutSeconds: number, nameFilter?: string): Pr
   }
 }
 
-export interface WriteOptions {
+interface WriteOptions {
   chunkSize: number;
   withoutResponse: boolean;
 }

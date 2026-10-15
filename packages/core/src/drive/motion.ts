@@ -9,8 +9,6 @@ export interface DriveInput {
   turn: number;
 }
 
-export const NEUTRAL: DriveInput = { x: 0, y: 0, turn: 0 };
-
 /**
  * The firmware does not blend motions, so exactly one wins. With priority "rotate":
  *   1. |turn| > rotateThreshold          -> turn_left / turn_right

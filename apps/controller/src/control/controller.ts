@@ -8,7 +8,7 @@ export interface ControlState {
 }
 
 /** The touch stick, the keyboard (web) and a gamepad (web). */
-export type InputSource = "touch" | "keys" | "pad";
+type InputSource = "touch" | "keys" | "pad";
 
 const ALL_IDLE: Record<InputSource, DriveAxes> = { touch: IDLE, keys: IDLE, pad: IDLE };
 

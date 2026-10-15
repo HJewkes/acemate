@@ -81,11 +81,6 @@
       "count": 1
     }
   },
-  "packages/core/src/controls/assumptions.ts": {
-    "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 1
-    }
-  },
   "packages/core/src/drive/drive-loop.ts": {
     "@typescript-eslint/no-confusing-void-expression": {
       "count": 2
@@ -99,7 +94,7 @@
       "count": 1
     },
     "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 3
+      "count": 1
     }
   },
   "packages/core/src/protocol/launch.ts": {

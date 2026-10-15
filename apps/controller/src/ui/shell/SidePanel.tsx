@@ -8,7 +8,7 @@ import { liveReadout } from "../readout";
 import { useThemedStyles, type Palette } from "../theme";
 import { useNow } from "../use-clock";
 
-export interface SidePanelProps {
+interface SidePanelProps {
   robot: RobotView;
   shot: Shot;
 }

@@ -1,6 +1,6 @@
 import type { Motion } from "@acemate/core";
 
-export type KeyAction = { kind: "motion"; motion: Motion } | { kind: "quit" } | { kind: "ignore" };
+type KeyAction = { kind: "motion"; motion: Motion } | { kind: "quit" } | { kind: "ignore" };
 
 const KEYMAP: Record<string, Motion> = {
   w: "go_front",

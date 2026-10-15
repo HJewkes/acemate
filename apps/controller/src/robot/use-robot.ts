@@ -43,7 +43,6 @@ export interface RobotView {
   disconnect(): void;
   fire(message: FireMessage): void;
   stopRun(): void;
-  pauseRun(): void;
   /** Writes stop at once, then run_stop. */
   emergencyStop(): void;
 }
@@ -86,7 +85,7 @@ function useLaunchView() {
   return { launch, listener, setRunState };
 }
 
-export interface RobotOptions {
+interface RobotOptions {
   /** The robot to auto-connect to on launch and on returning to the app; null until loaded or if none. */
   lastRobot: SavedRobot | null;
   onConnected(robot: SavedRobot): void;
@@ -186,7 +185,6 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
     [withSession],
   );
   const stopRun = useCallback(() => withSession((current) => current.launch.handle({ kind: "stop" })), [withSession]);
-  const pauseRun = useCallback(() => withSession((current) => current.launch.handle({ kind: "pause" })), [withSession]);
   const emergencyStop = useCallback(() => session.current?.emergencyStop(), []);
 
   useEffect(() => {
@@ -232,7 +230,6 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
     disconnect,
     fire,
     stopRun,
-    pauseRun,
     emergencyStop,
   };
 }
