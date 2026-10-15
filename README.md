@@ -40,13 +40,13 @@ The native app is built from source with Expo. You need a Mac with Xcode, Node 2
 
 ### Android (Chrome)
 
-Open https://hjewkes.github.io/acemate/ in Chrome. Tap the device chip, then **Choose robot…**, and pick the `ACEMATE-XXXXX` device in the browser's chooser. Allow Bluetooth and Nearby devices if Android asks.
+Open https://hjewkes.github.io/acemate/ in Chrome. Tap the device chip. With no robot linked, that one tap opens the browser's chooser as well as the device menu; pick the `ACEMATE-XXXXX` device. Later connects go through **Choose robot…** or **Reconnect** in the menu. Allow Bluetooth and Nearby devices if Android asks.
 
 ### Desktop (Chrome or Edge)
 
 Open https://hjewkes.github.io/acemate/ in Chrome or Edge on macOS, Windows, Linux or ChromeOS, and connect the same way.
 
-To try the controller without a robot, open https://hjewkes.github.io/acemate/?mock=1 in any browser. **Choose robot…** then connects to a pretend robot, `ACEMATE-MOCK0`, which answers like an S10 and runs launches without firing anything.
+To try the controller without a robot, open https://hjewkes.github.io/acemate/?mock=1 in any browser. Tapping the device chip then connects to a pretend robot, `ACEMATE-MOCK0`, which answers like an S10 and runs launches without firing anything.
 
 ### iPhone (Bluefy browser)
 
