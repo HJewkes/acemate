@@ -1,5 +1,6 @@
 // Renders a web export in mock mode at every viewport in viewports.mjs, with the device's safe-area insets emulated,
-// and fails when text is ellipsized or cut off, or a control sits off screen, under an inset or on another control.
+// and fails when text is ellipsized or cut off, or a control sits off screen, under an inset or on another control, or
+// when the stick sits under 60 px below Fire.
 // Writes a screenshot per viewport and state, issues outlined in red and insets shaded, plus index.html and report.json.
 // Usage: node scripts/check-viewports.mjs <dist dir> [output dir] [viewport name filter]
 import { mkdir, writeFile } from "node:fs/promises";
@@ -59,6 +60,24 @@ async function drawOverlay(page, insets, issues) {
   return () => page.evaluate(() => document.getElementById("viewport-audit-overlay")?.remove());
 }
 
+// Fire and the stick sit one above the other in the portrait column; the Strafe / Turn switch must keep them apart.
+const MIN_FIRE_GAP = 60;
+
+/** The gap between the bottom of the Fire bar and the top of the stick, or null when they are not stacked. */
+async function fireClearanceIssues(page) {
+  return page.evaluate((minGap) => {
+    const rectOf = (id) => document.querySelector(`[data-testid="${id}"]`)?.getBoundingClientRect();
+    const fire = rectOf("fire-bar");
+    const stick = rectOf("drive-stick");
+    const stacked = fire && stick && Math.min(fire.right, stick.right) - Math.max(fire.left, stick.left) > 0;
+    if (!stacked) return [];
+    const gap = stick.top - fire.bottom;
+    if (gap >= minGap) return [];
+    const rect = { x: fire.left, y: fire.bottom, width: fire.width, height: Math.max(gap, 0) };
+    return [{ kind: "stick too close to Fire", text: `${Math.round(gap)}px gap, under ${minGap}px`, rect }];
+  }, MIN_FIRE_GAP);
+}
+
 async function auditState(page, viewport, state, out) {
   const file = `${slug(viewport.name)}-${state.name}.png`;
   const result = { viewport: viewport.name, state: state.name, strict: viewport.strict, file, issues: [] };
@@ -76,6 +95,7 @@ async function auditState(page, viewport, state, out) {
   }
   await settle(page);
   result.issues = await page.evaluate((insets) => window.auditViewport(insets), viewport.insets);
+  result.issues.push(...(await fireClearanceIssues(page)));
   const removeOverlay = await drawOverlay(page, viewport.insets, result.issues);
   await page.screenshot({ path: join(out, file) });
   await removeOverlay();

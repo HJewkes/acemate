@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { chooseArrangement, type ColumnLayout } from "../src/ui/layout";
+import { STICK_SWITCH, chooseArrangement, type ColumnLayout } from "../src/ui/layout";
 import {
   FIRE_GUARD,
+  PORTRAIT_MIN_HEIGHT,
   HEADER,
   HEADER_GAP,
   computeDriveLayout,
@@ -25,9 +26,6 @@ const BROWSERS = [
   { width: 375, height: 548 },
   { width: 360, height: 640 },
 ];
-
-// The switch's own height, between the Fire guard and the stick.
-const STICK_SWITCH = 50;
 
 function stackHeight(layout: ColumnLayout): number {
   const used = HEADER + HEADER_GAP + portraitLauncherHeight(layout) + FIRE_GUARD + STICK_SWITCH + layout.column;
@@ -66,15 +64,17 @@ describe("portrait layout", () => {
     expect(layout.spacerBottom).toBeGreaterThan(layout.spacerTop - 24);
   });
 
+  it.each([360, 375, 393, 440])("fits the stack at the minimum portrait height and width %i", (width) => {
+    const layout = computePortraitLayout({ width, height: PORTRAIT_MIN_HEIGHT });
+
+    expect(stackHeight(layout)).toBe(PORTRAIT_MIN_HEIGHT);
+  });
+
   it("moves the pad beside the controls in a short browser window", () => {
     const layout = computePortraitLayout({ width: 375, height: 548 });
 
     expect(layout.launcher).toBe("wide");
     expect(layout.column).toBeGreaterThanOrEqual(150);
-  });
-
-  it("keeps the stick clear of Fire: the guard and the switch sit between them", () => {
-    expect(FIRE_GUARD + STICK_SWITCH).toBeGreaterThanOrEqual(60);
   });
 });
 

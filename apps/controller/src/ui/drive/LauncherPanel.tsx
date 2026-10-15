@@ -100,6 +100,7 @@ function FireBar({ robot, hold }: Pick<Props, "robot" | "hold">) {
   }, [locked, cancel]);
   return (
     <Pressable
+      testID="fire-bar"
       style={[styles.fire, locked && styles.fireLocked]}
       disabled={locked}
       onPressIn={hold.press}
