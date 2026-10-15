@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { computeLayout, launcherHeight } from "../src/ui/layout";
+import { computePortraitLayout, portraitLauncherHeight } from "../src/ui/layout-portrait";
+import { CHIP_ROW, computeLayout, launcherHeight } from "../src/ui/layout";
 
 const island = (side: number, bottom: number) => ({ top: 0, right: side, bottom, left: side });
 
@@ -72,5 +73,18 @@ describe("drive layout", () => {
 
   it("caps the columns on a tablet so the controls don't sprawl", () => {
     expect(computeLayout({ width: 1366, height: 1024 }).column).toBe(260);
+  });
+
+  it("fits the Spin and Balls chips in the old spin switch's height, so the panel does not grow", () => {
+    const landscape = computeLayout({ width: 956, height: 440, insets: island(62, 20) });
+    const portrait = computePortraitLayout({
+      width: 393,
+      height: 852,
+      insets: { top: 59, right: 0, bottom: 34, left: 0 },
+    });
+
+    expect(CHIP_ROW).toBeLessThanOrEqual(37);
+    expect(launcherHeight(landscape)).toBe(364);
+    expect(portraitLauncherHeight(portrait)).toBe(421);
   });
 });

@@ -1,4 +1,5 @@
 import { directionLabel, spinLabel } from "@acemate/core";
+import { ballsNote } from "../launcher/chips";
 import { runChip } from "../launcher/run-chip";
 import type { Shot } from "../launcher/shot";
 import type { RobotView } from "../robot/use-robot";
@@ -40,7 +41,10 @@ export function liveReadout(robot: ReadoutRobot, shot: Shot, now: number, flipDi
     { label: "Link", value: linkText(robot) },
     { label: "Motion", value: motionText(robot) },
     { label: "Aim", value: `${directionLabel(shot.direction, flipDirection)} · elev ${shot.elevation}°` },
-    { label: "Shot", value: `speed ${shot.speed} · ${spinLabel(shot.spin)}` },
+    {
+      label: "Shot",
+      value: [`speed ${shot.speed}`, spinLabel(shot.spin), ballsNote(shot)].filter(Boolean).join(" · "),
+    },
     { label: "Run", value: runText(robot, now) },
     { label: "Battery", value: battery === null ? NONE : `${battery}%` },
   ];

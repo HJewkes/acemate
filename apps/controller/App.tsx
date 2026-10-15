@@ -8,7 +8,7 @@ import { Controller } from "./src/control/controller";
 import { useKeysAndPad } from "./src/control/use-keys-and-pad";
 import { requestedProbe } from "./src/debug/probe-env";
 import type { Horizontal, Stick } from "./src/control/sticks";
-import { singleBall, type Shot } from "./src/launcher/shot";
+import { fireMessage, type Shot } from "./src/launcher/shot";
 import { useHoldFire } from "./src/launcher/use-hold-fire";
 import { AUTO_CONNECT } from "./src/robot/ble-channel";
 import { connectsOnMenuOpen } from "./src/robot/menu-connect";
@@ -48,7 +48,7 @@ export default function App() {
   }, [controller, horizontal]);
   const hold = useHoldFire(() => {
     if (menu.open) return;
-    const message = singleBall(aimShot);
+    const message = fireMessage(aimShot);
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     robot.fire(message);
   });

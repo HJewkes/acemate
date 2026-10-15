@@ -1,4 +1,5 @@
 import {
+  CHIP_ROW,
   LABEL_MIN,
   NO_INSETS,
   PANEL_INSET,
@@ -21,8 +22,8 @@ const MARGIN_BOTTOM = 12;
 /** The header row (device chip, Keys, run chip) and the gap under it. */
 export const HEADER = 44;
 export const HEADER_GAP = 12;
-/** The stacked launcher's height less its pad: spin, speed, a two-line readout, Fire, padding and gaps. */
-const STACKED_CHROME = 192;
+/** The stacked launcher's height less its pad: the chip row, speed, a two-line readout, Fire, padding and gaps. */
+const STACKED_CHROME = CHIP_ROW + 157;
 /** Space between Fire and the Strafe / Turn switch, so a thumb on the switch is well clear of Fire. */
 export const FIRE_GUARD = 16;
 // The stick and pad stay near the owner-tuned landscape stick (200), and the pad no larger than is useful.
@@ -79,7 +80,7 @@ function stackedSizing({ content, room }: Frame): Sizing | null {
   return column < STACKED_MIN || pad < STACKED_MIN ? null : { launcher: "stacked", column, pad };
 }
 
-/** For short windows: the pad beside spin, speed, readout and Fire, as in landscape's wide launcher. */
+/** For short windows: the pad beside the chips, speed, readout and Fire, as in landscape's wide launcher. */
 function compactSizing({ content, room }: Frame): Sizing {
   const pad = Math.floor(clamp(content - 2 * PANEL_INSET - WIDE_SIDE - WIDE_GAP, PAD_MIN, PAD_MAX));
   const launcher = Math.max(pad, WIDE_SIDE_HEIGHT) + 2 * PANEL_INSET;

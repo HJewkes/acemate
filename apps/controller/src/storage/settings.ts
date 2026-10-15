@@ -1,3 +1,4 @@
+import { SPANS, snapTo } from "@acemate/core";
 import type { Horizontal } from "../control/sticks";
 import { DEFAULT_SHOT, type Shot } from "../launcher/shot";
 import type { ThemeName } from "../ui/theme";
@@ -39,6 +40,10 @@ export const DEFAULT_SETTINGS: Settings = {
 
 const isNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 
+// An interval off the Every slider's grid falls back rather than reach the robot.
+const isInterval = (value: unknown): value is number => isNumber(value) && snapTo(value, SPANS.interval) === value;
+
+/** The ball count is left out on purpose: it is back to 1 on every launch, so a forgotten 10-ball hold never fires. */
 function parseShot(value: unknown): Shot {
   const shot = value as Partial<Record<keyof Shot, unknown>> | null;
   if (!shot || typeof shot !== "object") return DEFAULT_SHOT;
@@ -49,6 +54,7 @@ function parseShot(value: unknown): Shot {
     elevation: pick("elevation"),
     speed: pick("speed"),
     spin: pick("spin"),
+    interval: isInterval(shot.interval) ? shot.interval : DEFAULT_SHOT.interval,
   };
 }
 
