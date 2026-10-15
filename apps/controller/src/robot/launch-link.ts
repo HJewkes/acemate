@@ -1,5 +1,11 @@
 import { NO_RUN, runStartMs, type RunInfo } from "../launcher/run-chip";
-import { LaunchController, type LaunchMessage, type Request } from "@acemate/core";
+import {
+  LaunchController,
+  countryCodeFromLocale,
+  setTimeRequest,
+  type LaunchMessage,
+  type Request,
+} from "@acemate/core";
 
 export type CarState = { running?: boolean; bat?: number | null; time_is_set?: boolean } & Record<string, unknown>;
 
@@ -16,17 +22,6 @@ export interface LaunchLinkDeps {
 
 // The stock app resends set_time whenever the heartbeat says the clock is unset; we throttle it to 30 s.
 export const SET_TIME_EVERY_MS = 30_000;
-
-export function setTimeRequest(now: number): Request {
-  return {
-    type: "set_time",
-    data: {
-      unix_timestamp: Math.floor(now / 1000),
-      time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC",
-      country_code: "US",
-    },
-  };
-}
 
 type Waiter = { type: string; resolve: (message: Request | null) => void };
 
@@ -94,7 +89,9 @@ export class LaunchLink {
     const now = this.deps.now();
     if (carState.time_is_set === false && (this.timeSentAt === null || now - this.timeSentAt >= SET_TIME_EVERY_MS)) {
       this.timeSentAt = now;
-      this.deps.send(setTimeRequest(now)).catch(() => undefined);
+      this.deps
+        .send(setTimeRequest(now, countryCodeFromLocale(Intl.DateTimeFormat().resolvedOptions().locale)))
+        .catch(() => undefined);
     }
     this.controller.onCarState(carState.running === true, now);
     this.listeners.forEach((listener) => listener.carState(carState));

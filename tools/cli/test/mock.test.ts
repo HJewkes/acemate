@@ -83,8 +83,9 @@ describe("send against the mock robot", () => {
 });
 
 describe("launch --fire against the mock robot", () => {
-  it("sends run_start but sees no run, because the CLI never sets the robot's clock", async () => {
+  it("sets the robot's clock, then sees the run start and stop", async () => {
     const { lines, recorded, deps } = sendDeps();
+    // The mock's one-ball run lasts one real second, so this test lets the watch sleep for real.
     const argv = [
       "single",
       "--dir",
@@ -98,28 +99,25 @@ describe("launch --fire against the mock robot", () => {
       "--fire",
       "--mock",
       "--watch",
-      "2",
+      "4",
     ];
     const { setMode, options } = parseLaunchArgs(argv);
 
     const code = await runLaunch(setMode, options, {
       ...deps,
-      sleep: noSleep,
+      sleep: (ms) => (ms >= 1000 ? new Promise((resolve) => setTimeout(resolve, 600)) : noSleep()),
       onInterrupt: () => undefined,
       open: async () => createMockLink(options.chunk),
     });
 
     expect(code).toBe(0);
     expect(lines.some((line) => line.startsWith('← {"type":"rsp_set_mode"'))).toBe(true);
-    expect(lines.join("\n")).toContain("without seeing running:true");
-    expect(recorded.filter((e) => e.direction === "tx").map((e) => (e.payload as { type: string }).type)).toEqual([
-      "ask_init_data",
-      "ask_heartbeat",
-      "set_mode",
-      "run_start",
-      "ask_heartbeat",
-      "ask_heartbeat",
-      "run_stop",
-    ]);
+    expect(lines.some((line) => line.startsWith('← {"type":"rsp_set_time"'))).toBe(true);
+    expect(lines.some((line) => line.startsWith('← {"type":"run_start"'))).toBe(true);
+    expect(lines.some((line) => line.startsWith('← {"type":"run_stop"'))).toBe(true);
+    expect(lines.join("\n")).toContain("Run finished.");
+    const sent = recorded.filter((e) => e.direction === "tx").map((e) => (e.payload as { type: string }).type);
+    expect(sent.slice(0, 5)).toEqual(["ask_init_data", "ask_heartbeat", "set_time", "set_mode", "run_start"]);
+    expect(sent.at(-1)).toBe("run_stop");
   });
 });

@@ -1,6 +1,8 @@
 import { parseArgs } from "node:util";
 import {
   LaunchValidationError,
+  countryCodeFromLocale,
+  setTimeRequest,
   ballMachine,
   runRequests,
   singleShot,
@@ -202,6 +204,8 @@ async function startRoutine(channel: Channel, setMode: Request, deps: LaunchDeps
   if (!(await channel.ask(requests.askInit(), "rsp_init_data"))) throw new Error("no rsp_init_data; not launching");
   const running = isRunning(await channel.ask(requests.heartbeat(), "rsp_heartbeat"));
   if (running !== false) throw new Error(`heartbeat running=${String(running)}; need running:false before launching`);
+  const clock = setTimeRequest(Date.now(), countryCodeFromLocale(Intl.DateTimeFormat().resolvedOptions().locale));
+  if (!(await channel.ask(clock, "rsp_set_time"))) throw new Error("rsp_set_time never arrived; not launching");
   const reply = await channel.ask(setMode, "rsp_set_mode");
   if (!reply) throw new Error("rsp_set_mode never arrived; not sending run_start");
   deps.record("event", { rsp_set_mode: reply });
