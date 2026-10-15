@@ -49,4 +49,12 @@ describe("live readout", () => {
 
     expect(read({ ...IDLE_ROBOT, launch }, 66_000).Run).toBe("Ball machine 01:05");
   });
+
+  it("adds the ball count to the shot when one hold fires more than one", () => {
+    const shot = { ...DEFAULT_SHOT, spin: 2, count: 3, interval: 4 };
+
+    const rows = Object.fromEntries(liveReadout(IDLE_ROBOT, shot, 0, false).map((row) => [row.label, row.value]));
+
+    expect(rows.Shot).toBe("speed 5 · topspin 2 · 3 balls / 4 s");
+  });
 });

@@ -56,8 +56,14 @@ export interface LayoutInput {
   insets?: Insets;
 }
 
-// The launcher stacks spin, speed, the square pad, a readout and the fire bar: about column + 164 pt tall.
-const PANEL_CHROME = 164;
+/** The chip row's track padding, each chip's vertical padding and its one line of text: inputs.tsx draws from these. */
+export const CHIP_TRACK_PADDING = 3;
+export const CHIP_PADDING_V = 7;
+export const CHIP_LINE = 15;
+/** The Spin and Balls chips take the old spin switch's slot at its height, so the panel never grows for them. */
+export const CHIP_ROW = 2 * CHIP_TRACK_PADDING + 2 * CHIP_PADDING_V + CHIP_LINE;
+// The launcher stacks the chip row, speed, the square pad, a readout and the fire bar: about column + 164 pt tall.
+const PANEL_CHROME = CHIP_ROW + 129;
 // Minimum screen margins, kept even where there is no inset.
 const MARGIN_H = 20;
 const MARGIN_TOP = 8;
@@ -70,15 +76,15 @@ const COLUMN_MIN = 130;
 // The wide shape's floor, for the shortest browser windows, where the stacked shape cannot fit at all.
 const WIDE_MIN = 110;
 const COLUMN_MAX = 260;
-/** Narrower than this, "↔ Strafe" and the spin labels drop to icons. */
+/** Narrower than this, "↔ Strafe" and the chip labels drop to their short forms. */
 export const LABEL_MIN = 180;
 /** Inner padding plus border of the launcher panel, on each side. */
 export const PANEL_INSET = 12;
-/** In the wide launcher, the column of spin, speed, readout and Fire beside the pad, and its gap to the pad. */
+/** In the wide launcher, the column of chips, speed, readout and Fire beside the pad, and its gap to the pad. */
 export const WIDE_SIDE = 160;
 export const WIDE_GAP = 10;
-/** The height spin, speed, a readout line and Fire need in that column, however small the pad beside it. */
-export const WIDE_SIDE_HEIGHT = 150;
+/** The height the chips, speed, a readout line and Fire need in that column, however small the pad beside it. */
+export const WIDE_SIDE_HEIGHT = CHIP_ROW + 115;
 // Narrower than this, a portrait window cannot fit the landscape row, so it gets the column.
 const ROW_MIN_WIDTH = 600;
 // Below this stacked size the pad and labels get cramped, so a short, wide screen moves the pad beside the controls.

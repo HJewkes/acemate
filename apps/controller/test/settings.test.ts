@@ -35,6 +35,27 @@ describe("settings", () => {
     expect(await loadSettings(store)).toEqual(saved);
   });
 
+  it("keeps the Balls chip's interval across a restart", async () => {
+    const store = memoryStore();
+
+    await saveSettings(store, { ...DEFAULT_SETTINGS, shot: { ...DEFAULT_SHOT, count: 3, interval: 2.5 } });
+
+    expect((await loadSettings(store)).shot.interval).toBe(2.5);
+  });
+
+  it("starts every launch at one ball, so a forgotten 7-ball setting never fires on its own", async () => {
+    const store = memoryStore();
+
+    await saveSettings(store, { ...DEFAULT_SETTINGS, shot: { ...DEFAULT_SHOT, count: 7 } });
+
+    expect((await loadSettings(store)).shot.count).toBe(1);
+  });
+
+  it("drops a saved interval off the Every slider's grid", () => {
+    expect(parseSettings(JSON.stringify({ shot: { interval: 2.3 } })).shot.interval).toBe(DEFAULT_SHOT.interval);
+    expect(parseSettings(JSON.stringify({ shot: { interval: 40 } })).shot.interval).toBe(DEFAULT_SHOT.interval);
+  });
+
   it("falls back to defaults for missing or corrupt storage", async () => {
     expect(await loadSettings(memoryStore())).toEqual(DEFAULT_SETTINGS);
     expect(parseSettings("{not json")).toEqual(DEFAULT_SETTINGS);
