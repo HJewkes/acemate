@@ -48,6 +48,8 @@ Open https://hjewkes.github.io/acemate/ in Chrome. Tap the device chip. With no 
 
 Open https://hjewkes.github.io/acemate/ in Chrome or Edge on macOS, Windows, Linux or ChromeOS, and connect the same way.
 
+With a mouse or trackpad and a window big enough, the drive screen sits in a phone-sized frame with a side panel beside it. The panel lists the keyboard and gamepad controls, shows a live readout (link, motion, aim, shot, run and battery) and holds the debug log. In a smaller window, or on a touch screen, the drive screen fills the window.
+
 To try the controller without a robot, open https://hjewkes.github.io/acemate/?mock=1 in any browser. Tapping the device chip then connects to a pretend robot, `ACEMATE-MOCK0`, which answers like an S10 and runs launches without firing anything.
 
 ### iPhone (Bluefy browser)
@@ -77,13 +79,14 @@ The drive screen works in landscape and portrait. In landscape it has three part
   - nearby robots, with connect and disconnect;
   - the theme (dark or light);
   - **Allow driving during runs**;
-  - the debug log, with a Clear button.
+  - the debug log, with a **Clear log** button;
+  - on the web, **Max write without response** (180, 100 or 20 B), a debug setting for Android phones that keep a small Bluetooth packet size. Try 20 B if driving fails on Android.
 - **Right: the launcher.**
   - Spin: slice, flat or topspin.
   - Speed from 1 to 10. The bar fills from right to left.
   - The aim pad: across sets direction, and up sets elevation.
   - The fire bar. Hold it until it fills to fire one ball.
-- **Top right: the run chip.** It appears while a run is active, showing the mode and the elapsed time, and clears as soon as the robot reports the run finished. Tap it to stop the run.
+- **Top right: the run chip.** It appears as soon as you fire, while the robot confirms the shot, and stays through the run, showing the mode and the elapsed time. It clears as soon as the robot reports the run finished. Tap it to stop the run.
 - The aim readout under the pad shows direction and elevation; speed and spin are on the controls above it. Labels never end in "…": a label that doesn't fit shrinks, then shows its icon (Strafe / Turn become ↔ / ↻).
 
 In portrait the same controls stack, top to bottom: the device chip (with Keys and the run chip beside it), the launcher at full width, then the Strafe / Turn switch and the stick at the bottom, where your thumb rests. The switch keeps Fire well clear of the stick. In a short browser window the aim pad moves beside spin, speed and Fire. Portrait iPads keep the landscape layout. In portrait the device menu is one scrolling sheet with a **Done** button at the bottom.
@@ -106,7 +109,7 @@ Turning the phone mid-drive stops the robot: the stick is rebuilt under your thu
 
 ### Keyboard
 
-On the web build only. Tap **⌨ Keys** under the device chip for a reminder. Keys do nothing while the device menu is open or while you are typing in a field.
+On the web build only. Tap **⌨ Keys** by the device chip for a reminder; in the laptop frame, the side panel lists them instead. Keys do nothing while the device menu is open, while you are typing in a field, or with Ctrl, Alt or ⌘ held.
 
 | Key      | Action                                                                    |
 | -------- | ------------------------------------------------------------------------- |
@@ -120,7 +123,7 @@ On the web build only. Tap **⌨ Keys** under the device chip for a reminder. Ke
 
 ### Gamepad
 
-On the web build only, for pads with the standard layout.
+On the web build only, for pads with the standard layout. The pad is read only while the page has focus.
 
 | Input         | Action                                    |
 | ------------- | ----------------------------------------- |
@@ -129,7 +132,7 @@ On the web build only, for pads with the standard layout.
 | Right trigger | hold to fire                              |
 | `B` / `○`     | stop, as `Escape`                         |
 
-Leaving the page (switching tab or window) lets go of every key, stick and fire hold. Hiding or closing the page also ends a run.
+Leaving the page (switching tab or window) lets go of every key, stick and fire hold. Hiding or closing the page also ends a run and drops the link.
 
 ## Launching
 
@@ -146,7 +149,7 @@ Driving is held at stop during a run unless you turn on **Allow driving during r
 
 ## Settings and auto-connect
 
-The app remembers your Strafe / Turn choice, your last shot, the theme, the driving-during-runs option and the last robot you connected to.
+The app remembers your Strafe / Turn choice, your last shot, the theme, the driving-during-runs option, the web write limit and the last robot you connected to.
 
 The iPhone app reconnects to that robot by itself when it opens and when you return to it. If you tap Disconnect, it stays disconnected until you connect from the device menu or open the app again.
 
@@ -164,7 +167,7 @@ In a browser, the app never connects by itself, because the browser's chooser ne
 
 - Use Node 24. Node 25 breaks the happy-dom tests.
 - The root is an npm workspace with one lockfile: run `npm ci` once at the root. `packages/core` (`@acemate/core`) holds the shared protocol, drive and launcher logic, consumed as TypeScript source by `apps/controller` and `tools/cli`.
-- `tools/cli` (`@acemate/cli`) is a laptop CLI over Node BLE. Run `npx acemate --help` from the root for `scan`, `listen [--watch S]`, `drive`, `pulse`, `launch` (a dry run unless given `--fire`) and `send '<json>' [--watch S]`, which writes one raw request and prints every reply. `send` refuses OTA (any type with `ota` in it, `mcu_ota`, `ap` with purpose `ota`), the `upload` and `trigger_update` paths, `start_calib_extrinsic` and `set_court_profile`. Every frame is logged to `acemate.jsonl`. Add `--mock` to `listen`, `drive`, `pulse`, `send` or `launch` to run against the shared mock robot (`ACEMATE-MOCK0`) instead of Bluetooth, for example `npx acemate send '{"type":"ask_init_data"}' --mock`; frames are still logged and `send` still refuses the same requests. The mock ignores `run_start` until `set_time` has been sent, as the robot does, so `launch --fire` sends `set_time` and waits for `rsp_set_time` before `run_start`; a mock `launch --fire` therefore sees the run start and stop.
+- `tools/cli` (`@acemate/cli`) is a laptop CLI over Node BLE. Run `npx acemate --help` from the root for `scan`, `listen [--watch S]`, `drive`, `pulse`, `launch` (a dry run unless given `--fire`) and `send '<json>' [--watch S]`, which writes one raw request and prints every reply. `send` refuses OTA (any type with `ota` in it, `mcu_ota`, `ap` with purpose `ota`), the `upload` and `trigger_update` paths, `start_calib_extrinsic` and `set_court_profile`. Every frame is logged to `acemate.jsonl` (`launch.jsonl` for `launch`); `--log` picks another file. Add `--mock` to `scan`, `listen`, `drive`, `pulse`, `send` or `launch` to run against the shared mock robot (`ACEMATE-MOCK0`) instead of Bluetooth, for example `npx acemate send '{"type":"ask_init_data"}' --mock`; frames are still logged and `send` still refuses the same requests. The mock ignores `run_start` until `set_time` has been sent, as the robot does, so `launch --fire` sends `set_time` and waits for `rsp_set_time` before `run_start`; a mock `launch --fire` therefore sees the run start and stop.
 - Tests per package: `npm test` and `npm run typecheck` inside it, or both across every workspace from the root.
 - From the root: `npm run lint` and `npm run format:check`.
 - Layout check for `apps/controller`: `npm run export:web && npm run check:viewports` renders the web build in mock mode at every size in `scripts/viewports.mjs` (iPhones with their Dynamic Island or notch insets emulated, Bluefy and Android browser windows, iPads, laptops), with the drive screen disconnected, the device menu open, and connected. It fails on text that ends in "…" or is cut off, a box or control off screen, under a safe-area inset or spilling out of its panel, and overlapping controls. It writes `viewport-report/index.html`, a contact sheet with each problem outlined in red and the insets shaded; CI uploads it as the `viewport-report` artifact. Set `CHROMIUM_PATH` if Playwright's own Chromium is not installed. Portrait sizes are checked as strictly as landscape. In portrait it also fails when the stick sits less than 60 px below Fire. The portrait layout fits windows down to 490 pt tall (`PORTRAIT_MIN_HEIGHT` in `src/ui/layout-portrait.ts`).

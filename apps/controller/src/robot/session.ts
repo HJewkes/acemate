@@ -23,10 +23,6 @@ interface SessionConfig {
 
 export const DEFAULT_SESSION: SessionConfig = { loop: DEFAULT_LOOP, heartbeatMs: 3000 };
 
-/**
- * One connected robot: frames requests onto the channel, decodes its messages, and runs the drive loop.
- * Call drive() with the wanted motion and tick() every ~10 ms; time comes only from now(), so tests use a fake clock.
- */
 // On iOS, with-response writes at connect stalled the queue (2026-10-12); unacked writes up to one packet worked.
 // Only lines too big for one packet (iOS allows ~182 bytes unacked) go with response, as a long write.
 const MAX_UNACKED_WRITE = 180;
@@ -48,6 +44,10 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
   });
 }
 
+/**
+ * One connected robot: frames requests onto the channel, decodes its messages, and runs the drive loop.
+ * Call drive() with the wanted motion and tick() every ~10 ms; time comes only from now(), so tests use a fake clock.
+ */
 export class RobotSession {
   readonly launch: LaunchLink;
   /** The stock app blocks motion during a run, so how the firmware handles it is unknown; off by default. */
