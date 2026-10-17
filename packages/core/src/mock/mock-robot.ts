@@ -110,28 +110,33 @@ export class MockRobot {
     return { type: "rsp_set_mode", data: { mode: this.carState.mode, result: "ok" } };
   }
 
-  // The robot acks entry with factory_test/start/success; the exact field names are unconfirmed.
+  // Reply shapes confirmed from a hardware capture on 2026-10-17 (S10 v2.2.10):
+  // enter/exit carry a top-level status "success"; wheel_test replies carry no status field.
   private factoryTest(request: Request): Request | null {
     const { command, action } = request;
     if (command === "wheel_test") return this.wheelTest(action, request.data);
     if (action !== "start" && action !== "stop") return null;
     this.factory.factoryMode = action === "start";
     this.setWheels(null);
-    return { type: "factory_test", action, result: "success" };
+    return { type: "factory_test", action, status: "success" };
   }
 
-  // wheels_speeds is an instantaneous readback that always shows zeros on the hardware.
+  // start echoes the requested direction/speed; wheels_speeds is an instantaneous
+  // readback that always shows zeros on the hardware. stop returns data.status "stopped".
   private wheelTest(action: unknown, data: unknown): Request | null {
     if (!this.factory.factoryMode) return null;
-    if (action === "stop") this.setWheels(null);
-    else if (action === "start") this.setWheels(wheelsFrom(data));
-    else return null;
+    if (action === "stop") {
+      this.setWheels(null);
+      return { type: "factory_test", command: "wheel_test", action: "stop", data: { status: "stopped" } };
+    }
+    if (action !== "start") return null;
+    this.setWheels(wheelsFrom(data));
+    const { direction, speed } = (data ?? {}) as { direction?: unknown; speed?: unknown };
     return {
       type: "factory_test",
       command: "wheel_test",
-      action,
-      result: "success",
-      data: { wheels_speeds: [0, 0, 0, 0] },
+      action: "start",
+      data: { direction, speed, wheels_speeds: [0, 0, 0, 0] },
     };
   }
 

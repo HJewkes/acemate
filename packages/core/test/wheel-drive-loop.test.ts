@@ -219,10 +219,12 @@ describe("wheel drive loop against the mock robot", () => {
     vi.advanceTimersByTime(50);
 
     expect(robot.factoryState).toEqual({ factoryMode: false, wheels: null });
-    expect(replies.map((reply) => `${reply.command ?? ""}/${String(reply.action)}/${String(reply.result)}`)).toEqual([
+    const ackStatus = (reply: Request) =>
+      (reply.status as string | undefined) ?? (reply.data as { status?: string } | undefined)?.status ?? "";
+    expect(replies.map((reply) => `${reply.command ?? ""}/${String(reply.action)}/${ackStatus(reply)}`)).toEqual([
       "/start/success",
-      "wheel_test/start/success",
-      "wheel_test/stop/success",
+      "wheel_test/start/",
+      "wheel_test/stop/stopped",
       "/stop/success",
     ]);
     done();
