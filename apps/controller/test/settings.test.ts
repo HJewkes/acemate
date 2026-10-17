@@ -27,6 +27,7 @@ describe("settings", () => {
       lastRobot: { id: "B1F2-ROBOT", name: "ACEMATE-XXXXX" },
       theme: "light" as const,
       allowDriveDuringRun: true,
+      advancedDrive: true,
       maxUnackedWrite: 20 as const,
     };
 
@@ -69,6 +70,13 @@ describe("settings", () => {
     expect((await loadSettings(store)).allowDriveDuringRun).toBe(true);
     expect(parseSettings(JSON.stringify({ allowDriveDuringRun: "yes" })).allowDriveDuringRun).toBe(false);
     expect(parseSettings(JSON.stringify({ theme: "light" })).allowDriveDuringRun).toBe(false);
+  });
+
+  it("keeps advanced drive off unless it was saved as exactly true", () => {
+    expect(DEFAULT_SETTINGS.advancedDrive).toBe(false);
+    expect(parseSettings(JSON.stringify({ advancedDrive: true })).advancedDrive).toBe(true);
+    expect(parseSettings(JSON.stringify({ advancedDrive: 1 })).advancedDrive).toBe(false);
+    expect(parseSettings(JSON.stringify({ theme: "light" })).advancedDrive).toBe(false);
   });
 
   it("keeps only a known unacked-write limit, defaulting to one packet's worth", () => {

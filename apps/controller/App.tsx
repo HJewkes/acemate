@@ -25,12 +25,13 @@ export default function App() {
   const controller = useMemo(() => new Controller(), []);
   const [probe, setProbe] = useState(requestedProbe);
   const { settings, loaded, update } = useSettings();
-  const { horizontal, shot: aimShot, theme, lastRobot, allowDriveDuringRun, maxUnackedWrite } = settings;
+  const { horizontal, shot: aimShot, theme, lastRobot, allowDriveDuringRun, advancedDrive, maxUnackedWrite } = settings;
   const rememberRobot = useCallback((robot: SavedRobot) => update(() => ({ lastRobot: robot })), [update]);
   const robot = useRobot(controller, {
     lastRobot: loaded ? lastRobot : null,
     onConnected: rememberRobot,
     allowDriveDuringRun,
+    advancedDrive,
     maxUnackedWrite,
   });
   const setAimShot = useCallback(
@@ -42,6 +43,7 @@ export default function App() {
   const setHorizontal = useCallback((next: Horizontal) => update(() => ({ horizontal: next })), [update]);
   const setTheme = useCallback((next: ThemeName) => update(() => ({ theme: next })), [update]);
   const setAllowDrive = useCallback((allow: boolean) => update(() => ({ allowDriveDuringRun: allow })), [update]);
+  const setAdvancedDrive = useCallback((advanced: boolean) => update(() => ({ advancedDrive: advanced })), [update]);
   const setWriteLimit = useCallback((limit: UnackedLimit) => update(() => ({ maxUnackedWrite: limit })), [update]);
   useEffect(() => {
     controller.setHorizontal(horizontal);
@@ -91,6 +93,8 @@ export default function App() {
             onTheme={setTheme}
             allowDriveDuringRun={allowDriveDuringRun}
             onAllowDriveDuringRun={setAllowDrive}
+            advancedDrive={advancedDrive}
+            onAdvancedDrive={setAdvancedDrive}
             maxUnackedWrite={maxUnackedWrite}
             onMaxUnackedWrite={setWriteLimit}
           />

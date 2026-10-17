@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { AppState } from "react-native";
 import type { Controller, ControlState } from "../control/controller";
 import { NO_RUN, type RunInfo } from "../launcher/run-chip";
-import type { FireMessage } from "@acemate/core";
+import type { FireMessage, Motion } from "@acemate/core";
 import type { SavedRobot } from "../storage/settings";
 import { AUTO_CONNECT, openRobot } from "./ble-channel";
 import type { LaunchListener } from "./launch-link";
@@ -90,6 +90,8 @@ interface RobotOptions {
   lastRobot: SavedRobot | null;
   onConnected(robot: SavedRobot): void;
   allowDriveDuringRun: boolean;
+  /** Runs the factory-test wheel loop on the stick vector instead of motion_control; applied live each tick. */
+  advancedDrive: boolean;
   /** Applied to each channel live, so the web debug menu can lower it mid-session. */
   maxUnackedWrite: number;
 }
@@ -191,12 +193,7 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
     const timer = setInterval(() => {
       const next = controller.read();
       setControl((shown) => (shown.motion === next.motion && shown.latched === next.latched ? shown : next));
-      if (session.current) {
-        session.current.allowDriveDuringRun = optionsRef.current.allowDriveDuringRun;
-        session.current.channel.maxUnackedWrite = optionsRef.current.maxUnackedWrite;
-      }
-      session.current?.drive(next.motion);
-      session.current?.tick();
+      if (session.current) driveSession(session.current, optionsRef.current, next.motion, controller);
       const launch = session.current?.launch;
       setRunState(launch?.running ?? false, launch?.inFlight ?? false, launch?.run ?? NO_RUN);
     }, TICK_MS);
@@ -232,6 +229,16 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
     stopRun,
     emergencyStop,
   };
+}
+
+/** Applies the live options, feeds whichever drive path is on (never both), and ticks it. */
+function driveSession(current: RobotSession, options: RobotOptions, motion: Motion, controller: Controller): void {
+  current.allowDriveDuringRun = options.allowDriveDuringRun;
+  current.channel.maxUnackedWrite = options.maxUnackedWrite;
+  current.setAdvanced(options.advancedDrive);
+  if (current.advanced) current.driveWheels(controller.readVector());
+  else current.drive(motion);
+  current.tick();
 }
 
 interface SessionHooks {

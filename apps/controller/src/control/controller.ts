@@ -1,4 +1,4 @@
-import { applyStopLatch, combineInputs, resolveMotion, type Motion } from "@acemate/core";
+import { applyStopLatch, combineInputs, resolveMotion, type DriveInput, type Motion } from "@acemate/core";
 import { IDLE, axesToInput, stickToAxes, type DriveAxes, type Horizontal, type Stick } from "./sticks";
 
 export interface ControlState {
@@ -11,6 +11,7 @@ export interface ControlState {
 type InputSource = "touch" | "keys" | "pad";
 
 const ALL_IDLE: Record<InputSource, DriveAxes> = { touch: IDLE, keys: IDLE, pad: IDLE };
+const NO_INPUT: DriveInput = { x: 0, y: 0, turn: 0 };
 
 /** Holds each input source, what their horizontal axis does, and the e-stop latch; read() resolves them to one motion. */
 export class Controller {
@@ -43,9 +44,17 @@ export class Controller {
 
   /** The stronger push wins per axis across sources, then resolveMotion picks the one motion to send. */
   read(): ControlState {
-    const inputs = Object.values(this.sources).map((axes) => axesToInput(axes, this.horizontal));
-    const result = applyStopLatch(this.latched, resolveMotion(combineInputs(...inputs)));
+    const result = applyStopLatch(this.latched, resolveMotion(this.combined()));
     this.latched = result.latched;
     return result;
+  }
+
+  /** The same combined input as a continuous vector for the advanced drive; zero while read() holds the e-stop latch. */
+  readVector(): DriveInput {
+    return this.latched ? NO_INPUT : this.combined();
+  }
+
+  private combined(): DriveInput {
+    return combineInputs(...Object.values(this.sources).map((axes) => axesToInput(axes, this.horizontal)));
   }
 }

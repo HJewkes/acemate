@@ -15,6 +15,8 @@ export interface MenuSettings {
   onTheme(theme: ThemeName): void;
   allowDriveDuringRun: boolean;
   onAllowDriveDuringRun(allow: boolean): void;
+  advancedDrive: boolean;
+  onAdvancedDrive(advanced: boolean): void;
   maxUnackedWrite: UnackedLimit;
   onMaxUnackedWrite(limit: UnackedLimit): void;
 }

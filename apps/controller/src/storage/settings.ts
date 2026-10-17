@@ -20,6 +20,8 @@ export interface Settings {
   theme: ThemeName;
   /** Lets the stick drive while a launch run is active; firing still needs the robot stopped. */
   allowDriveDuringRun: boolean;
+  /** Drives over the factory-test wheel path (graded speed, true strafe) instead of motion_control. */
+  advancedDrive: boolean;
   /** Longest line written without response; the web debug menu lowers it if Android keeps a 23-byte MTU. */
   maxUnackedWrite: UnackedLimit;
 }
@@ -34,6 +36,7 @@ export const DEFAULT_SETTINGS: Settings = {
   lastRobot: null,
   theme: "dark",
   allowDriveDuringRun: false,
+  advancedDrive: false,
   maxUnackedWrite: 180,
 };
 
@@ -69,6 +72,7 @@ export function parseSettings(raw: string | null): Settings {
       lastRobot: parseRobot(value.lastRobot),
       theme: value.theme === "light" ? "light" : "dark",
       allowDriveDuringRun: value.allowDriveDuringRun === true,
+      advancedDrive: value.advancedDrive === true,
       maxUnackedWrite:
         UNACKED_LIMITS.find((limit) => limit === value.maxUnackedWrite) ?? DEFAULT_SETTINGS.maxUnackedWrite,
     };
