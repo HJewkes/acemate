@@ -1,5 +1,6 @@
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useNearbyRobots } from "../../robot/use-nearby-robots";
+import type { DriveMode } from "../../robot/drive-mode";
 import type { RobotView } from "../../robot/use-robot";
 import type { SavedRobot, UnackedLimit } from "../../storage/settings";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,6 +16,8 @@ export interface MenuSettings {
   onTheme(theme: ThemeName): void;
   allowDriveDuringRun: boolean;
   onAllowDriveDuringRun(allow: boolean): void;
+  driveMode: DriveMode;
+  onDriveMode(mode: DriveMode): void;
   maxUnackedWrite: UnackedLimit;
   onMaxUnackedWrite(limit: UnackedLimit): void;
 }

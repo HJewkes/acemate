@@ -5,6 +5,7 @@ import { NO_RUN, type RunInfo } from "../launcher/run-chip";
 import type { FireMessage } from "@acemate/core";
 import type { SavedRobot } from "../storage/settings";
 import { AUTO_CONNECT, openRobot } from "./ble-channel";
+import type { DriveMode } from "./drive-mode";
 import type { LaunchListener } from "./launch-link";
 import { describeMessage } from "./messages";
 import { RobotSession } from "./session";
@@ -90,6 +91,8 @@ interface RobotOptions {
   lastRobot: SavedRobot | null;
   onConnected(robot: SavedRobot): void;
   allowDriveDuringRun: boolean;
+  /** Which drive path the stick feeds; applied live each tick. */
+  driveMode: DriveMode;
   /** Applied to each channel live, so the web debug menu can lower it mid-session. */
   maxUnackedWrite: number;
 }
@@ -189,14 +192,9 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const next = controller.read();
-      setControl((shown) => (shown.motion === next.motion && shown.latched === next.latched ? shown : next));
-      if (session.current) {
-        session.current.allowDriveDuringRun = optionsRef.current.allowDriveDuringRun;
-        session.current.channel.maxUnackedWrite = optionsRef.current.maxUnackedWrite;
-      }
-      session.current?.drive(next.motion);
-      session.current?.tick();
+      const next = controller.read(optionsRef.current.driveMode === "diagonal");
+      setControl((shown) => (sameControl(shown, next) ? shown : next));
+      if (session.current) driveSession(session.current, optionsRef.current, next, controller);
       const launch = session.current?.launch;
       setRunState(launch?.running ?? false, launch?.inFlight ?? false, launch?.run ?? NO_RUN);
     }, TICK_MS);
@@ -232,6 +230,22 @@ export function useRobot(controller: Controller, options: RobotOptions): RobotVi
     stopRun,
     emergencyStop,
   };
+}
+
+function sameControl(a: ControlState, b: ControlState): boolean {
+  return a.motion === b.motion && a.latched === b.latched && a.speed === b.speed;
+}
+
+/** Applies the live options, feeds whichever drive path is on (only one), and ticks it. */
+function driveSession(current: RobotSession, options: RobotOptions, control: ControlState, controller: Controller) {
+  current.allowDriveDuringRun = options.allowDriveDuringRun;
+  current.channel.maxUnackedWrite = options.maxUnackedWrite;
+  current.setDriveMode(options.driveMode);
+  const mode = current.driveMode;
+  if (mode === "wheel") current.driveWheels(controller.readVector());
+  else if (mode === "diagonal") current.driveDiagonal(control.motion, control.speed ?? 1);
+  else current.drive(control.motion);
+  current.tick();
 }
 
 interface SessionHooks {

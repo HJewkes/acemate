@@ -11,6 +11,7 @@ import type { Horizontal, Stick } from "./src/control/sticks";
 import { singleBall, type Shot } from "./src/launcher/shot";
 import { useHoldFire } from "./src/launcher/use-hold-fire";
 import { AUTO_CONNECT } from "./src/robot/ble-channel";
+import type { DriveMode } from "./src/robot/drive-mode";
 import { connectsOnMenuOpen } from "./src/robot/menu-connect";
 import { useRobot, type RobotView } from "./src/robot/use-robot";
 import type { SavedRobot, UnackedLimit } from "./src/storage/settings";
@@ -25,12 +26,13 @@ export default function App() {
   const controller = useMemo(() => new Controller(), []);
   const [probe, setProbe] = useState(requestedProbe);
   const { settings, loaded, update } = useSettings();
-  const { horizontal, shot: aimShot, theme, lastRobot, allowDriveDuringRun, maxUnackedWrite } = settings;
+  const { horizontal, shot: aimShot, theme, lastRobot, allowDriveDuringRun, driveMode, maxUnackedWrite } = settings;
   const rememberRobot = useCallback((robot: SavedRobot) => update(() => ({ lastRobot: robot })), [update]);
   const robot = useRobot(controller, {
     lastRobot: loaded ? lastRobot : null,
     onConnected: rememberRobot,
     allowDriveDuringRun,
+    driveMode,
     maxUnackedWrite,
   });
   const setAimShot = useCallback(
@@ -42,6 +44,7 @@ export default function App() {
   const setHorizontal = useCallback((next: Horizontal) => update(() => ({ horizontal: next })), [update]);
   const setTheme = useCallback((next: ThemeName) => update(() => ({ theme: next })), [update]);
   const setAllowDrive = useCallback((allow: boolean) => update(() => ({ allowDriveDuringRun: allow })), [update]);
+  const setDriveMode = useCallback((mode: DriveMode) => update(() => ({ driveMode: mode })), [update]);
   const setWriteLimit = useCallback((limit: UnackedLimit) => update(() => ({ maxUnackedWrite: limit })), [update]);
   useEffect(() => {
     controller.setHorizontal(horizontal);
@@ -91,6 +94,8 @@ export default function App() {
             onTheme={setTheme}
             allowDriveDuringRun={allowDriveDuringRun}
             onAllowDriveDuringRun={setAllowDrive}
+            driveMode={driveMode}
+            onDriveMode={setDriveMode}
             maxUnackedWrite={maxUnackedWrite}
             onMaxUnackedWrite={setWriteLimit}
           />

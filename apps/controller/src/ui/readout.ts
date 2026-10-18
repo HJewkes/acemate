@@ -23,7 +23,8 @@ function linkText({ status, detail }: ReadoutRobot): string {
 }
 
 function motionText({ control }: ReadoutRobot): string {
-  const motion = control.motion.replace(/_/g, " ");
+  const name = control.motion.replace(/_/g, " ");
+  const motion = control.speed && control.motion !== "stop" ? `${name} · speed ${control.speed}` : name;
   return control.latched ? `${motion} (latched until released)` : motion;
 }
 

@@ -34,6 +34,13 @@ describe("live readout", () => {
     expect(rows).toMatchObject({ Link: "Linked · ACEMATE-XXXXX", Battery: "80%", Motion: "turn left" });
   });
 
+  it("shows the diagonal mode's speed while moving, but not at stop", () => {
+    expect(read({ ...IDLE_ROBOT, control: { motion: "go_back_left", latched: false, speed: 3 } }).Motion).toBe(
+      "go back left · speed 3",
+    );
+    expect(read({ ...IDLE_ROBOT, control: { motion: "stop", latched: false, speed: 1 } }).Motion).toBe("stop");
+  });
+
   it("says when an e-stop latch is holding the robot", () => {
     expect(read({ ...IDLE_ROBOT, control: { motion: "stop", latched: true } }).Motion).toBe(
       "stop (latched until released)",

@@ -3,6 +3,8 @@ import { parseMessage, type Request } from "../protocol/protocol";
 // Reply shapes follow captures in docs/protocol.md; rsp_set_time and rsp_set_mode fields beyond type are unconfirmed.
 export const MOCK_ROBOT_NAME = "ACEMATE-MOCK0";
 const REPLY_DELAY_MS = 30;
+// Each wheel_test start drives one CAN frame that lasts about this long on the robot.
+export const MOCK_WHEEL_FRAME_MS = 500;
 
 export interface MockCarState {
   car_loc_status: number;
@@ -12,6 +14,12 @@ export interface MockCarState {
   train_id: null;
   runner_state: number;
   bat: number;
+}
+
+/** Factory-test state the hardware does not report; tests read it to see what the wheels would do. */
+export interface MockFactoryState {
+  factoryMode: boolean;
+  wheels: { direction: string; speed: number } | null;
 }
 
 /** One robot-to-app message as the S10 sends it: compact JSON ending in the +==ACE==+ marker. */
@@ -36,13 +44,19 @@ export class MockRobot {
     runner_state: 0,
     bat: 76,
   };
+  private readonly factory: MockFactoryState = { factoryMode: false, wheels: null };
   private runSeconds = 1;
   private runTimer: ReturnType<typeof setTimeout> | undefined;
+  private wheelTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor(private readonly emit: (message: Request) => void) {}
 
   get state(): Readonly<MockCarState> {
     return { ...this.carState };
+  }
+
+  get factoryState(): Readonly<MockFactoryState> {
+    return { ...this.factory };
   }
 
   /** Takes the text of one BLE write; the robot parses each write as a whole message. */
@@ -54,9 +68,10 @@ export class MockRobot {
     if (reply) this.later(reply);
   }
 
-  /** Cancels a pending run end, as a dropped link would. */
+  /** Cancels a pending run end and wheel frame, as a dropped link would. */
   close(): void {
     clearTimeout(this.runTimer);
+    clearTimeout(this.wheelTimer);
   }
 
   private answer(request: Request): Request | null {
@@ -75,6 +90,8 @@ export class MockRobot {
         return this.setMode(request);
       case "run_start":
         return this.startRun();
+      case "factory_test":
+        return this.factoryTest(request);
       case "run_pause":
       case "run_stop":
         this.endRun();
@@ -91,6 +108,42 @@ export class MockRobot {
     const interval = typeof data.interval === "number" ? data.interval : 1;
     this.runSeconds = balls * interval;
     return { type: "rsp_set_mode", data: { mode: this.carState.mode, result: "ok" } };
+  }
+
+  // Reply shapes confirmed from a hardware capture on 2026-10-17 (S10 v2.2.10):
+  // enter/exit carry a top-level status "success"; wheel_test replies carry no status field.
+  private factoryTest(request: Request): Request | null {
+    const { command, action } = request;
+    if (command === "wheel_test") return this.wheelTest(action, request.data);
+    if (action !== "start" && action !== "stop") return null;
+    this.factory.factoryMode = action === "start";
+    this.setWheels(null);
+    return { type: "factory_test", action, status: "success" };
+  }
+
+  // start echoes the requested direction/speed; wheels_speeds is an instantaneous
+  // readback that always shows zeros on the hardware. stop returns data.status "stopped".
+  private wheelTest(action: unknown, data: unknown): Request | null {
+    if (!this.factory.factoryMode) return null;
+    if (action === "stop") {
+      this.setWheels(null);
+      return { type: "factory_test", command: "wheel_test", action: "stop", data: { status: "stopped" } };
+    }
+    if (action !== "start") return null;
+    this.setWheels(wheelsFrom(data));
+    const { direction, speed } = (data ?? {}) as { direction?: unknown; speed?: unknown };
+    return {
+      type: "factory_test",
+      command: "wheel_test",
+      action: "start",
+      data: { direction, speed, wheels_speeds: [0, 0, 0, 0] },
+    };
+  }
+
+  private setWheels(wheels: MockFactoryState["wheels"]): void {
+    clearTimeout(this.wheelTimer);
+    this.factory.wheels = wheels;
+    if (wheels) this.wheelTimer = setTimeout(() => (this.factory.wheels = null), MOCK_WHEEL_FRAME_MS);
   }
 
   private startRun(): Request | null {
@@ -112,4 +165,9 @@ export class MockRobot {
   private later(message: Request): void {
     setTimeout(() => this.emit(message), REPLY_DELAY_MS);
   }
+}
+
+function wheelsFrom(data: unknown): MockFactoryState["wheels"] {
+  const { direction, speed } = (data ?? {}) as { direction?: unknown; speed?: unknown };
+  return typeof direction === "string" && typeof speed === "number" ? { direction, speed } : null;
 }

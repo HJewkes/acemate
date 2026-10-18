@@ -103,3 +103,49 @@ describe("robotLine", () => {
     expect(lines).toEqual(['{"type":"rsp_heartbeat"}']);
   });
 });
+
+describe("MockRobot factory test", () => {
+  const wheelStart = {
+    type: "factory_test",
+    command: "wheel_test",
+    action: "start",
+    data: { direction: "drive_left", speed: 3 },
+  };
+
+  it("ignores wheel_test until factory mode is entered", () => {
+    const { robot, send, types } = robotWithInbox();
+
+    send(wheelStart);
+    vi.advanceTimersByTime(100);
+
+    expect(robot.factoryState.wheels).toBeNull();
+    expect(types()).toEqual([]);
+  });
+
+  it("drives the wheels for one 500 ms frame per wheel_test start", () => {
+    const { robot, send } = robotWithInbox();
+    send({ type: "factory_test", action: "start" });
+
+    send(wheelStart);
+    vi.advanceTimersByTime(499);
+    const during = robot.factoryState.wheels;
+    vi.advanceTimersByTime(1);
+
+    expect(during).toEqual({ direction: "drive_left", speed: 3 });
+    expect(robot.factoryState.wheels).toBeNull();
+  });
+
+  it("stops the wheels on wheel_test stop and on leaving factory mode", () => {
+    const { robot, send } = robotWithInbox();
+    send({ type: "factory_test", action: "start" });
+    send(wheelStart);
+
+    send({ type: "factory_test", command: "wheel_test", action: "stop" });
+    const afterStop = robot.factoryState.wheels;
+    send(wheelStart);
+    send({ type: "factory_test", action: "stop" });
+
+    expect(afterStop).toBeNull();
+    expect(robot.factoryState).toEqual({ factoryMode: false, wheels: null });
+  });
+});
