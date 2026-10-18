@@ -30,12 +30,12 @@ function advancedHarness(respond?: (request: Sent) => string | undefined) {
   return { ...robot, labels, labelsAt, steer };
 }
 
-describe("advanced drive", () => {
+describe("wheel drive mode", () => {
   it("stops motion_control before entering factory mode, then drives the wheels at a graded speed", async () => {
     const { session, drive, steer, labels } = advancedHarness();
     await drive("go_front");
 
-    session.setAdvanced(true);
+    session.setDriveMode("wheel");
     await steer({ y: 0.5 });
     await steer({ x: -1 });
 
@@ -49,9 +49,9 @@ describe("advanced drive", () => {
     ]);
   });
 
-  it("sends no motion_control while advanced, whatever drive() is given", async () => {
+  it("sends no motion_control in wheel mode, whatever drive() is given", async () => {
     const { session, drive, advance, labels } = advancedHarness();
-    session.setAdvanced(true);
+    session.setDriveMode("wheel");
 
     await drive("go_front");
     await advance(200);
@@ -59,7 +59,7 @@ describe("advanced drive", () => {
     expect(labels().filter((line) => line.startsWith("motion"))).toEqual([]);
   });
 
-  it("ignores the stick vector until advanced mode is on", async () => {
+  it("ignores the stick vector until wheel mode is on", async () => {
     const { steer, labels } = advancedHarness();
 
     await steer({ y: 1 });
@@ -69,7 +69,7 @@ describe("advanced drive", () => {
 
   it("resends a held stick every 100 ms and stops the wheels once input goes quiet for 500 ms", async () => {
     const { session, steer, advance, labelsAt } = advancedHarness();
-    session.setAdvanced(true);
+    session.setDriveMode("wheel");
     await steer({ y: 1 });
 
     await advance(600);
@@ -87,10 +87,10 @@ describe("advanced drive", () => {
 
   it("stops the wheels and exits factory mode when switched off, then drives motion_control again", async () => {
     const { session, steer, drive, labels } = advancedHarness();
-    session.setAdvanced(true);
+    session.setDriveMode("wheel");
     await steer({ x: 1 });
 
-    session.setAdvanced(false);
+    session.setDriveMode("stock");
     await drive("go_back");
 
     expect(labels().slice(-4)).toEqual(["wheel drive_right 10", "wheel stop", "exit", "motion go_back"]);
@@ -98,19 +98,19 @@ describe("advanced drive", () => {
 
   it("stops the wheels and exits factory mode on an emergency stop", async () => {
     const { session, steer, labels } = advancedHarness();
-    session.setAdvanced(true);
+    session.setDriveMode("wheel");
     await steer({ y: -1 });
 
     session.emergencyStop();
     await flush();
 
     expect(labels().slice(-3, -1)).toEqual(["wheel stop", "exit"]);
-    expect(session.advanced).toBe(false);
+    expect(session.driveMode).toBe("stock");
   });
 
   it("stops the wheels and exits factory mode before closing the link on shutdown", async () => {
     const { session, steer, labels, events } = advancedHarness();
-    session.setAdvanced(true);
+    session.setDriveMode("wheel");
     await steer({ y: 1 });
 
     await session.shutdown();
@@ -124,7 +124,7 @@ describe("advanced drive", () => {
     await held.session.launch.handle(oneBall);
     held.notify(runningHeartbeat);
     await flush();
-    held.session.setAdvanced(true);
+    held.session.setDriveMode("wheel");
 
     await held.steer({ y: 1 });
     held.session.allowDriveDuringRun = true;
@@ -135,7 +135,7 @@ describe("advanced drive", () => {
 
   it("refuses a new launch while the wheels are moving", async () => {
     const { session, steer, types } = advancedHarness(acceptsSetMode);
-    session.setAdvanced(true);
+    session.setDriveMode("wheel");
     await steer({ y: 1 });
 
     await session.launch.handle(oneBall);

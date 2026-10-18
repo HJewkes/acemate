@@ -27,7 +27,7 @@ describe("settings", () => {
       lastRobot: { id: "B1F2-ROBOT", name: "ACEMATE-XXXXX" },
       theme: "light" as const,
       allowDriveDuringRun: true,
-      advancedDrive: true,
+      driveMode: "diagonal" as const,
       maxUnackedWrite: 20 as const,
     };
 
@@ -72,11 +72,16 @@ describe("settings", () => {
     expect(parseSettings(JSON.stringify({ theme: "light" })).allowDriveDuringRun).toBe(false);
   });
 
-  it("keeps advanced drive off unless it was saved as exactly true", () => {
-    expect(DEFAULT_SETTINGS.advancedDrive).toBe(false);
-    expect(parseSettings(JSON.stringify({ advancedDrive: true })).advancedDrive).toBe(true);
-    expect(parseSettings(JSON.stringify({ advancedDrive: 1 })).advancedDrive).toBe(false);
-    expect(parseSettings(JSON.stringify({ theme: "light" })).advancedDrive).toBe(false);
+  it("defaults the drive mode to stock and drops an unknown one", () => {
+    expect(DEFAULT_SETTINGS.driveMode).toBe("stock");
+    expect(parseSettings(JSON.stringify({ driveMode: "turbo" })).driveMode).toBe("stock");
+    expect(parseSettings(JSON.stringify({ driveMode: "wheel" })).driveMode).toBe("wheel");
+  });
+
+  it("migrates the old advancedDrive switch to wheel mode only when it was exactly true", () => {
+    expect(parseSettings(JSON.stringify({ advancedDrive: true })).driveMode).toBe("wheel");
+    expect(parseSettings(JSON.stringify({ advancedDrive: 1 })).driveMode).toBe("stock");
+    expect(parseSettings(JSON.stringify({ advancedDrive: true, driveMode: "diagonal" })).driveMode).toBe("diagonal");
   });
 
   it("keeps only a known unacked-write limit, defaulting to one packet's worth", () => {

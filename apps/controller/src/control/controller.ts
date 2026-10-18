@@ -1,10 +1,19 @@
-import { applyStopLatch, combineInputs, resolveMotion, type DriveInput, type Motion } from "@acemate/core";
+import {
+  applyStopLatch,
+  combineInputs,
+  resolveMotion,
+  resolveSpeedMotion,
+  type DriveInput,
+  type Motion,
+} from "@acemate/core";
 import { IDLE, axesToInput, stickToAxes, type DriveAxes, type Horizontal, type Stick } from "./sticks";
 
 export interface ControlState {
   motion: Motion;
   /** True after an emergency stop until every input is back in its deadzone. */
   latched: boolean;
+  /** Only in diagonal reads: the graded speed sent with the motion. */
+  speed?: number;
 }
 
 /** The touch stick, the keyboard (web) and a gamepad (web). */
@@ -42,14 +51,23 @@ export class Controller {
     this.latched = true;
   }
 
-  /** The stronger push wins per axis across sources, then resolveMotion picks the one motion to send. */
-  read(): ControlState {
-    const result = applyStopLatch(this.latched, resolveMotion(this.combined()));
+  /**
+   * The stronger push wins per axis across sources, then resolveMotion picks the one motion to send. A diagonal read
+   * picks from eight directions instead and adds a speed; both resolvers agree on when to stop.
+   */
+  read(diagonal = false): ControlState {
+    if (!diagonal) return this.latch(resolveMotion(this.combined()));
+    const { motion, speed } = resolveSpeedMotion(this.combined());
+    return { ...this.latch(motion), speed };
+  }
+
+  private latch(motion: Motion): ControlState {
+    const result = applyStopLatch(this.latched, motion);
     this.latched = result.latched;
     return result;
   }
 
-  /** The same combined input as a continuous vector for the advanced drive; zero while read() holds the e-stop latch. */
+  /** The same combined input as a continuous vector for the wheel drive; zero while read() holds the e-stop latch. */
   readVector(): DriveInput {
     return this.latched ? NO_INPUT : this.combined();
   }
