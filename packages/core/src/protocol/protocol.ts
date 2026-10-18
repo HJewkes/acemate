@@ -4,7 +4,12 @@ export const NUS_WRITE = "6e400002b5a3f393e0a9e50e24dcca9e";
 export const NUS_NOTIFY = "6e400003b5a3f393e0a9e50e24dcca9e";
 
 export const MOTIONS = ["go_front", "go_back", "go_left", "go_right", "turn_left", "turn_right", "stop"] as const;
-export type Motion = (typeof MOTIONS)[number];
+/**
+ * Found in firmware 2.2.11's motion_control string table, next to speed/f_speed/h_speed/yaw_speed; never seen on the
+ * wire from the stock app, so whether the robot acts on them is unverified. Only the diagonal drive mode sends them.
+ */
+export const DIAGONAL_MOTIONS = ["go_front_left", "go_front_right", "go_back_left", "go_back_right"] as const;
+export type Motion = (typeof MOTIONS)[number] | (typeof DIAGONAL_MOTIONS)[number];
 
 export type Request = Record<string, unknown> & { type: string };
 
@@ -15,6 +20,11 @@ export const requests = {
   motion: (motion: Motion): Request => ({
     type: "motion_control",
     data: { motion, shot_switch: "off" },
+  }),
+  /** motion_control with the per-message speed field guessed from the firmware strings; unverified on hardware. */
+  motionWithSpeed: (motion: Motion, speed: number): Request => ({
+    type: "motion_control",
+    data: { motion, speed, shot_switch: "off" },
   }),
 };
 

@@ -7,6 +7,12 @@ describe("motion command encoding", () => {
 
     expect(line).toBe('{"type":"motion_control","data":{"motion":"go_front","shot_switch":"off"}}\r\n');
   });
+
+  it("adds an integer speed to a diagonal motion and keeps the launcher off", () => {
+    const line = encodeLine(requests.motionWithSpeed("go_back_left", 4)).toString("utf8");
+
+    expect(line).toBe('{"type":"motion_control","data":{"motion":"go_back_left","speed":4,"shot_switch":"off"}}\r\n');
+  });
 });
 
 describe("chunk", () => {

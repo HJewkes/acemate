@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { MOTION_RULE, combineInputs, resolveMotion, type MotionRule } from "../src/drive/motion";
+import {
+  DIAGONAL_SPEED_LEVELS,
+  MOTION_RULE,
+  combineInputs,
+  resolveDiagonalMotion,
+  resolveMotion,
+  resolveSpeedMotion,
+  type MotionRule,
+} from "../src/drive/motion";
 
 const input = (x: number, y: number, turn: number) => ({ x, y, turn });
 
@@ -49,5 +57,54 @@ describe("resolveMotion with a configured rule", () => {
 describe("combineInputs", () => {
   it("keeps the stronger push per axis so keys and sticks don't cancel", () => {
     expect(combineInputs(input(0, 1, 0), input(0.3, -0.2, -0.7))).toEqual(input(0.3, 1, -0.7));
+  });
+});
+
+describe("resolveDiagonalMotion", () => {
+  it("picks the nearest of eight directions by the stick's angle", () => {
+    expect(resolveDiagonalMotion(input(0, 1, 0))).toBe("go_front");
+    expect(resolveDiagonalMotion(input(0.7, 0.7, 0))).toBe("go_front_right");
+    expect(resolveDiagonalMotion(input(1, 0, 0))).toBe("go_right");
+    expect(resolveDiagonalMotion(input(0.7, -0.7, 0))).toBe("go_back_right");
+    expect(resolveDiagonalMotion(input(0, -1, 0))).toBe("go_back");
+    expect(resolveDiagonalMotion(input(-0.7, -0.7, 0))).toBe("go_back_left");
+    expect(resolveDiagonalMotion(input(-1, 0, 0))).toBe("go_left");
+    expect(resolveDiagonalMotion(input(-0.7, 0.7, 0))).toBe("go_front_left");
+  });
+
+  it("splits octants at 22.5 degrees off a cardinal", () => {
+    const near = Math.tan((22 * Math.PI) / 180);
+    const past = Math.tan((23 * Math.PI) / 180);
+
+    expect(resolveDiagonalMotion(input(near, 1, 0))).toBe("go_front");
+    expect(resolveDiagonalMotion(input(past, 1, 0))).toBe("go_front_right");
+    expect(resolveDiagonalMotion(input(-past, -1, 0))).toBe("go_back_left");
+  });
+
+  it("keeps resolveMotion's deadzone and turn rules", () => {
+    expect(resolveDiagonalMotion(input(0.2, 0.2, 0))).toBe("stop");
+    expect(resolveDiagonalMotion(input(0.7, 0.7, -0.6))).toBe("turn_left");
+    expect(resolveDiagonalMotion(input(0, 0, 0.4))).toBe("turn_right");
+  });
+
+  it("leaves the stock resolver on four directions", () => {
+    expect(resolveMotion(input(0.7, 0.7, 0))).toBe("go_front");
+  });
+});
+
+describe("resolveSpeedMotion", () => {
+  it("grades speed from 1 just past the deadzone to the top level at full push", () => {
+    expect(resolveSpeedMotion(input(0, 0.26, 0))).toEqual({ motion: "go_front", speed: 1 });
+    expect(resolveSpeedMotion(input(0, 0.6, 0))).toEqual({ motion: "go_front", speed: 3 });
+    expect(resolveSpeedMotion(input(0, -1, 0))).toEqual({ motion: "go_back", speed: DIAGONAL_SPEED_LEVELS });
+  });
+
+  it("clamps a corner push, longer than one, to the top level", () => {
+    expect(resolveSpeedMotion(input(1, 1, 0))).toEqual({ motion: "go_front_right", speed: 5 });
+  });
+
+  it("grades a turn by the twist alone", () => {
+    expect(resolveSpeedMotion(input(0, 0, -1))).toEqual({ motion: "turn_left", speed: 5 });
+    expect(resolveSpeedMotion(input(0, 0, 0.3))).toEqual({ motion: "turn_right", speed: 1 });
   });
 });
